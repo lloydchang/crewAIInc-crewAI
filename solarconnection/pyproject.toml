@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "solarconnection"
+version = "0.1.0"
+description = "solarconnection using crewAI"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.13"
+crewai = { extras = ["tools"], version = ">=0.61.0,<1.0.0" }
+
+
+[tool.poetry.scripts]
+solarconnection = "solarconnection.main:run"
+run_crew = "solarconnection.main:run"
+train = "solarconnection.main:train"
+replay = "solarconnection.main:replay"
+test = "solarconnection.main:test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,55 @@
+gather_community_solar_data:
+  description: >
+    Collect comprehensive data on community solar projects in California.
+    This includes information on project locations, energy output, costs, and available subsidy programs.
+    Analyze the gathered data to identify trends, challenges, and opportunities within the community solar sector.
+  agent: data_researcher
+  priority: 1
+  expected_output: >
+    A detailed report encompassing:
+      - Overview of current community solar projects in California.
+      - Analysis of energy costs associated with these projects.
+      - Summary of subsidy programs available to support community solar initiatives.
+      - Insights and recommendations based on the data collected.
+
+research_community_solar_projects:
+  description: "Gather data on community solar projects in California."
+  agent: data_researcher
+  priority: 2
+  expected_output: "Detailed report on community solar projects in California."
+
+analyze_subsidy_programs:
+  description: "Research and analyze available subsidy programs for low-income families."
+  agent: data_researcher
+  priority: 2
+  expected_output: "Report summarizing available subsidy programs and their potential impact."
+
+design_website_wireframe:
+  description: "Create a wireframe for The Solar Connection website."
+  agent: full_stack_developer
+  priority: 3
+  expected_output: "Wireframe mockups for The Solar Connection website."
+
+implement_marketplace_feature:
+  description: "Develop the public marketplace feature for connecting renters and solar projects."
+  agent: full_stack_developer
+  priority: 2
+  expected_output: "Functional marketplace feature for connecting renters and solar projects."
+
+create_financial_model:
+  description: "Develop a model to calculate potential cost savings for users."
+  agent: financial_analyst
+  priority: 3
+  expected_output: "Financial model estimating potential savings for users."
+
+create_project_timeline:
+  description: "Create a project timeline and milestones."
+  agent: project_manager
+  priority: 3
+  expected_output: "Project timeline with key milestones and deadlines."
+
+integrate_components:
+  description: "Integrate all components and prepare for demo."
+  agent: project_manager
+  priority: 4
+  expected_output: "Integrated system ready for demo."
