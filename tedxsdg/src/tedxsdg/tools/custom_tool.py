@@ -52,9 +52,12 @@ class YoutubeVideoSearchTool(StructuredTool):
         result = tool.run(query)
         return f"YouTube Search Results for '{query}' (Video URL: {youtube_video_url}):\n{result}"
 
-# SDG Alignment Tool Input Schema
+# SDG Alignment Tool Input Schema with Dictionary Input
 class SDGAlignmentInput(BaseModel):
-    idea: str = Field(..., description="The idea to analyze for SDG alignment")
+    idea: dict = Field(
+        ..., 
+        description="The idea to analyze for SDG alignment, provided as a dictionary with fields like 'title' and 'description'"
+    )
     sdgs: List[str] = Field(default_factory=list, description="List of SDGs to consider")
 
 # SDG Alignment Tool
@@ -63,9 +66,13 @@ class SDGAlignmentTool(StructuredTool):
     description = "Analyzes ideas and aligns them with UN Sustainable Development Goals (SDGs)"
     args_schema = SDGAlignmentInput
 
-    def _run(self, idea: str, sdgs: List[str]) -> str:
+    def _run(self, idea: dict, sdgs: List[str]) -> str:
+        # Extract title and description from the idea dictionary
+        title = idea.get('title', 'Untitled')
+        description = idea.get('description', 'No description provided')
+
         # Simulate SDG alignment analysis
-        return f"SDG Alignment analysis for idea: {idea}, considering SDGs: {', '.join(sdgs)}"
+        return f"SDG Alignment analysis for idea: '{title}' with description: '{description}', considering SDGs: {', '.join(sdgs)}"
 
 # Sustainability Impact Tool Input Schema
 class SustainabilityImpactInput(BaseModel):
