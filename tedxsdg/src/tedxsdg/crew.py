@@ -13,19 +13,8 @@ import traceback
 from typing import Union, List
 from pydantic import BaseModel, Field
 
-# -----------------------------------------
-# Environment Variable Configuration
-# -----------------------------------------
-
-import os
-os.environ['OTEL_SDK_DISABLED'] = 'true' # Disable telemetry
-
 # Set verbose logging for litellm via environment variable
 os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
-
-# -----------------------------------------
-# Ollama Configuration
-# -----------------------------------------
 
 # Configure Ollama to use Llama 3
 ollama_model = "ollama/llama3"
