@@ -1,5 +1,8 @@
 # tasks.yaml
 
+# TEDxSDG Tasks Configuration
+# Each task defines a description, agent responsible, priority level, and expected output.
+
 analyze_idea:
   description: >
     Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
@@ -14,6 +17,7 @@ analyze_idea:
     }
     Finally, use the web_search tool to find relevant information and examples.
   agent: idea_analyzer
+  priority: 2  # Medium priority
   expected_output: >
     A detailed analysis report including:
     1. Summary of the user's idea
@@ -30,6 +34,7 @@ generate_action_plan:
     Use the sustainability_impact_assessor tool to evaluate the potential impact of each step. 
     Use the web_search tool to find best practices and examples for each step of the plan.
   agent: action_plan_generator
+  priority: 1  # High priority
   expected_output: >
     A comprehensive action plan including:
     1. Executive summary of the project
@@ -48,6 +53,7 @@ provide_expert_advice:
     Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice. 
     Use the web_search tool to find relevant examples and case studies to support your advice.
   agent: expert_advisor
+  priority: 3  # Low priority
   expected_output: >
     Detailed expert advice including:
     1. Restatement of the user's question or challenge
@@ -64,6 +70,7 @@ facilitate_collaboration:
     Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations. 
     Use the web_search tool to find examples of successful collaborations in similar fields.
   agent: collaboration_facilitator
+  priority: 2  # Medium priority
   expected_output: >
     A collaboration proposal including:
     1. Overview of the projects considered
@@ -81,6 +88,7 @@ integrate_data:
     Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data. 
     Use the web_search tool to find relevant datasets and data integration techniques.
   agent: data_integration_specialist
+  priority: 2  # Medium priority
   expected_output: >
     A comprehensive data analysis report including:
     1. List of data sources used
