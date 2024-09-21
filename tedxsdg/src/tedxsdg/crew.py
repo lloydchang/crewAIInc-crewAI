@@ -33,7 +33,10 @@ def sanitize_tool_input(input_data):
 # -----------------------------------------
 
 class SDGAlignmentInput(BaseModel):
-    idea: str = Field(..., description="The idea to analyze for SDG alignment")
+    idea: Union[str, dict] = Field(
+        ..., 
+        description="The idea to analyze for SDG alignment. Can be either a string or a dictionary with fields like 'title' and 'description'."
+    )
     sdgs: List[str] = Field(default_factory=list, description="List of SDGs to consider")
 
 class SustainabilityImpactInput(BaseModel):
@@ -44,8 +47,14 @@ class SustainabilityImpactInput(BaseModel):
 # Tool Functions
 # -----------------------------------------
 
-def analyze_sdg_alignment(idea: str, sdgs: List[str]) -> str:
-    # Implement the SDG alignment analysis logic here
+def analyze_sdg_alignment(idea: Union[str, dict], sdgs: List[str]) -> str:
+    # If idea is a dictionary, extract title and description
+    if isinstance(idea, dict):
+        title = idea.get('title', 'Untitled')
+        description = idea.get('description', 'No description provided')
+        idea = f"Title: {title}, Description: {description}"
+
+    # Now idea is guaranteed to be a string
     return f"Analyzing SDG alignment for idea: {idea}\nConsidering SDGs: {', '.join(sdgs)}"
 
 def assess_sustainability_impact(project: str, metrics: List[str]) -> str:
