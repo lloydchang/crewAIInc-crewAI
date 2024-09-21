@@ -17,6 +17,9 @@ from pydantic import BaseModel, Field
 # Environment Variable Configuration
 # -----------------------------------------
 
+import os
+os.environ['OTEL_SDK_DISABLED'] = 'true' # Disable telemetry
+
 # Set verbose logging for litellm via environment variable
 os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
 

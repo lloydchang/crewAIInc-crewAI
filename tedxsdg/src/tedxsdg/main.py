@@ -2,6 +2,29 @@
 
 # main.py
 
+import logging
+import os
+
+# Disable the OpenTelemetry SDK by setting the environment variable
+os.environ['OTEL_SDK_DISABLED'] = 'true'
+
+# Get the logger used by OpenTelemetry (adjust the logger name if necessary)
+opentelemetry_logger = logging.getLogger('opentelemetry')
+
+# Set the logging level to ERROR to suppress warnings
+opentelemetry_logger.setLevel(logging.ERROR)
+
+# Optionally, if you want to ignore specific messages, use a custom logging filter
+class NoSDKWarningFilter(logging.Filter):
+    def filter(self, record):
+        # Suppress log records that contain 'SDK is disabled.'
+        return 'SDK is disabled.' not in record.getMessage()
+
+# Add the filter to the OpenTelemetry logger
+opentelemetry_logger.addFilter(NoSDKWarningFilter())
+
+# Now, OpenTelemetry warnings should no longer appear
+
 from tedxsdg.crew import run_crew
 
 def run_tedxsdg_platform():
