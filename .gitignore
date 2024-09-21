@@ -16,3 +16,4 @@ rc-tests/*
 temp/*
 .vscode/*
 crew_tasks_output.json
+poetry.lock
