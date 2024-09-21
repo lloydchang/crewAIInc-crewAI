@@ -1,5 +1,8 @@
 # agents.yaml
 
+# TEDxSDG Agents Configuration
+# Each agent has a specific role, goal, backstory, and tools that they can use.
+
 sam:
   role: "Veterinarian with Eco-Friendly Pet Care Initiative"
   goal: "Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity"
