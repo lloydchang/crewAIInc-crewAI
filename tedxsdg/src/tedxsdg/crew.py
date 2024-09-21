@@ -171,7 +171,7 @@ class CrewAIManager:
                 role=agent_config.get("role"),
                 goal=agent_config.get("goal"),
                 backstory=agent_config.get("backstory"),
-                allow_delegation=agent_config.get("allow_delegation", False),
+                allow_delegation=agent_config.get("allow_delegation", True),
                 verbose=True,
                 llm=ollama_model,
                 tools=tools
