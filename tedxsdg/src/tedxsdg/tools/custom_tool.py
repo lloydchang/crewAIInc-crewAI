@@ -67,12 +67,13 @@ class SDGAlignmentTool(StructuredTool):
     args_schema = SDGAlignmentInput
 
     def _run(self, idea: dict, sdgs: List[str]) -> str:
-        # Extract title and description from the idea dictionary
+        # Convert the idea dictionary to a string (e.g., combining title and description)
         title = idea.get('title', 'Untitled')
         description = idea.get('description', 'No description provided')
+        idea_str = f"Title: {title}, Description: {description}"
 
         # Simulate SDG alignment analysis
-        return f"SDG Alignment analysis for idea: '{title}' with description: '{description}', considering SDGs: {', '.join(sdgs)}"
+        return f"SDG Alignment analysis for idea: '{idea_str}', considering SDGs: {', '.join(sdgs)}"
 
 # Sustainability Impact Tool Input Schema
 class SustainabilityImpactInput(BaseModel):
