@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "tedxsdg"
+version = "0.1.0"
+description = "tedxsdg using crewAI"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.13"
+crewai = { extras = ["tools"], version = ">=0.61.0,<1.0.0" }
+
+
+[tool.poetry.scripts]
+tedxsdg = "tedxsdg.main:run"
+run_crew = "tedxsdg.main:run"
+train = "tedxsdg.main:train"
+replay = "tedxsdg.main:replay"
+test = "tedxsdg.main:test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
