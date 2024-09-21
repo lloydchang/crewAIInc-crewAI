@@ -1,54 +1,31 @@
 #!/usr/bin/env python
-import sys
-from tedxsdg.crew import TedxsdgCrew
 
-# This main file is intended to be a way for your to run your
-# crew locally, so refrain from adding necessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+# main.py
+
+from tedxsdg.crew import run_crew
+
+def run_tedxsdg_platform():
+    print("Welcome to the TEDxSDG Platform!")
+    print("\nDemonstrating the platform with two example ideas:")
+
+    ideas = [
+        ("Sam", "Launch an eco-friendly pet care initiative to promote responsible ownership and biodiversity"),
+        ("Alex", "Develop a sustainable supply chain to combat hunger and reduce food waste")
+    ]
+
+    for protagonist, idea in ideas:
+        print(f"\n\n{protagonist}'s Idea: {idea}")
+        print("-" * 50)
+        result = run_tedxsdg_crew(idea, protagonist)
+        print("\nTEDxSDG Crew Execution Result:")
+        print(result)
+        print("=" * 50)
 
 def run():
     """
-    Run the crew.
+    This function will be called by the 'crewai run' command.
     """
-    inputs = {
-        'topic': 'AI LLMs'
-    }
-    TedxsdgCrew().crew().kickoff(inputs=inputs)
+    run_crew()
 
-
-def train():
-    """
-    Train the crew for a given number of iterations.
-    """
-    inputs = {
-        "topic": "AI LLMs"
-    }
-    try:
-        TedxsdgCrew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
-
-    except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
-
-def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
-    try:
-        TedxsdgCrew().crew().replay(task_id=sys.argv[1])
-
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
-
-def test():
-    """
-    Test the crew execution and returns the results.
-    """
-    inputs = {
-        "topic": "AI LLMs"
-    }
-    try:
-        TedxsdgCrew().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
-
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+if __name__ == "__main__":
+    run()

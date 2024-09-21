@@ -1,17 +1,92 @@
-research_task:
-  description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is 2024.
-  expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+# tasks.yaml
 
-reporting_task:
+analyze_idea:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
+    {
+      "idea": "{idea}",
+      "sdgs": ["SDG 1", "SDG 2", "SDG 3"]  # List relevant SDGs here
+    }
+    Then, assess the sustainability impact using the sustainability_impact_assessor tool with the structure:
+    {
+      "project": "{project}",
+      "metrics": ["metric1", "metric2", "metric3"]  # List relevant metrics here
+    }
+    Finally, use the web_search tool to find relevant information and examples.
+  agent: idea_analyzer
   expected_output: >
-    A fully fledge reports with the mains topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A detailed analysis report including:
+    1. Summary of the user's idea
+    2. Primary SDG(s) addressed, with explanation
+    3. Secondary SDG(s) impacted, with explanation
+    4. Detailed description of how the idea contributes to each identified SDG
+    5. Potential challenges or considerations
+    6. List of relevant examples or case studies found through web search
+
+generate_action_plan:
+  description: >
+    Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan. 
+    Use the sdg_alignment tool to ensure each step aligns with the relevant SDGs. 
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of each step. 
+    Use the web_search tool to find best practices and examples for each step of the plan.
+  agent: action_plan_generator
+  expected_output: >
+    A comprehensive action plan including:
+    1. Executive summary of the project
+    2. Detailed list of actionable steps, each with a description and estimated timeframe
+    3. Resource requirements for each step
+    4. Suggested partnerships or collaborations
+    5. Timeline visualization (e.g., Gantt chart)
+    6. List of KPIs and how to measure them
+    7. Scalability suggestions
+    8. Potential challenges and mitigation strategies
+
+provide_expert_advice:
+  description: >
+    Address specific questions or challenges related to the implementation of SDG-aligned projects. 
+    Use the sdg_alignment tool to ensure advice is in line with SDG goals. 
+    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice. 
+    Use the web_search tool to find relevant examples and case studies to support your advice.
+  agent: expert_advisor
+  expected_output: >
+    Detailed expert advice including:
+    1. Restatement of the user's question or challenge
+    2. Comprehensive answer or solution
+    3. Relevant examples or case studies
+    4. Step-by-step guidance for implementation
+    5. Potential challenges and how to overcome them
+    6. Additional resources or tools for further assistance
+
+facilitate_collaboration:
+  description: >
+    Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities. 
+    Use the sdg_alignment tool to identify common SDG goals between projects. 
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations. 
+    Use the web_search tool to find examples of successful collaborations in similar fields.
+  agent: collaboration_facilitator
+  expected_output: >
+    A collaboration proposal including:
+    1. Overview of the projects considered
+    2. Identified synergies between projects
+    3. Specific collaboration opportunities, with detailed descriptions
+    4. Potential benefits of collaboration for each project
+    5. Overall impact assessment on SDG advancement
+    6. Suggested next steps for initiating partnerships
+    7. Potential challenges in collaboration and how to address them
+
+integrate_data:
+  description: >
+    Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects. 
+    Use the sdg_alignment tool to ensure data analysis aligns with SDG goals. 
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data. 
+    Use the web_search tool to find relevant datasets and data integration techniques.
+  agent: data_integration_specialist
+  expected_output: >
+    A comprehensive data analysis report including:
+    1. List of data sources used
+    2. Methodology for data integration and analysis
+    3. Key findings and insights relevant to the project
+    4. Data visualizations (e.g., charts, graphs)
+    5. Interpretation of results in the context of the project
+    6. Data-driven recommendations for the project
+    7. Limitations of the analysis and areas for further investigation
