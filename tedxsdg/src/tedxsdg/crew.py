@@ -12,6 +12,7 @@ import sys
 import traceback
 from typing import Union, List
 from pydantic import BaseModel, Field
+import json  # Added for handling JSON issues
 
 # Set verbose logging for litellm via environment variable
 os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
@@ -20,13 +21,26 @@ os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
 ollama_model = "ollama/llama3"
 
 # -----------------------------------------
-# Helper Function
+# Helper Functions
 # -----------------------------------------
 
 def sanitize_tool_input(input_data):
     if isinstance(input_data, dict) and 'tool_input' in input_data:
         return input_data['tool_input']
     return str(input_data)
+
+# Handling JSON with extra data
+def load_json_with_extra_data(data):
+    try:
+        obj, end = json.JSONDecoder().raw_decode(data)
+        extra_data = data[end:].strip()
+        if extra_data:
+            print(f"Extra data found: {extra_data}")
+            obj['extra_data'] = extra_data
+        return obj
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {str(e)}")
+        return {"error": "Invalid JSON"}
 
 # -----------------------------------------
 # Tool Input Schemas
@@ -40,7 +54,7 @@ class SDGAlignmentInput(BaseModel):
     sdgs: List[str] = Field(default_factory=list, description="List of SDGs to consider")
 
 class SustainabilityImpactInput(BaseModel):
-    project: str = Field(..., description="The project to assess for sustainability impact")
+    project: str = Field(default="Unnamed Project", description="The project to assess for sustainability impact")  # Default project name
     metrics: List[str] = Field(default_factory=list, description="List of sustainability metrics to consider")
 
 # -----------------------------------------
@@ -58,6 +72,10 @@ def analyze_sdg_alignment(idea: Union[str, dict], sdgs: List[str]) -> str:
     return f"Analyzing SDG alignment for idea: {idea}\nConsidering SDGs: {', '.join(sdgs)}"
 
 def assess_sustainability_impact(project: str, metrics: List[str]) -> str:
+    # Add logging to check project input
+    print(f"Project: {project}")
+    if not project:
+        project = "Unnamed Project"  # Set default if project is empty
     # Implement the sustainability impact assessment logic here
     return f"Assessing sustainability impact for project: {project}\nConsidering metrics: {', '.join(metrics)}"
 

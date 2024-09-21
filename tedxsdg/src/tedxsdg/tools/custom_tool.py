@@ -7,6 +7,7 @@ from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from crewai_tools import YoutubeVideoSearchTool as YoutubeSearchToolAPI
 from pydantic import BaseModel, Field
 from typing import List, Union
+import json  # Added to handle JSON-related issues
 
 # Sanitizing input for tools
 def sanitize_tool_input(input_data):
@@ -81,7 +82,7 @@ class SDGAlignmentTool(StructuredTool):
 
 # Sustainability Impact Tool Input Schema
 class SustainabilityImpactInput(BaseModel):
-    project: str = Field(..., description="The project to assess for sustainability impact")
+    project: str = Field(default="Unnamed Project", description="The project to assess for sustainability impact")  # Default project name
     metrics: List[str] = Field(default_factory=list, description="List of sustainability metrics to consider")
 
 # Sustainability Impact Assessor Tool
