@@ -1,8 +1,40 @@
-# tasks.yaml
-
 # TEDxSDG Tasks Configuration
 # Each task defines a description, agent responsible, priority level, and expected output.
 
+# config/tasks.yaml
+
+# Task for Sam (Veterinarian with Eco-Friendly Pet Care Initiative)
+launch_eco_friendly_pet_care:
+  description: >
+    Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
+    Use the sdg_alignment tool to align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
+    Assess the initiative's sustainability using the sustainability_impact_assessor tool.
+    Finally, use the web_search tool to research best practices and similar initiatives.
+  agent: sam
+  priority: 1  # High priority
+  expected_output: >
+    A detailed report including:
+    1. Summary of the eco-friendly pet care initiative
+    2. Primary SDGs addressed (SDG 3 and SDG 15)
+    3. Steps for implementation
+    4. Best practices from similar initiatives found via web search
+
+# Task for Alex (Restaurateur with Sustainable Supply Chain Vision)
+develop_sustainable_supply_chain:
+  description: >
+    Develop and implement a sustainable supply chain to combat hunger and reduce food waste.
+    Use the sdg_alignment tool to align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
+    Assess the sustainability impact of the supply chain using the sustainability_impact_assessor tool.
+    Finally, use the web_search tool to find best practices and similar examples.
+  agent: alex
+  priority: 1  # High priority
+  expected_output: >
+    A comprehensive supply chain plan including:
+    1. Detailed steps for developing the supply chain
+    2. SDGs 2 and 12 alignment and analysis
+    3. List of best practices from web research
+
+# Task for idea_analyzer
 analyze_idea:
   description: >
     Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
@@ -27,6 +59,7 @@ analyze_idea:
     5. Potential challenges or considerations
     6. List of relevant examples or case studies found through web search
 
+# Task for action_plan_generator
 generate_action_plan:
   description: >
     Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan. 
@@ -34,7 +67,7 @@ generate_action_plan:
     Use the sustainability_impact_assessor tool to evaluate the potential impact of each step. 
     Use the web_search tool to find best practices and examples for each step of the plan.
   agent: action_plan_generator
-  priority: 1  # High priority
+  priority: 2  # High priority
   expected_output: >
     A comprehensive action plan including:
     1. Executive summary of the project
@@ -46,23 +79,7 @@ generate_action_plan:
     7. Scalability suggestions
     8. Potential challenges and mitigation strategies
 
-provide_expert_advice:
-  description: >
-    Address specific questions or challenges related to the implementation of SDG-aligned projects. 
-    Use the sdg_alignment tool to ensure advice is in line with SDG goals. 
-    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice. 
-    Use the web_search tool to find relevant examples and case studies to support your advice.
-  agent: expert_advisor
-  priority: 3  # Low priority
-  expected_output: >
-    Detailed expert advice including:
-    1. Restatement of the user's question or challenge
-    2. Comprehensive answer or solution
-    3. Relevant examples or case studies
-    4. Step-by-step guidance for implementation
-    5. Potential challenges and how to overcome them
-    6. Additional resources or tools for further assistance
-
+# Task for collaboration_facilitator
 facilitate_collaboration:
   description: >
     Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities. 
@@ -81,6 +98,7 @@ facilitate_collaboration:
     6. Suggested next steps for initiating partnerships
     7. Potential challenges in collaboration and how to address them
 
+# Task for data_integration_specialist
 integrate_data:
   description: >
     Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects. 
@@ -98,3 +116,21 @@ integrate_data:
     5. Interpretation of results in the context of the project
     6. Data-driven recommendations for the project
     7. Limitations of the analysis and areas for further investigation
+
+# Task for expert_advisor
+provide_expert_advice:
+  description: >
+    Address specific questions or challenges related to the implementation of SDG-aligned projects. 
+    Use the sdg_alignment tool to ensure advice is in line with SDG goals. 
+    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice. 
+    Use the web_search tool to find relevant examples and case studies to support your advice.
+  agent: expert_advisor
+  priority: 3  # Low priority
+  expected_output: >
+    Detailed expert advice including:
+    1. Restatement of the user's question or challenge
+    2. Comprehensive answer or solution
+    3. Relevant examples or case studies
+    4. Step-by-step guidance for implementation
+    5. Potential challenges and how to overcome them
+    6. Additional resources or tools for further assistance

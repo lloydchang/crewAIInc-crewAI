@@ -1,7 +1,7 @@
-# agents.yaml
-
 # TEDxSDG Agents Configuration
 # Each agent has a specific role, goal, backstory, and tools that they can use.
+
+# config/agents.py
 
 sam:
   role: "Veterinarian with Eco-Friendly Pet Care Initiative"
@@ -11,9 +11,9 @@ sam:
     Your project addresses SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
   allow_delegation: true
   tools:
-    - web_search
     - sdg_alignment
     - sustainability_impact_assessor
+    - web_search
 
 alex:
   role: "Restaurateur with Sustainable Supply Chain Vision"
@@ -23,9 +23,9 @@ alex:
     Your project addresses SDG 2 (Zero Hunger) and SDG 12 (Responsible Consumption and Production).
   allow_delegation: true
   tools:
-    - web_search
     - sdg_alignment
     - sustainability_impact_assessor
+    - web_search
 
 idea_analyzer:
   role: "TEDxSDG Idea Analyzer"
@@ -49,17 +49,6 @@ action_plan_generator:
     - sustainability_impact_assessor
     - web_search
 
-expert_advisor:
-  role: "TEDxSDG Expert Advisor"
-  goal: "Provide expert advice on SDG-related topics and monitor project progress"
-  backstory: >
-    The expert advisor offers technical insights and best practices for projects.
-  allow_delegation: true
-  tools:
-    - sdg_alignment
-    - sustainability_impact_assessor
-    - web_search
-
 collaboration_facilitator:
   role: "TEDxSDG Collaboration Facilitator"
   goal: "Facilitate collaboration and identify synergies between projects"
@@ -76,6 +65,17 @@ data_integration_specialist:
   goal: "Integrate and analyze data from multiple open-source datasets to provide insights"
   backstory: >
     The data specialist agent uses data to provide insights for SDG-related projects.
+  allow_delegation: true
+  tools:
+    - sdg_alignment
+    - sustainability_impact_assessor
+    - web_search
+
+expert_advisor:
+  role: "TEDxSDG Expert Advisor"
+  goal: "Provide expert advice on SDG-related topics and monitor project progress"
+  backstory: >
+    The expert advisor offers technical insights and best practices for projects.
   allow_delegation: true
   tools:
     - sdg_alignment
