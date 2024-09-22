@@ -29,7 +29,8 @@ class DuckDuckGoSearchTool(StructuredTool):
         # Use DuckDuckGo API to search the web and return the results
         search_api = DuckDuckGoSearchAPIWrapper()
         result = search_api.run(query)
-        return f"DuckDuckGo Search Results for '{query}':\n{result}"
+        # Return a "Final Answer" when done
+        return f"Final Answer: DuckDuckGo Search Results for '{query}':\n{result}"
 
 # YouTube Video Search Tool Input Schema
 class YoutubeSearchInput(BaseModel):
@@ -51,7 +52,7 @@ class YoutubeVideoSearchTool(StructuredTool):
         
         # Perform the search
         result = tool.run(query)
-        return f"YouTube Search Results for '{query}' (Video URL: {youtube_video_url}):\n{result}"
+        return f"Final Answer: YouTube Search Results for '{query}' (Video URL: {youtube_video_url}):\n{result}"
 
 # SDG Alignment Tool Input Schema with String or Dictionary Input
 class SDGAlignmentInput(BaseModel):
@@ -78,7 +79,7 @@ class SDGAlignmentTool(StructuredTool):
             idea_str = idea
 
         # Simulate SDG alignment analysis
-        return f"SDG Alignment analysis for idea: '{idea_str}', considering SDGs: {', '.join(sdgs)}"
+        return f"Final Answer: SDG Alignment analysis for idea: '{idea_str}', considering SDGs: {', '.join(sdgs)}"
 
 # Sustainability Impact Tool Input Schema
 class SustainabilityImpactInput(BaseModel):
@@ -93,7 +94,7 @@ class SustainabilityImpactAssessorTool(StructuredTool):
 
     def _run(self, project: str, metrics: List[str]) -> str:
         # Simulate sustainability impact assessment
-        return f"Sustainability impact assessment for project: {project}, considering metrics: {', '.join(metrics)}"
+        return f"Final Answer: Sustainability impact assessment for project: {project}, considering metrics: {', '.join(metrics)}"
 
 # Tool creation factory to return the appropriate tool based on the name
 def create_custom_tool(tool_name: str) -> StructuredTool:
