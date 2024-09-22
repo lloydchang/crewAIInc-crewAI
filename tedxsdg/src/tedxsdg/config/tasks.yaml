@@ -3,7 +3,10 @@
 
 # config/tasks.yaml
 
-# Task for Sam (Veterinarian with Eco-Friendly Pet Care Initiative)
+# TEDxSDG Tasks Configuration
+# Each task defines a description, agent responsible, priority level, and expected output.
+
+# Task for Sam (a Dedicated Veterinarian with Eco-Friendly Pet Care Initiative)
 launch_eco_friendly_pet_care:
   description: >
     Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
@@ -19,7 +22,7 @@ launch_eco_friendly_pet_care:
     3. Steps for implementation
     4. Best practices from similar initiatives found via web search
 
-# Task for Alex (Restaurateur with Sustainable Supply Chain Vision)
+# Task for Alex (a Visionary Restaurateur with Sustainable Supply Chain Vision)
 develop_sustainable_supply_chain:
   description: >
     Develop and implement a sustainable supply chain to combat hunger and reduce food waste.

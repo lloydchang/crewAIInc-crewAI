@@ -14,6 +14,9 @@ opentelemetry_logger = logging.getLogger('opentelemetry')
 # Set the logging level to ERROR to suppress warnings
 opentelemetry_logger.setLevel(logging.ERROR)
 
+# Set verbose logging for litellm via environment variable
+os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
+
 from tedxsdg.crew import run_crew
 
 def run_tedxsdg_platform():
