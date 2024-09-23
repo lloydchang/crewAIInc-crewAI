@@ -12,7 +12,7 @@ sam:
     You aim to promote responsible ownership and biodiversity through your initiative.
   allow_delegation: true
   tools:
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
@@ -26,7 +26,7 @@ alex:
     You aim to combat hunger and reduce food waste through your food supply chain innovations.
   allow_delegation: true
   tools:
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
@@ -41,7 +41,7 @@ expert_advisor:
   tools:
     - sustainability_impact_assessor
     - sdg_alignment
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
 
 idea_analyzer:
@@ -52,7 +52,7 @@ idea_analyzer:
     Your expertise helps identify the most impactful and sustainable project concepts.
   allow_delegation: true
   tools:
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
@@ -65,7 +65,7 @@ data_integration_specialist:
     Your analysis helps inform decision-making and measure the impact of sustainable development initiatives.
   allow_delegation: true
   tools:
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
@@ -78,7 +78,7 @@ action_plan_generator:
     Your plans help turn concepts into reality, ensuring they contribute effectively to sustainable development goals.
   allow_delegation: true
   tools:
-    - youtube_search
+    - tedx_search
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
@@ -92,5 +92,5 @@ collaboration_facilitator:
   allow_delegation: true
   tools:
     - sdg_alignment
-    - youtube_search
+    - tedx_search
     - duckduckgo_search

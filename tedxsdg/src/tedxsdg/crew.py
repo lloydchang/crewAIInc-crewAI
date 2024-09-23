@@ -176,7 +176,7 @@ class CrewAIManager:
                     '- Dictionary input: {"query": "search query", "additional_info": "extra details"}\n'
                     "Important:\n\n"
                     "- Always choose an action from the available tools when you need to perform a task.\n"
-                    "- Do not output 'Action: None' or any action that is not listed in the available tools.\n"
+                    "- Do not output 'Action: N/A', 'Action: None', or any action that is not listed in the available tools.\n"
                     "- If you need to think or reason internally, use 'Thought:' followed by your reasoning.\n\n"
                     "When you have a final answer or conclusion, use the 'Final Answer:' prefix to submit it."
                 )

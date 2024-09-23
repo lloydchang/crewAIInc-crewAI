@@ -5,7 +5,7 @@
 
 launch_eco_friendly_pet_care:
   description: >
-    Use the youtube_search tool to research best practices and similar initiatives.
+    Use the tedx_search tool to research best practices and similar initiatives.
     Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
     Use the sdg_alignment tool to align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
     Assess the initiative's sustainability using the sustainability_impact_assessor tool.
@@ -21,7 +21,7 @@ launch_eco_friendly_pet_care:
 
 develop_sustainable_food_supply_chain:
   description: >
-    Use the youtube_search tool to find best practices and similar examples.
+    Use the tedx_search tool to find best practices and similar examples.
     Develop and implement a sustainable food supply chain to combat hunger and reduce food waste.
     Use the sdg_alignment tool to align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
     Assess the sustainability impact of the food supply chain using the sustainability_impact_assessor tool.
@@ -36,7 +36,7 @@ develop_sustainable_food_supply_chain:
 
 provide_expert_advice:
   description: >
-    Use the youtube_search tool to find relevant examples and case studies to support your advice.
+    Use the tedx_search tool to find relevant examples and case studies to support your advice.
     Address specific questions or challenges related to the implementation of SDG-aligned projects.
     Use the sdg_alignment tool to ensure advice is in line with SDG goals.
     Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
@@ -54,7 +54,7 @@ provide_expert_advice:
 
 analyze_idea:
   description: >
-    Use the youtube_search tool to find relevant information and examples.
+    Use the tedx_search tool to find relevant information and examples.
     Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
     {
       "idea": "{idea}",
@@ -79,7 +79,7 @@ analyze_idea:
 
 generate_action_plan:
   description: >
-    Use the youtube_search tool to find best practices and examples for each step of the plan.
+    Use the tedx_search tool to find best practices and examples for each step of the plan.
     Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan.
     Use the sdg_alignment tool to ensure each step aligns with the relevant SDGs.
     Use the sustainability_impact_assessor tool to evaluate the potential impact of each step.
@@ -99,7 +99,7 @@ generate_action_plan:
 
 facilitate_collaboration:
   description: >
-    Use the youtube_search tool to find examples of successful collaborations in similar fields.
+    Use the tedx_search tool to find examples of successful collaborations in similar fields.
     Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities.
     Use the sdg_alignment tool to identify common SDG goals between projects.
     Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations.
@@ -118,7 +118,7 @@ facilitate_collaboration:
 
 integrate_data:
   description: >
-    Use the youtube_search tool to find relevant datasets and data integration techniques.
+    Use the tedx_search tool to find relevant datasets and data integration techniques.
     Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects.
     Use the sdg_alignment tool to ensure data analysis aligns with SDG goals.
     Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data.
