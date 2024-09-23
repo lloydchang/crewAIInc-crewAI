@@ -4,32 +4,35 @@
 
 import os
 import logging
+import sys
+import re
+from typing import Union, Dict
+
+from dotenv import load_dotenv
+import yaml
+
 from crewai import Agent, Task, Crew, Process
-from langchain.tools import StructuredTool
 from langchain.agents import AgentOutputParser
 from langchain.schema import AgentAction, AgentFinish
-import yaml
-import sys
-import traceback
-import re
-from typing import Union, List, Dict, Any
-from pydantic import BaseModel, Field
+
 from tools.custom_tool import create_custom_tool
 
+# Load environment variables from .env
+load_dotenv()
+
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-# Define global LLM configurations
-llm_model_name = "ollama/llama3"  # Adjust the model name to a valid Ollama model
+# Configure Ollama to use Llama 3
+OLLAMA_MODEL = "ollama/llama3"
 
-llm_config = {
-    "provider": "ollama",
-    "model": llm_model_name,
-    "temperature": 2.0,
-}
-
-llm_memory = False
+llm_provider = os.getenv("LLM_PROVIDER", "ollama")
+llm_model_name = os.getenv("LLM_MODEL_NAME", "llama3")
+llm_temperature = float(os.getenv("LLM_TEMPERATURE", "2.0"))
 
 embedder_config = {
     "provider": "ollama",
@@ -38,11 +41,19 @@ embedder_config = {
     }
 }
 
+llm_config = {
+    "provider": llm_provider,
+    "model": llm_model_name,
+    "temperature": llm_temperature,
+}
+
+llm_memory = False
+
 # Function to log which LLM is being used
-def log_llm_use(llm_config):
-    provider = llm_config.get("provider", "Unknown Provider")
-    model = llm_config.get("model", "Unknown Model")
-    temperature = llm_config.get("temperature", "Default")
+def log_llm_use(config: Dict):
+    provider = config.get("provider", "Unknown Provider")
+    model = config.get("model", "Unknown Model")
+    temperature = config.get("temperature", "Default")
     logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
 
 class CustomOutputParser(AgentOutputParser):
@@ -63,7 +74,11 @@ class CustomOutputParser(AgentOutputParser):
             thought_match = re.search(r"(thought|Thought):\s*(.*)", llm_output, re.DOTALL)
             if thought_match:
                 # Handle 'thought' as internal reasoning
-                return AgentAction(tool="thought", tool_input=thought_match.group(2).strip(), log=llm_output)
+                return AgentAction(
+                    tool="thought",
+                    tool_input=thought_match.group(2).strip(),
+                    log=llm_output
+                )
 
             # If no patterns matched, raise an error
             raise ValueError(f"Could not parse LLM output: {llm_output}")
@@ -71,8 +86,18 @@ class CustomOutputParser(AgentOutputParser):
         action = match.group(1).strip()
         action_input = match.group(2).strip()
 
-        # Return the action and action input
-        return AgentAction(tool=action, tool_input=action_input.strip('"'), log=llm_output)
+        # Ensure action_input is a valid dictionary
+        try:
+            action_input_dict = eval(action_input) if action_input.startswith("{") else {"query": action_input}
+        except Exception as e:
+            logger.error(f"Error parsing action input: {action_input} - {str(e)}")
+            raise
+
+        return AgentAction(
+            tool=action,
+            tool_input=action_input_dict,
+            log=llm_output
+        )
 
 class CrewAIManager:
     def __init__(self, agents_config_path: str, tasks_config_path: str):
@@ -90,7 +115,7 @@ class CrewAIManager:
         log_llm_use(self.llm_config)
 
     def load_config(self, config_path: str, config_type: str) -> Dict:
-        # Load configuration from YAML files
+        """Load configuration from YAML files."""
         try:
             with open(config_path, 'r') as file:
                 config = yaml.safe_load(file)
@@ -101,7 +126,7 @@ class CrewAIManager:
             sys.exit(1)
 
     def create_agent(self, agent_name: str) -> Agent:
-        # Create an agent based on the configuration
+        """Create an agent based on the configuration."""
         if agent_name not in self.agents_config:
             raise ValueError(f"Agent '{agent_name}' not found in agents configuration.")
 
@@ -111,13 +136,14 @@ class CrewAIManager:
         for tool_name in tool_names:
             # Prepare tool configuration
             tool_config = {
-                "llm": {
-                    "config": self.llm_config
-                },
                 "embedder": self.embedder,
                 "memory": self.memory
             }
-            tools.append(create_custom_tool(tool_name, config=tool_config))
+            tool = create_custom_tool(tool_name, config=tool_config)
+            if tool:
+                tools.append(tool)
+            else:
+                logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
 
         try:
             agent = Agent(
@@ -127,21 +153,21 @@ class CrewAIManager:
                 backstory=agent_config.get("backstory"),
                 allow_delegation=agent_config.get("allow_delegation", True),
                 verbose=True,
-                llm_config=self.llm_config,
+                llm=OLLAMA_MODEL,
                 tools=tools,
                 output_parser=CustomOutputParser(),
-                instructions=f"""You have access to the following tools: {', '.join([tool.name for tool in tools])}.
-Use these tools to complete your tasks. You can provide either a string or a dictionary as input.
-For example:
-- String input: "search query"
-- Dictionary input: {{"query": "search query", "additional_info": "extra details"}}
-Important:
-
-- Always choose an action from the available tools when you need to perform a task.
-- Do not output 'Action: None' or any action that is not listed in the available tools.
-- If you need to think or reason internally, use 'Thought:' followed by your reasoning.
-
-When you have a final answer or conclusion, use the 'Final Answer:' prefix to submit it."""
+                instructions=(
+                    f"You have access to the following tools: {', '.join([tool.name for tool in tools])}.\n"
+                    "Use these tools to complete your tasks. You can provide either a string or a dictionary as input.\n"
+                    "For example:\n"
+                    '- String input: "search query"\n'
+                    '- Dictionary input: {"query": "search query", "additional_info": "extra details"}\n'
+                    "Important:\n\n"
+                    "- Always choose an action from the available tools when you need to perform a task.\n"
+                    "- Do not output 'Action: None' or any action that is not listed in the available tools.\n"
+                    "- If you need to think or reason internally, use 'Thought:' followed by your reasoning.\n\n"
+                    "When you have a final answer or conclusion, use the 'Final Answer:' prefix to submit it."
+                )
             )
             logger.info(f"Created agent '{agent_name}' with tools: {[tool.name for tool in tools]}")
             self.agents[agent_name] = agent
@@ -151,7 +177,7 @@ When you have a final answer or conclusion, use the 'Final Answer:' prefix to su
             raise
 
     def create_task(self, task_name: str) -> Task:
-        # Create a task based on the configuration
+        """Create a task based on the configuration."""
         if task_name not in self.tasks_config:
             raise ValueError(f"Task '{task_name}' not found in tasks configuration.")
 
@@ -171,24 +197,28 @@ When you have a final answer or conclusion, use the 'Final Answer:' prefix to su
                 priority=priority,
                 expected_output=str(task_config.get("expected_output", "No output specified."))
             )
-            logger.info(f"Created task '{task_name}' assigned to agent '{agent_identifier}' with priority {priority}.")
+            logger.info(
+                f"Created task '{task_name}' assigned to agent '{agent_identifier}' with priority {priority}."
+            )
+            self.tasks.append(task)
             return task
         except Exception as e:
             logger.error(f"Error creating task '{task_name}': {str(e)}")
             raise
 
     def initialize_crew(self) -> Crew:
-        # Initialize the crew with agents and tasks
+        """Initialize the crew with agents and tasks."""
         logger.info("Initializing crew")
         for task_name in self.tasks_config.keys():
             try:
-                task = self.create_task(task_name)
-                self.tasks.append(task)
+                self.create_task(task_name)
             except Exception as e:
                 logger.error(f"Error creating task '{task_name}': {str(e)}", exc_info=True)
 
         if not self.agents or not self.tasks:
-            raise ValueError("At least one agent and one task must be successfully created to initialize the crew.")
+            raise ValueError(
+                "At least one agent and one task must be successfully created to initialize the crew."
+            )
 
         try:
             crew = Crew(
@@ -197,7 +227,6 @@ When you have a final answer or conclusion, use the 'Final Answer:' prefix to su
                 process=Process.sequential,
                 memory=self.memory,
                 embedder=self.embedder,
-                manager_llm_config=self.llm_config,
                 max_rpm=None,
                 share_crew=False,
                 verbose=True,
@@ -209,7 +238,7 @@ When you have a final answer or conclusion, use the 'Final Answer:' prefix to su
             raise
 
 def run_crew() -> Union[str, None]:
-    # Main function to run the crew
+    """Main function to run the crew."""
     agents_config_path = 'config/agents.yaml'
     tasks_config_path = 'config/tasks.yaml'
 

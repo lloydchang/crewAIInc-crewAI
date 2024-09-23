@@ -8,15 +8,14 @@ from langchain.tools import StructuredTool
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from pydantic import BaseModel, Field
 from typing import List, Union, Dict, Any, Type, Optional
-from embedchain import App as EmbedChainApp
-from embedchain.config import AppConfig
-import litellm
-
-use_rag = True
+from embedchain import App  # Corrected Import from Embedchain
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Flag to use RAG techniques
+use_rag = False
 
 # Helper functions
 def is_valid_youtube_url(url: str) -> bool:
@@ -94,31 +93,25 @@ class DuckDuckGoSearchTool(StructuredTool):
 
 class CustomYoutubeVideoSearchTool(StructuredTool):
     """
-    A custom YouTube video search tool that performs semantic searches on YouTube videos using embedchain.
+    A custom YouTube video search tool that performs semantic searches on YouTube videos using Embedchain.
     """
     name: str = "youtube_search"
     description: str = "Searches YouTube videos for specific content using RAG techniques"
     args_schema: Type[BaseModel] = YoutubeVideoSearchToolSchema
-    embedchain_app: Any = None
+    embedchain_app: Optional[App] = None
     config: Dict[str, Any] = Field(default_factory=dict)
-    embedding_fn: Any = None
+    use_rag: bool = False  # <--- Added field
 
-    def __init__(self, youtube_video_url: Optional[str] = None, config: Optional[Dict[str, Any]] = None, use_rag: bool = False):
+    def __init__(
+        self,
+        config: Optional[Dict[str, Any]] = None,
+        use_rag: bool = False,
+        embedchain_app: Optional[App] = None  # Made Optional for safety
+    ):
         super().__init__()
         self.config = config or {}
-
-        # Initialize custom LLM and embedder based on config to avoid OpenAI API usage
-        llm_provider = self.config.get('llm', {}).get('provider')
-        llm_provider_config = self.config.get('llm', {}).get('config', {})
-
-        if use_rag:
-            # Initialize embedchain with default settings
-            app_config = AppConfig(collect_metrics=False)
-            self.embedchain_app = EmbedChainApp(config=app_config)
-
-            if youtube_video_url and youtube_video_url.lower() != "none":
-                self.embedchain_app.add("youtube_video", youtube_video_url)
-                self.description = f"A tool that can be used to semantic search a query in the {youtube_video_url} YouTube video content."
+        self.embedchain_app = embedchain_app
+        self.use_rag = use_rag
 
     def _run(self, search_query: Union[str, Dict[str, Any]], youtube_video_url: Optional[str] = None, **kwargs: Any) -> str:
         query_str = extract_query_string(search_query)
@@ -131,23 +124,24 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
             youtube_video_url = None
 
         try:
-            # Only perform RAG if the flag is set
-            if youtube_video_url:
+            # Only perform RAG if the flag is set and Embedchain App is initialized
+            if self.use_rag and youtube_video_url:
                 if not is_valid_youtube_url(youtube_video_url):
                     logger.warning(f"Invalid YouTube URL provided: {youtube_video_url}")
                     return f"Error: Invalid YouTube URL provided: {youtube_video_url}"
                 logger.info(f"Adding YouTube video URL: {youtube_video_url}")
                 if self.embedchain_app:
                     self.embedchain_app.add("youtube_video", youtube_video_url)
-            else:
-                logger.info("No valid YouTube video URL provided, proceeding with general search.")
+                else:
+                    logger.error("Embedchain App is not initialized.")
+                    return "Error: Embedchain App is not initialized."
 
             if self.embedchain_app:
                 result = self.embedchain_app.query(query_str)
                 logger.info("YouTube search completed successfully")
                 return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
             else:
-                return "RAG service disabled."
+                return "RAG service disabled or Embedchain App not initialized."
 
         except Exception as e:
             logger.error(f"Error during YouTube video search: {str(e)}", exc_info=True)
@@ -172,6 +166,8 @@ class SDGAlignmentTool(StructuredTool):
             sdgs = ["All SDGs"]
         
         logger.info(f"Performing SDG alignment analysis for idea: {idea_str}")
+        # Placeholder for actual SDG alignment logic
+        # Implement the logic to align the idea with the specified SDGs here
         return f"Final Answer: SDG Alignment analysis for idea: '{idea_str}', considering SDGs: {', '.join(sdgs)}"
 
 class SustainabilityImpactAssessorTool(StructuredTool):
@@ -193,9 +189,11 @@ class SustainabilityImpactAssessorTool(StructuredTool):
             return "Error: No valid sustainability metrics provided for assessment."
 
         logger.info(f"Performing sustainability impact assessment for project: {project_str}")
+        # Placeholder for actual sustainability impact assessment logic
+        # Implement the logic to assess sustainability based on the provided metrics here
         return f"Final Answer: Sustainability impact assessment for project: {project_str}, considering metrics: {', '.join(metrics)}"
 
-def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = False) -> StructuredTool:
+def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = False, embedchain_app: App = None) -> StructuredTool:
     logger.info(f"Creating custom tool: {tool_name}")
     tools = {
         "youtube_search": CustomYoutubeVideoSearchTool,
@@ -208,7 +206,7 @@ def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = Fals
         logger.warning(f"Tool '{tool_name}' not found. Using DuckDuckGoSearchTool as fallback.")
         tool = DuckDuckGoSearchTool()
     elif tool_class == CustomYoutubeVideoSearchTool:
-        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag)
+        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag, embedchain_app=embedchain_app)
     else:
         tool = tool_class()
     logger.info(f"Created tool: {tool.name}")
