@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # Helper functions
-def is_valid_YouTube_url(url: str) -> bool:
+def is_valid_youtube_url(url: str) -> bool:
     """
     Validates if the given URL is a valid YouTube URL using a regex pattern.
     """
-    YouTube_regex = re.compile(r'(https?://)?(www\.)?(YouTube|youtu|YouTube-nocookie)\.(com|be)/.+')
-    return bool(YouTube_regex.match(url))
+    youtube_regex = re.compile(r'(https?://)?(www\.)?(YouTube|youtu|YouTube-nocookie)\.(com|be)/.+')
+    return bool(youtube_regex.match(url))
 
 def extract_query_string(query_input: Any) -> str:
     """
