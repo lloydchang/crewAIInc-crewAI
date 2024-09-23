@@ -180,11 +180,23 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
             logger.error("Error: No valid search query provided.")
             return "Error: No valid search query provided."
 
-        try:
-            # Perform the search using the CrewAIYoutubeSearchTool
-            logger.debug(f"Calling CrewAIYoutubeSearchTool with query_str: {query_str}")
-            result = self.crewai_tool.run(query_str)
+        # Test with simple queries to verify YouTube search functionality
+        test_queries = ["cats", "dogs", "funny pets"]
+        for test_query in test_queries:
+            logger.debug(f"Testing query: {test_query}")
+            try:
+                result = self.crewai_tool.run(test_query)
+                logger.info(f"Test YouTube search completed successfully for '{test_query}'")
+                logger.debug(f"Search result: {result}")
+                return f"Test Search Results for '{test_query}':\n{result}"
 
+            except Exception as e:
+                logger.error(f"Error during YouTube video search for query '{test_query}': {str(e)}", exc_info=True)
+                return f"Error during YouTube video search for query '{test_query}': {str(e)}"
+
+        # Perform the original query after testing
+        try:
+            result = self.crewai_tool.run(query_str)
             logger.info("YouTube search completed successfully")
             return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
 
