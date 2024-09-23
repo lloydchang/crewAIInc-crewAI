@@ -26,7 +26,7 @@ os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
 
 # Enable verbose mode for litellm even though it's deprecated
 # It gives more detailed information than LITELLM_LOG = DEBUG
-litellm.set_verbose = True
+# litellm.set_verbose = True
 
 from tedxsdg.crew import run_crew  # Importing run_crew from your crew file
 

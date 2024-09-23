@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(leve
 logger = logging.getLogger(__name__)
 
 # Flag to use RAG techniques
-use_rag = False
+use_rag = True
 
 # Helper functions
 def is_valid_youtube_url(url: str) -> bool:
@@ -34,8 +34,58 @@ def extract_query_string(query_input: Any) -> str:
     if isinstance(query_input, str):
         return query_input.strip()
     if isinstance(query_input, dict):
-        return query_input.get('q', '').strip()
+        # Check for multiple possible keys
+        return query_input.get('search_query', query_input.get('query', query_input.get('q', '')).strip())
     return str(query_input).strip()
+
+def prepare_youtube_search_input(input_data: Union[str, Dict[str, Any]]) -> Dict[str, str]:
+    """
+    Prepares the input for the youtube_search tool by extracting the search query.
+
+    Parameters:
+        input_data (str or dict): The input data containing the search query.
+
+    Returns:
+        dict: A dictionary formatted for youtube_search with the key 'search_query'.
+
+    Raises:
+        ValueError: If the input_data does not contain a valid search query.
+    """
+    logger.debug("Preparing YouTube search input.")
+    if isinstance(input_data, str):
+        # If input is a string, assume it's the search query
+        search_query = input_data.strip()
+        if not search_query:
+            logger.error("Input string is empty.")
+            raise ValueError("Input string is empty.")
+        logger.debug(f"Extracted search_query from string: {search_query}")
+        return {"search_query": search_query}
+    
+    elif isinstance(input_data, dict):
+        # If input is a dictionary, look for 'search_query' key
+        search_query = input_data.get('search_query')
+        if isinstance(search_query, str):
+            search_query = search_query.strip()
+            if search_query:
+                logger.debug(f"Extracted search_query from dict: {search_query}")
+                return {"search_query": search_query}
+        
+        # If 'search_query' key is not present or invalid, try to find a string value in the dict
+        for key, value in input_data.items():
+            if isinstance(value, str):
+                search_query = value.strip()
+                if search_query:
+                    logger.debug(f"Extracted search_query from key '{key}': {search_query}")
+                    return {"search_query": search_query}
+        
+        # If no string value is found, raise an error
+        logger.error("Dictionary input does not contain a valid 'search_query' string.")
+        raise ValueError("Dictionary input does not contain a valid 'search_query' string.")
+    
+    else:
+        # If input is neither string nor dict, raise an error
+        logger.error("Invalid input type received. Expected string or dictionary.")
+        raise ValueError("Input must be a string or a dictionary containing 'search_query'.")
 
 # Input schemas
 class DuckDuckGoSearchInput(BaseModel):
@@ -48,8 +98,14 @@ class YoutubeVideoSearchToolSchema(BaseModel):
     """
     Input schema for CustomYoutubeVideoSearchTool.
     """
-    search_query: Union[str, Dict[str, Any]] = Field(..., description="Search query for YouTube content.")
+    search_query: Union[str, Dict[str, Any]] = Field(
+        ...,
+        description="Search query for YouTube content."
+    )
     youtube_video_url: Optional[str] = Field(None, description="Optional YouTube video URL")
+
+    class Config:
+        populate_by_name = True  # Updated for Pydantic V2
 
 class SDGAlignmentInput(BaseModel):
     """
@@ -112,10 +168,22 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
         self.config = config or {}
         self.embedchain_app = embedchain_app
         self.use_rag = use_rag
+        logger.debug(f"CustomYoutubeVideoSearchTool initialized with use_rag={self.use_rag}")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], youtube_video_url: Optional[str] = None, **kwargs: Any) -> str:
-        query_str = extract_query_string(search_query)
-        logger.info(f"CustomYoutubeVideoSearchTool._run called with search_query: {query_str}, youtube_video_url: {youtube_video_url}")
+        """
+        Executes the YouTube video search based on the provided search query and optional video URL.
+        """
+        logger.debug(f"_run called with search_query: {search_query}, youtube_video_url: {youtube_video_url}, kwargs: {kwargs}")
+        
+        try:
+            # Use the wrapper function to prepare the search query
+            formatted_input = prepare_youtube_search_input(search_query)
+            query_str = formatted_input["search_query"]
+            logger.info(f"CustomYoutubeVideoSearchTool._run called with query_str: {query_str}, youtube_video_url: {youtube_video_url}")
+        except ValueError as ve:
+            logger.error(f"Input preparation error: {str(ve)}")
+            return f"Error: {str(ve)}"
 
         if not query_str:
             return "Error: No valid search query provided."
@@ -194,6 +262,9 @@ class SustainabilityImpactAssessorTool(StructuredTool):
         return f"Final Answer: Sustainability impact assessment for project: {project_str}, considering metrics: {', '.join(metrics)}"
 
 def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = False, embedchain_app: App = None) -> StructuredTool:
+    """
+    Factory function to create and return the desired custom tool based on the tool_name.
+    """
     logger.info(f"Creating custom tool: {tool_name}")
     tools = {
         "youtube_search": CustomYoutubeVideoSearchTool,
