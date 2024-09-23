@@ -13,6 +13,8 @@ from crewai_tools import YoutubeVideoSearchTool as CrewAIYoutubeSearchTool
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger.setLevel(logging.DEBUG)
 
 # Helper functions
 def is_valid_youtube_url(url: str) -> bool:
@@ -149,26 +151,23 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
     description: str = "Searches YouTube videos for specific content using RAG techniques"
     args_schema: Type[BaseModel] = YoutubeVideoSearchToolSchema
     config: Dict[str, Any] = Field(default_factory=dict)
-    use_rag: bool = True
     crewai_tool: Optional[CrewAIYoutubeSearchTool] = None
 
     def __init__(
         self,
         config: Optional[Dict[str, Any]] = None,
-        use_rag: bool = True,
         youtube_video_url: Optional[str] = None  # This can still be passed if needed
     ):
         super().__init__()
         self.config = config or {}
-        self.use_rag = use_rag
 
         # Always initialize CrewAIYoutubeSearchTool, ignoring the youtube_video_url attribute
         self.crewai_tool = CrewAIYoutubeSearchTool(config=self.config)
-        logger.debug(f"CustomYoutubeVideoSearchTool initialized with use_rag={self.use_rag}")
+        logger.debug(f"CustomYoutubeVideoSearchTool initialized")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
         logger.debug(f"_run called with search_query: {search_query}, kwargs: {kwargs}")
-        
+
         try:
             formatted_input = prepare_youtube_search_input(search_query)
             query_str = formatted_input["search_query"]
@@ -178,11 +177,14 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
             return f"Error: {str(ve)}"
 
         if not query_str:
+            logger.error("Error: No valid search query provided.")
             return "Error: No valid search query provided."
 
         try:
             # Perform the search using the CrewAIYoutubeSearchTool
+            logger.debug(f"Calling CrewAIYoutubeSearchTool with query_str: {query_str}")
             result = self.crewai_tool.run(query_str)
+
             logger.info("YouTube search completed successfully")
             return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
 
@@ -236,7 +238,7 @@ class SustainabilityImpactAssessorTool(StructuredTool):
         # Implement the logic to assess sustainability based on the provided metrics here
         return f"Final Answer: Sustainability impact assessment for project: {project_str}, considering metrics: {', '.join(metrics)}"
 
-def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = True, youtube_video_url: Optional[str] = None) -> StructuredTool:
+def create_custom_tool(tool_name: str, config: Dict = None, youtube_video_url: Optional[str] = None) -> StructuredTool:
     """
     Factory function to create and return the desired custom tool based on the tool_name.
     """
@@ -259,7 +261,7 @@ def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = True
         logger.warning(f"Tool '{tool_name}' not found. Using DuckDuckGoSearchTool as fallback.")
         tool = DuckDuckGoSearchTool()
     elif tool_class == CustomYoutubeVideoSearchTool:
-        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag, youtube_video_url=youtube_video_url)
+        tool = CustomYoutubeVideoSearchTool(config=config, youtube_video_url=youtube_video_url)
     else:
         tool = tool_class()
     logger.info(f"Created tool: {tool.name}")
