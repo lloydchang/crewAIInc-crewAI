@@ -16,7 +16,7 @@ from langchain.agents import AgentOutputParser
 from langchain.schema import AgentAction, AgentFinish
 
 from tools.custom_tool import create_custom_tool
-from embedchain import App
+# from embedchain import App
 
 # Load environment variables from .env
 load_dotenv()
@@ -50,7 +50,11 @@ llm_config = {
 
 llm_memory = False
 
-embedchain_app = App()
+# Instantiate Embedchain App with the updated embedder configuration
+# embedchain_app = App(
+#    provider=embedder_config["provider"],
+#    model=embedder_config["config"]["model"]
+#)
 
 # Function to log which LLM is being used
 def log_llm_use(config: Dict):
@@ -142,7 +146,8 @@ class CrewAIManager:
                 "embedder": self.embedder,
                 "memory": self.memory
             }
-            tool = create_custom_tool(tool_name, config=tool_config, embedchain_app=embedchain_app)
+#            tool = create_custom_tool(tool_name, config=tool_config, embedchain_app=embedchain_app)
+            tool = create_custom_tool(tool_name, config=tool_config)
             if tool:
                 tools.append(tool)
             else:
