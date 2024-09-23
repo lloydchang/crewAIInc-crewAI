@@ -77,7 +77,7 @@ class DuckDuckGoSearchInput(BaseModel):
 
 class YouTubeSearchToolSchema(BaseModel):
     search_query: Union[str, Dict[str, Any]] = Field(..., description="Search query for YouTube channel content.")
-    YouTube_channel_handle: Optional[str] = Field(None, description="Optional YouTube channel handle")
+    youtube_channel_handle: Optional[str] = Field(None, description="Optional YouTube channel handle")
 
 class SDGAlignmentInput(BaseModel):
     idea: Union[str, Dict[str, Any]] = Field(..., description="Idea to analyze for SDG alignment")
@@ -113,26 +113,26 @@ class CustomYouTubeSearchTool(StructuredTool):
     args_schema: Type[BaseModel] = YouTubeSearchToolSchema
     config: Dict[str, Any] = Field(default_factory=dict)
     crewai_tool: Optional[CrewAIYoutubeChannelSearchTool] = None
-    YouTube_channel_handle: Optional[str] = Field(default=None)  # Add this field
+    youtube_channel_handle: Optional[str] = Field(default=None)  # Add this field
 
     def __init__(
         self,
         config: Optional[Dict[str, Any]] = None,
-        YouTube_channel_handle: Optional[str] = None  # Add this parameter
+        youtube_channel_handle: Optional[str] = None  # Add this parameter
     ):
         super().__init__()
         self.config = config or {}
-        self.YouTube_channel_handle = YouTube_channel_handle or '@TEDx'  # Default to @TEDx if no handle is provided
+        self.youtube_channel_handle = youtube_channel_handle or '@TEDx'  # Default to @TEDx if no handle is provided
 
         # Initialize CrewAIYoutubeChannelSearchTool with the channel handle
-        self.crewai_tool = CrewAIYoutubeChannelSearchTool(youtube_channel_handle=self.YouTube_channel_handle, config=self.config)
-        logger.debug(f"CustomYouTubeSearchTool initialized with channel handle: {self.YouTube_channel_handle}")
+        self.crewai_tool = CrewAIYoutubeChannelSearchTool(youtube_channel_handle=self.youtube_channel_handle, config=self.config)
+        logger.debug(f"CustomYouTubeSearchTool initialized with channel handle: {self.youtube_channel_handle}")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
         logger.debug(f"_run called with search_query: {search_query}, kwargs: {kwargs}")
 
         # Ensure the YouTube channel handle from initialization is used if not explicitly provided
-        channel_handle = kwargs.get('YouTube_channel_handle', self.YouTube_channel_handle)
+        channel_handle = kwargs.get('youtube_channel_handle', self.youtube_channel_handle)
 
         if channel_handle is None:
             logger.error("No valid YouTube channel handle provided.")
@@ -197,7 +197,7 @@ class SustainabilityImpactAssessorTool(StructuredTool):
         return f"Final Answer: Sustainability impact assessment for project: {project_str}, considering metrics: {', '.join(metrics)}"
 
 # Factory function for creating tools
-def create_custom_tool(tool_name: str, config: Dict = None, YouTube_channel_handle: Optional[str] = None) -> StructuredTool:
+def create_custom_tool(tool_name: str, config: Dict = None, youtube_channel_handle: Optional[str] = None) -> StructuredTool:
     logger.info(f"Creating custom tool: {tool_name}")
 
     tools = {
@@ -212,7 +212,7 @@ def create_custom_tool(tool_name: str, config: Dict = None, YouTube_channel_hand
         logger.warning(f"Tool '{tool_name}' not found. Using DuckDuckGoSearchTool as fallback.")
         tool = DuckDuckGoSearchTool()
     elif tool_class == CustomYouTubeSearchTool:
-        tool = CustomYouTubeSearchTool(config=config, YouTube_channel_handle=YouTube_channel_handle)
+        tool = CustomYouTubeSearchTool(config=config, youtube_channel_handle=youtube_channel_handle)
     else:
         tool = tool_class()
 
