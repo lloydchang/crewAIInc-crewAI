@@ -34,6 +34,24 @@ develop_sustainable_food_supply_chain:
     2. SDGs 2 and 12 alignment and analysis
     3. List of best practices from web research
 
+provide_expert_advice:
+  description: >
+    Use the youtube_search tool to find relevant examples and case studies to support your advice.
+    Address specific questions or challenges related to the implementation of SDG-aligned projects.
+    Use the sdg_alignment tool to ensure advice is in line with SDG goals.
+    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
+    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
+  agent: expert_advisor
+  priority: 1  # Low priority
+  expected_output: >
+    Detailed expert advice including:
+    1. Restatement of the user's question or challenge
+    2. Comprehensive answer or solution
+    3. Relevant examples or case studies
+    4. Step-by-step guidance for implementation
+    5. Potential challenges and how to overcome them
+    6. Additional resources or tools for further assistance
+
 analyze_idea:
   description: >
     Use the youtube_search tool to find relevant information and examples.
@@ -116,21 +134,3 @@ integrate_data:
     5. Interpretation of results in the context of the project
     6. Data-driven recommendations for the project
     7. Limitations of the analysis and areas for further investigation
-
-provide_expert_advice:
-  description: >
-    Use the youtube_search tool to find relevant examples and case studies to support your advice.
-    Address specific questions or challenges related to the implementation of SDG-aligned projects.
-    Use the sdg_alignment tool to ensure advice is in line with SDG goals.
-    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
-    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
-  agent: expert_advisor
-  priority: 3  # Low priority
-  expected_output: >
-    Detailed expert advice including:
-    1. Restatement of the user's question or challenge
-    2. Comprehensive answer or solution
-    3. Relevant examples or case studies
-    4. Step-by-step guidance for implementation
-    5. Potential challenges and how to overcome them
-    6. Additional resources or tools for further assistance

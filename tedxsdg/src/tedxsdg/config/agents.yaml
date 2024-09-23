@@ -31,6 +31,19 @@ alex:
     - sdg_alignment
     - sustainability_impact_assessor
 
+expert_advisor:
+  role: "expert_advisor"
+  goal: "Provide expert advice on SDG-related topics"
+  backstory: >
+    You are an expert advisor offering technical insights and best practices for SDG projects.
+    Your knowledge spans across various sustainable development areas, helping to guide and refine project strategies.
+  allow_delegation: true
+  tools:
+    - sustainability_impact_assessor
+    - sdg_alignment
+    - youtube_search
+    - duckduckgo_search
+
 idea_analyzer:
   role: "idea_analyzer"
   goal: "Analyze ideas and align them with UN SDGs"
@@ -69,19 +82,6 @@ action_plan_generator:
     - duckduckgo_search
     - sdg_alignment
     - sustainability_impact_assessor
-
-expert_advisor:
-  role: "expert_advisor"
-  goal: "Provide expert advice on SDG-related topics"
-  backstory: >
-    You are an expert advisor offering technical insights and best practices for SDG projects.
-    Your knowledge spans across various sustainable development areas, helping to guide and refine project strategies.
-  allow_delegation: true
-  tools:
-    - sustainability_impact_assessor
-    - sdg_alignment
-    - youtube_search
-    - duckduckgo_search
 
 collaboration_facilitator:
   role: "collaboration_facilitator"
