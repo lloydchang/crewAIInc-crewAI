@@ -250,6 +250,13 @@ def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = True
     Factory function to create and return the desired custom tool based on the tool_name.
     """
     logger.info(f"Creating custom tool: {tool_name}")
+
+    # Removed memory handling to prevent schema errors
+    # if config and 'memory' in config:
+    #     if not isinstance(config['memory'], dict):
+    #         logger.warning(f"Memory field in config is invalid: {config['memory']}. Setting to an empty dictionary.")
+    #         config['memory'] = {}
+
     tools = {
         "youtube_search": CustomYoutubeVideoSearchTool,
         "duckduckgo_search": DuckDuckGoSearchTool,

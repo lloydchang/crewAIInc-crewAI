@@ -48,7 +48,11 @@ llm_config = {
     "temperature": llm_temperature,
 }
 
-llm_memory = False
+# For Crew's memory (boolean)
+crew_memory_env = os.getenv("CREW_MEMORY", "False").lower()
+crew_memory = True if crew_memory_env in ('true', '1', 't') else False
+
+llm_memory = crew_memory  # Now a boolean
 
 # Instantiate Embedchain App with the updated embedder configuration
 # embedchain_app = App(
@@ -141,10 +145,10 @@ class CrewAIManager:
         tool_names = agent_config.get("tools", [])
         tools = []
         for tool_name in tool_names:
-            # Prepare tool configuration
+            # Prepare tool configuration without 'memory'
             tool_config = {
                 "embedder": self.embedder,
-                "memory": self.memory
+                # "memory": self.memory  # Removed to prevent schema errors
             }
 #            tool = create_custom_tool(tool_name, config=tool_config, embedchain_app=embedchain_app)
             tool = create_custom_tool(tool_name, config=tool_config)
@@ -233,7 +237,7 @@ class CrewAIManager:
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
                 process=Process.sequential,
-                memory=self.memory,
+                memory=self.memory,  # Passed as a boolean
                 embedder=self.embedder,
                 max_rpm=None,
                 share_crew=False,
