@@ -161,11 +161,14 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
         super().__init__()
         self.config = config or {}
         self.use_rag = use_rag
-        self.crewai_tool = CrewAIYoutubeSearchTool(
-            youtube_video_url=youtube_video_url,
-            config=self.config
-        )
-        logger.debug(f"CustomYoutubeVideoSearchTool initialized with use_rag={self.use_rag}")
+
+        if youtube_video_url:
+            self.crewai_tool = CrewAIYoutubeSearchTool(
+                youtube_video_url=youtube_video_url,
+                config=self.config
+            )
+        else:
+            logger.info("No youtube_video_url provided, only search query will be used.")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], youtube_video_url: Optional[str] = None, **kwargs: Any) -> str:
         logger.debug(f"_run called with search_query: {search_query}, youtube_video_url: {youtube_video_url}, kwargs: {kwargs}")
