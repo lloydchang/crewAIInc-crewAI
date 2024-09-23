@@ -125,7 +125,7 @@ class CustomYouTubeSearchTool(StructuredTool):
         self.YouTube_channel_handle = YouTube_channel_handle or '@TEDx'  # Default to @TEDx if no handle is provided
 
         # Initialize CrewAIYoutubeChannelSearchTool with the channel handle
-        self.crewai_tool = CrewAIYoutubeChannelSearchTool(YouTube_channel_handle=self.YouTube_channel_handle, config=self.config)
+        self.crewai_tool = CrewAIYoutubeChannelSearchTool(youtube_channel_handle=self.YouTube_channel_handle, config=self.config)
         logger.debug(f"CustomYouTubeSearchTool initialized with channel handle: {self.YouTube_channel_handle}")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
