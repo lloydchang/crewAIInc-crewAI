@@ -3,16 +3,13 @@
 
 # config/tasks.yaml
 
-# TEDxSDG Tasks Configuration
-# Each task defines a description, agent responsible, priority level, and expected output.
-
-# Task for Sam (a Dedicated Veterinarian with Eco-Friendly Pet Care Initiative)
 launch_eco_friendly_pet_care:
   description: >
+    Use the youtube_search tool to research best practices and similar initiatives.
     Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
     Use the sdg_alignment tool to align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
     Assess the initiative's sustainability using the sustainability_impact_assessor tool.
-    Finally, use the web_search tool to research best practices and similar initiatives.
+    Finally, use the duckduckgo_search tool to research best practices and similar initiatives.
   agent: sam
   priority: 1  # High priority
   expected_output: >
@@ -22,35 +19,35 @@ launch_eco_friendly_pet_care:
     3. Steps for implementation
     4. Best practices from similar initiatives found via web search
 
-# Task for Alex (a Visionary Restaurateur with Sustainable Supply Chain Vision)
-develop_sustainable_supply_chain:
+develop_sustainable_food_supply_chain:
   description: >
-    Develop and implement a sustainable supply chain to combat hunger and reduce food waste.
+    Use the youtube_search tool to find best practices and similar examples.
+    Develop and implement a sustainable food supply chain to combat hunger and reduce food waste.
     Use the sdg_alignment tool to align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
-    Assess the sustainability impact of the supply chain using the sustainability_impact_assessor tool.
-    Finally, use the web_search tool to find best practices and similar examples.
+    Assess the sustainability impact of the food supply chain using the sustainability_impact_assessor tool.
+    Finally, use the duckduckgo_search tool to find best practices and similar examples.
   agent: alex
   priority: 1  # High priority
   expected_output: >
-    A comprehensive supply chain plan including:
-    1. Detailed steps for developing the supply chain
+    A comprehensive food supply chain plan including:
+    1. Detailed steps for developing the food supply chain
     2. SDGs 2 and 12 alignment and analysis
     3. List of best practices from web research
 
-# Task for idea_analyzer
 analyze_idea:
   description: >
+    Use the youtube_search tool to find relevant information and examples.
     Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
     {
       "idea": "{idea}",
-      "sdgs": ["SDG 1", "SDG 2", "SDG 3"]  # List relevant SDGs here
+      "sdgs": [12, 17]  # List relevant SDGs here
     }
     Then, assess the sustainability impact using the sustainability_impact_assessor tool with the structure:
     {
       "project": "{project}",
       "metrics": ["metric1", "metric2", "metric3"]  # List relevant metrics here
     }
-    Finally, use the web_search tool to find relevant information and examples.
+    Finally, use the duckduckgo_search tool to find relevant information and examples.
   agent: idea_analyzer
   priority: 2  # Medium priority
   expected_output: >
@@ -62,13 +59,13 @@ analyze_idea:
     5. Potential challenges or considerations
     6. List of relevant examples or case studies found through web search
 
-# Task for action_plan_generator
 generate_action_plan:
   description: >
-    Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan. 
-    Use the sdg_alignment tool to ensure each step aligns with the relevant SDGs. 
-    Use the sustainability_impact_assessor tool to evaluate the potential impact of each step. 
-    Use the web_search tool to find best practices and examples for each step of the plan.
+    Use the youtube_search tool to find best practices and examples for each step of the plan.
+    Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan.
+    Use the sdg_alignment tool to ensure each step aligns with the relevant SDGs.
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of each step.
+    Use the duckduckgo_search tool to find best practices and examples for each step of the plan.
   agent: action_plan_generator
   priority: 2  # High priority
   expected_output: >
@@ -82,13 +79,13 @@ generate_action_plan:
     7. Scalability suggestions
     8. Potential challenges and mitigation strategies
 
-# Task for collaboration_facilitator
 facilitate_collaboration:
   description: >
-    Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities. 
-    Use the sdg_alignment tool to identify common SDG goals between projects. 
-    Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations. 
-    Use the web_search tool to find examples of successful collaborations in similar fields.
+    Use the youtube_search tool to find examples of successful collaborations in similar fields.
+    Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities.
+    Use the sdg_alignment tool to identify common SDG goals between projects.
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations.
+    Use the duckduckgo_search tool to find examples of successful collaborations in similar fields.
   agent: collaboration_facilitator
   priority: 2  # Medium priority
   expected_output: >
@@ -101,13 +98,13 @@ facilitate_collaboration:
     6. Suggested next steps for initiating partnerships
     7. Potential challenges in collaboration and how to address them
 
-# Task for data_integration_specialist
 integrate_data:
   description: >
-    Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects. 
-    Use the sdg_alignment tool to ensure data analysis aligns with SDG goals. 
-    Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data. 
-    Use the web_search tool to find relevant datasets and data integration techniques.
+    Use the youtube_search tool to find relevant datasets and data integration techniques.
+    Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects.
+    Use the sdg_alignment tool to ensure data analysis aligns with SDG goals.
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data.
+    Use the duckduckgo_search tool to find relevant datasets and data integration techniques.
   agent: data_integration_specialist
   priority: 2  # Medium priority
   expected_output: >
@@ -120,13 +117,13 @@ integrate_data:
     6. Data-driven recommendations for the project
     7. Limitations of the analysis and areas for further investigation
 
-# Task for expert_advisor
 provide_expert_advice:
   description: >
-    Address specific questions or challenges related to the implementation of SDG-aligned projects. 
-    Use the sdg_alignment tool to ensure advice is in line with SDG goals. 
-    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice. 
-    Use the web_search tool to find relevant examples and case studies to support your advice.
+    Use the youtube_search tool to find relevant examples and case studies to support your advice.
+    Address specific questions or challenges related to the implementation of SDG-aligned projects.
+    Use the sdg_alignment tool to ensure advice is in line with SDG goals.
+    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
+    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
   agent: expert_advisor
   priority: 3  # Low priority
   expected_output: >
