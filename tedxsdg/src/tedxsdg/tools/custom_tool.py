@@ -171,6 +171,7 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
         logger.debug(f"_run called with search_query: {search_query}, youtube_video_url: {youtube_video_url}, kwargs: {kwargs}")
         
         try:
+            # Prepare the query
             formatted_input = prepare_youtube_search_input(search_query)
             query_str = formatted_input["search_query"]
             logger.info(f"CustomYoutubeVideoSearchTool._run called with query_str: {query_str}, youtube_video_url: {youtube_video_url}")
@@ -182,15 +183,18 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
             return "Error: No valid search query provided."
 
         try:
-            # If a new YouTube URL is provided in the run method, update the CrewAIYoutubeSearchTool
-            if youtube_video_url and youtube_video_url != self.crewai_tool.youtube_video_url:
+            # Handle case where no youtube_video_url is provided
+            if youtube_video_url is None:
+                logger.debug("No youtube_video_url provided, performing a general search.")
+                result = self.crewai_tool.run(query_str)
+            else:
+                logger.debug(f"Performing search within the video at URL: {youtube_video_url}")
+                # Perform search within the specific video if URL is provided
                 self.crewai_tool = CrewAIYoutubeSearchTool(
                     youtube_video_url=youtube_video_url,
                     config=self.config
                 )
-
-            # Perform the search using the CrewAIYoutubeSearchTool
-            result = self.crewai_tool.run(query_str)
+                result = self.crewai_tool.run(query_str)
             
             logger.info("YouTube search completed successfully")
             return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
