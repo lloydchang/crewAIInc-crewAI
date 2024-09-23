@@ -35,7 +35,7 @@ def extract_query_string(query_input: Any) -> str:
         return query_input.get('search_query', query_input.get('query', query_input.get('q', '')).strip())
     return str(query_input).strip()
 
-def prepare_YouTube_search_input(input_data: Union[str, Dict[str, Any]]) -> Dict[str, str]:
+def prepare_youtube_search_input(input_data: Union[str, Dict[str, Any]]) -> Dict[str, str]:
     """
     Prepares the input for the YouTube search tool by extracting the search query.
     """
@@ -108,7 +108,7 @@ class DuckDuckGoSearchTool(StructuredTool):
             return f"Error during DuckDuckGo search: {str(e)}"
 
 class CustomYouTubeSearchTool(StructuredTool):
-    name: str = "YouTube_search"
+    name: str = "youtube_search"
     description: str = "Searches YouTube channel content"
     args_schema: Type[BaseModel] = YouTubeSearchToolSchema
     config: Dict[str, Any] = Field(default_factory=dict)
@@ -139,7 +139,7 @@ class CustomYouTubeSearchTool(StructuredTool):
             return "Error: No valid YouTube channel handle provided."
 
         try:
-            formatted_input = prepare_YouTube_search_input(search_query)
+            formatted_input = prepare_youtube_search_input(search_query)
             query_str = formatted_input["search_query"]
             logger.info(f"CustomYouTubeSearchTool._run called with query_str: {query_str}")
         except ValueError as ve:
