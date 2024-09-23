@@ -12,8 +12,6 @@ from embedchain import App as EmbedChainApp
 from embedchain.config import AppConfig
 import litellm
 
-litellm.set_verbose = True
-
 use_rag = True
 
 # Set up logging
@@ -68,26 +66,6 @@ class SustainabilityImpactInput(BaseModel):
     project: Union[str, Dict[str, Any]] = Field(default="Unnamed Project", description="Project to assess for sustainability impact")
     metrics: List[str] = Field(default_factory=list, description="List of sustainability metrics")
 
-
-class CustomLlm:
-    """
-    A custom LLM class that wraps litellm and uses dynamic configuration passed from crew.py.
-    """
-    def __init__(self, config):
-        self.config = config  # Accept the configuration passed from crew.py
-
-    def generate(self, prompt: str) -> str:
-        """
-        Generates a response using litellm with dynamic configuration.
-        """
-        response = litellm.completion(
-            model=self.config.get('model'),
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.get('temperature'),
-            api_base=self.config.get('api_base', 'http://localhost:11434'),  # Default to localhost:11434
-        )
-        return response
-
 # Tool classes
 class DuckDuckGoSearchTool(StructuredTool):
     """
@@ -123,7 +101,6 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
     args_schema: Type[BaseModel] = YoutubeVideoSearchToolSchema
     embedchain_app: Any = None
     config: Dict[str, Any] = Field(default_factory=dict)
-    llm: Any = None
     embedding_fn: Any = None
 
     def __init__(self, youtube_video_url: Optional[str] = None, config: Optional[Dict[str, Any]] = None, use_rag: bool = False):
@@ -134,17 +111,10 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
         llm_provider = self.config.get('llm', {}).get('provider')
         llm_provider_config = self.config.get('llm', {}).get('config', {})
 
-        embedder_provider = self.config.get('embedder', {}).get('provider')
-        embedder_provider_config = self.config.get('embedder', {}).get('config', {})
-
-        self.llm = CustomLlm(config=llm_provider_config)  # Pass config as a single argument
-
         if use_rag:
-            # Initialize embedchain with custom LLM and embedding function
+            # Initialize embedchain with default settings
             app_config = AppConfig(collect_metrics=False)
             self.embedchain_app = EmbedChainApp(config=app_config)
-            self.embedchain_app.embedding_fn = self.embedding_fn
-            self.embedchain_app.llm = self.llm
 
             if youtube_video_url and youtube_video_url.lower() != "none":
                 self.embedchain_app.add("youtube_video", youtube_video_url)

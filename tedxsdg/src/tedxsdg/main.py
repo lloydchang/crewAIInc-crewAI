@@ -4,6 +4,7 @@
 
 import os
 import logging
+import litellm
 
 # Disable the OpenTelemetry SDK by setting the environment variable
 os.environ['OTEL_SDK_DISABLED'] = 'true'
@@ -22,6 +23,8 @@ opentelemetry_logger.setLevel(logging.ERROR)
 
 # Set verbose logging for litellm via environment variable
 os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
+
+litellm.set_verbose = True
 
 from tedxsdg.crew import run_crew  # Importing run_crew from your crew file
 

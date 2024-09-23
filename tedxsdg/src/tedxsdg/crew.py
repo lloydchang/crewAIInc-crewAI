@@ -38,6 +38,13 @@ embedder_config = {
     }
 }
 
+# Function to log which LLM is being used
+def log_llm_use(llm_config):
+    provider = llm_config.get("provider", "Unknown Provider")
+    model = llm_config.get("model", "Unknown Model")
+    temperature = llm_config.get("temperature", "Default")
+    logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
+
 class CustomOutputParser(AgentOutputParser):
     def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
         # Check if the output is a final answer
@@ -78,6 +85,9 @@ class CrewAIManager:
         self.llm_config = llm_config
         self.memory = llm_memory
         self.embedder = embedder_config
+
+        # Log which LLM is being used
+        log_llm_use(self.llm_config)
 
     def load_config(self, config_path: str, config_type: str) -> Dict:
         # Load configuration from YAML files
