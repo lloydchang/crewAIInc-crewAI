@@ -131,6 +131,13 @@ class CustomYouTubeSearchTool(StructuredTool):
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
         logger.debug(f"_run called with search_query: {search_query}, kwargs: {kwargs}")
 
+        # Ensure the YouTube channel handle from initialization is used if not explicitly provided
+        channel_handle = kwargs.get('YouTube_channel_handle', self.YouTube_channel_handle)
+
+        if channel_handle is None:
+            logger.error("No valid YouTube channel handle provided.")
+            return "Error: No valid YouTube channel handle provided."
+
         try:
             formatted_input = prepare_YouTube_search_input(search_query)
             query_str = formatted_input["search_query"]
@@ -143,11 +150,11 @@ class CustomYouTubeSearchTool(StructuredTool):
             logger.error("Error: No valid search query provided.")
             return "Error: No valid search query provided."
 
-        # Perform the original query within the YouTube channel
+        # Perform the query within the YouTube channel
         try:
             result = self.crewai_tool.run(query_str)
             logger.info("YouTube channel search completed successfully")
-            return f"Final Answer: YouTube Channel Search Results for '{query_str}' in channel '{self.YouTube_channel_handle}':\n{result}"
+            return f"Final Answer: YouTube Channel Search Results for '{query_str}' in channel '{channel_handle}':\n{result}"
 
         except Exception as e:
             logger.error(f"Error during YouTube channel search: {str(e)}", exc_info=True)
