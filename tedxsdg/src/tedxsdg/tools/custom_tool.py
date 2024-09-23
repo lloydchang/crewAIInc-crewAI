@@ -8,14 +8,11 @@ from langchain.tools import StructuredTool
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from pydantic import BaseModel, Field
 from typing import List, Union, Dict, Any, Type, Optional
-# from embedchain import App  # Corrected Import from Embedchain
+from crewai_tools import YoutubeVideoSearchTool as CrewAIYoutubeSearchTool
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-# Flag to use RAG techniques
-use_rag = True
 
 # Helper functions
 def is_valid_youtube_url(url: str) -> bool:
@@ -148,39 +145,32 @@ class DuckDuckGoSearchTool(StructuredTool):
             return f"Error during DuckDuckGo search: {str(e)}"
 
 class CustomYoutubeVideoSearchTool(StructuredTool):
-#    """
-#    A custom YouTube video search tool that performs semantic searches on YouTube videos using Embedchain.
-#    """
-    """
-    A custom YouTube video search tool that performs semantic searches on YouTube videos.
-    """
     name: str = "youtube_search"
     description: str = "Searches YouTube videos for specific content using RAG techniques"
     args_schema: Type[BaseModel] = YoutubeVideoSearchToolSchema
-#    embedchain_app: Optional[App] = None
     config: Dict[str, Any] = Field(default_factory=dict)
-    use_rag: bool = False  # <--- Added field
+    use_rag: bool = True
+    crewai_tool: Optional[CrewAIYoutubeSearchTool] = None
 
     def __init__(
         self,
         config: Optional[Dict[str, Any]] = None,
-        use_rag: bool = False,
-#        embedchain_app: Optional[App] = None  # Made Optional for safety
+        use_rag: bool = True,
+        youtube_video_url: Optional[str] = None
     ):
         super().__init__()
         self.config = config or {}
-#        self.embedchain_app = embedchain_app
         self.use_rag = use_rag
+        self.crewai_tool = CrewAIYoutubeSearchTool(
+            youtube_video_url=youtube_video_url,
+            config=self.config
+        )
         logger.debug(f"CustomYoutubeVideoSearchTool initialized with use_rag={self.use_rag}")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], youtube_video_url: Optional[str] = None, **kwargs: Any) -> str:
-        """
-        Executes the YouTube video search based on the provided search query and optional video URL.
-        """
         logger.debug(f"_run called with search_query: {search_query}, youtube_video_url: {youtube_video_url}, kwargs: {kwargs}")
         
         try:
-            # Use the wrapper function to prepare the search query
             formatted_input = prepare_youtube_search_input(search_query)
             query_str = formatted_input["search_query"]
             logger.info(f"CustomYoutubeVideoSearchTool._run called with query_str: {query_str}, youtube_video_url: {youtube_video_url}")
@@ -191,29 +181,19 @@ class CustomYoutubeVideoSearchTool(StructuredTool):
         if not query_str:
             return "Error: No valid search query provided."
 
-        if youtube_video_url and youtube_video_url.lower() == "none":
-            youtube_video_url = None
-
         try:
-#            # Only perform RAG if the flag is set and Embedchain App is initialized
-            # Only perform RAG if the flag is set
-            if self.use_rag and youtube_video_url:
-                if not is_valid_youtube_url(youtube_video_url):
-                    logger.warning(f"Invalid YouTube URL provided: {youtube_video_url}")
-                    return f"Error: Invalid YouTube URL provided: {youtube_video_url}"
-                logger.info(f"Adding YouTube video URL: {youtube_video_url}")
-#                if self.embedchain_app:
-#                    self.embedchain_app.add("youtube_video", youtube_video_url)
-#                else:
-#                    logger.error("Embedchain App is not initialized.")
-#                    return "Error: Embedchain App is not initialized."
+            # If a new YouTube URL is provided in the run method, update the CrewAIYoutubeSearchTool
+            if youtube_video_url and youtube_video_url != self.crewai_tool.youtube_video_url:
+                self.crewai_tool = CrewAIYoutubeSearchTool(
+                    youtube_video_url=youtube_video_url,
+                    config=self.config
+                )
 
-#            if self.embedchain_app:
-#                result = self.embedchain_app.query(query_str)
-#                logger.info("YouTube search completed successfully")
-#                return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
-#            else:
-#                return "RAG service disabled or Embedchain App not initialized."
+            # Perform the search using the CrewAIYoutubeSearchTool
+            result = self.crewai_tool.run(query_str)
+            
+            logger.info("YouTube search completed successfully")
+            return f"Final Answer: YouTube Search Results for '{query_str}':\n{result}"
 
         except Exception as e:
             logger.error(f"Error during YouTube video search: {str(e)}", exc_info=True)
@@ -265,9 +245,7 @@ class SustainabilityImpactAssessorTool(StructuredTool):
         # Implement the logic to assess sustainability based on the provided metrics here
         return f"Final Answer: Sustainability impact assessment for project: {project_str}, considering metrics: {', '.join(metrics)}"
 
-# def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = False, embedchain_app: App = None) -> StructuredTool:
-def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = False) -> StructuredTool:
-
+def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = True, youtube_video_url: Optional[str] = None) -> StructuredTool:
     """
     Factory function to create and return the desired custom tool based on the tool_name.
     """
@@ -282,10 +260,8 @@ def create_custom_tool(tool_name: str, config: Dict = None, use_rag: bool = Fals
     if tool_class is None:
         logger.warning(f"Tool '{tool_name}' not found. Using DuckDuckGoSearchTool as fallback.")
         tool = DuckDuckGoSearchTool()
-#    elif tool_class == CustomYoutubeVideoSearchTool:
-#        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag, embedchain_app=embedchain_app)
     elif tool_class == CustomYoutubeVideoSearchTool:
-        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag)
+        tool = CustomYoutubeVideoSearchTool(config=config, use_rag=use_rag, youtube_video_url=youtube_video_url)
     else:
         tool = tool_class()
     logger.info(f"Created tool: {tool.name}")
