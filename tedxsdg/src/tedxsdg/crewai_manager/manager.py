@@ -3,7 +3,7 @@
 import logging
 import os
 from pydantic import ValidationError
-from crewai import Crew, Process
+from crewai import Crew, Process, Agent, Task
 from crewai_manager.config_loader import load_config
 from crewai_manager.agent_factory import create_agent
 from schemas.config_schemas import ToolConfig
@@ -31,6 +31,9 @@ class CrewAIManager:
             self.tool_config = ToolConfig(**self.model_config)
             self.llm_config = self.tool_config.llm
             self.embedder_config = self.tool_config.embedder
+            logger.debug(f"LLM Configuration: {self.llm_config}")
+            logger.debug(f"Embedder Configuration: {self.embedder_config}")
+            logger.debug(f"ToolConfig successfully initialized: {self.tool_config}")
         except ValidationError as ve:
             logger.error(f"Validation error in model configuration: {ve}", exc_info=True)
             raise
@@ -128,7 +131,7 @@ class CrewAIManager:
                 tasks=self.tasks,
                 process=Process.sequential,  # Sequential processing of tasks
                 memory=self.memory,
-                embedder=self.embedder_config.config.model,  # Embedder model used in Crew
+                embedder=self.embedder_config.dict(),  # Embedder configuration used in Crew
                 max_rpm=None,  # RPM not limited
                 share_crew=False,  # Crew sharing is disabled
                 verbose=True,  # Enable verbose logging

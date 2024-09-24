@@ -5,7 +5,7 @@ from langchain.tools import StructuredTool
 from typing import Union, Dict, Any, Type
 
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schemas.duckduckgo_search_schema import DuckDuckGoSearchInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .utils import extract_query_string
@@ -16,6 +16,8 @@ class DuckDuckGoSearchTool(StructuredTool):
     name: str = "duckduckgo_search"
     description: str = "Searches the web using DuckDuckGo."
     args_schema: Type[BaseModel] = DuckDuckGoSearchInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
         super().__init__()

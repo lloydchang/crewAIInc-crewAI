@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Union, Dict, Any, List, Type
 from langchain.tools import StructuredTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schemas.sustainability_impact_schema import SustainabilityImpactInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .utils import extract_query_string
@@ -15,6 +15,8 @@ class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     llm_config: LLMConfig
     embedder_config: EmbedderConfig

@@ -5,7 +5,7 @@ import csv
 import io
 from typing import Optional, Dict, Union, Any, Type
 from langchain.tools import StructuredTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schemas.tedx_slug_schema import TEDxSlugInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .tedx_search_tool import TEDxSearchTool
@@ -17,6 +17,8 @@ class TEDxSlugTool(StructuredTool):
     name: str = "tedx_slug"
     description: str = "Retrieves TEDx content details based on a provided slug."
     args_schema: Type[BaseModel] = TEDxSlugInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
         super().__init__()

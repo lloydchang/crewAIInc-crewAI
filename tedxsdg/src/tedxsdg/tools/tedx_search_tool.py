@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Union, Dict, Any, Type, Optional
 from langchain.tools import StructuredTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schemas.tedx_search_schema import TEDxSearchInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
@@ -19,6 +19,8 @@ class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
         super().__init__()

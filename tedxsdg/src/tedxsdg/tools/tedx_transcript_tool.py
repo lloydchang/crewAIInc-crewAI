@@ -2,7 +2,7 @@
 
 import logging
 from langchain.tools import StructuredTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Union, Dict, Any, Type
 from schemas.tedx_transcript_schema import TEDxTranscriptInput
 from crewai_tools import WebsiteSearchTool
@@ -15,6 +15,8 @@ class TEDxTranscriptTool(StructuredTool):
     name: str = "tedx_transcript"
     description: str = "Retrieves the transcript of a TEDx talk based on the provided slug."
     args_schema: Type[BaseModel] = TEDxTranscriptInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
         super().__init__()

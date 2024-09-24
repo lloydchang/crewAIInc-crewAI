@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Union, Dict, Any, List, Type
 from langchain.tools import StructuredTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schemas.sdg_align_schema import SDGAlignInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .utils import extract_query_string
@@ -15,6 +15,8 @@ class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignInput
+    llm_config: LLMConfig = Field(exclude=True)
+    embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
         super().__init__()  # Ensure proper initialization of the base class
