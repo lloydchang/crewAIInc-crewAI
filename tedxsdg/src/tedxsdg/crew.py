@@ -22,8 +22,9 @@ load_dotenv()
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG,  # Set to DEBUG to capture all logs
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]  # Output logs to console
 )
 logger = logging.getLogger(__name__)
 
@@ -47,11 +48,7 @@ llm_config = {
     "temperature": llm_temperature,
 }
 
-# For Crew's memory (boolean)
-crew_memory_env = os.getenv("CREW_MEMORY", "False").lower()
-crew_memory = crew_memory_env in ('true', '1', 't')
-
-llm_memory = crew_memory  # Now a boolean
+llm_memory = True
 
 # Function to log which LLM is being used
 def log_llm_use(config: Dict):
@@ -76,21 +73,17 @@ class CustomOutputParser(AgentOutputParser):
         if not match:
             # Check for "thought:" or "Thought:" without an action
             thought_match = re.search(r"(thought|Thought):\s*(.*)", llm_output, re.DOTALL)
-            if thought_match:
-                # Handle 'thought' as internal reasoning
-                return AgentAction(
+        return AgentAction(
                     tool="thought",
                     tool_input=thought_match.group(2).strip(),
                     log=llm_output
                 )
 
-            # If no patterns matched, raise an error
-            raise ValueError(f"Could not parse LLM output: {llm_output}")
+        raise ValueError(f"Could not parse LLM output: {llm_output}")
 
         action = match.group(1).strip()
         action_input = match.group(2).strip()
 
-        # Ensure action_input is a valid dictionary
         try:
             action_input_dict = eval(action_input) if action_input.startswith("{") else {"query": action_input}
         except Exception as e:
@@ -105,7 +98,6 @@ class CustomOutputParser(AgentOutputParser):
 
 class CrewAIManager:
     def __init__(self, agents_config_path: str, tasks_config_path: str):
-        # Load agents and tasks configurations
         self.agents_config = self.load_config(agents_config_path, "agents")
         self.tasks_config = self.load_config(tasks_config_path, "tasks")
         self.agents = {}
@@ -115,11 +107,9 @@ class CrewAIManager:
         self.memory = llm_memory
         self.embedder_config = embedder_config
 
-        # Log which LLM is being used
         log_llm_use(self.llm_config)
 
     def load_config(self, config_path: str, config_type: str) -> Dict:
-        """Load configuration from YAML files."""
         try:
             with open(config_path, 'r') as file:
                 config = yaml.safe_load(file)
@@ -130,7 +120,6 @@ class CrewAIManager:
             sys.exit(1)
 
     def create_agent(self, agent_name: str) -> Agent:
-        """Create an agent based on the configuration."""
         if agent_name not in self.agents_config:
             raise ValueError(f"Agent '{agent_name}' not found in agents configuration.")
 
@@ -138,22 +127,21 @@ class CrewAIManager:
         tool_names = agent_config.get("tools", [])
         tools = []
 
-        # Check if configurations are set
         if not self.llm_config or not self.embedder_config:
             logger.error("Missing configurations: llm_config and/or embedder_config.")
-            # Attempt to fix missing configurations
             self.llm_config = llm_config
             self.embedder_config = embedder_config
 
         for tool_name in tool_names:
             try:
-                tool = create_custom_tool(tool_name, config={
-                    'llm_config': self.llm_config,
-                    'embedder_config': self.embedder_config
-                })
+                tool_config = {
+                    'llm_config': self.llm_config.copy(),
+                    'embedder_config': self.embedder_config.copy()
+                }
+                tool = create_custom_tool(tool_name, config=tool_config)
                 tools.append(tool)
             except Exception as e:
-                logger.error(f"Error creating tool '{tool_name}': {str(e)}")
+                logger.error(f"Error creating tool '{tool_name}': {str(e)}", exc_info=True)
                 logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
 
         try:
@@ -184,11 +172,10 @@ class CrewAIManager:
             self.agents[agent_name] = agent
             return agent
         except Exception as e:
-            logger.error(f"Error creating agent '{agent_name}': {str(e)}")
+            logger.error(f"Error creating agent '{agent_name}': {str(e)}", exc_info=True)
             raise
 
     def create_task(self, task_name: str) -> Task:
-        """Create a task based on the configuration."""
         if task_name not in self.tasks_config:
             raise ValueError(f"Task '{task_name}' not found in tasks configuration.")
 
@@ -208,17 +195,14 @@ class CrewAIManager:
                 priority=priority,
                 expected_output=str(task_config.get("expected_output", "No output specified."))
             )
-            logger.info(
-                f"Created task '{task_name}' assigned to agent '{agent_identifier}' with priority {priority}."
-            )
+            logger.info(f"Created task '{task_name}' assigned to agent '{agent_identifier}' with priority {priority}.")
             self.tasks.append(task)
             return task
         except Exception as e:
-            logger.error(f"Error creating task '{task_name}': {str(e)}")
+            logger.error(f"Error creating task '{task_name}': {str(e)}", exc_info=True)
             raise
 
     def initialize_crew(self) -> Crew:
-        """Initialize the crew with agents and tasks."""
         logger.info("Initializing crew")
         for task_name in self.tasks_config.keys():
             try:
@@ -227,16 +211,14 @@ class CrewAIManager:
                 logger.error(f"Error creating task '{task_name}': {str(e)}", exc_info=True)
 
         if not self.agents or not self.tasks:
-            raise ValueError(
-                "At least one agent and one task must be successfully created to initialize the crew."
-            )
+            raise ValueError("At least one agent and one task must be successfully created to initialize the crew.")
 
         try:
             crew = Crew(
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
                 process=Process.sequential,
-                memory=self.memory,  # Passed as a boolean
+                memory=self.memory,
                 embedder=self.embedder_config,
                 max_rpm=None,
                 share_crew=False,
@@ -245,11 +227,10 @@ class CrewAIManager:
             logger.info(f"Initialized the crew with {len(self.agents)} agents and {len(self.tasks)} tasks.")
             return crew
         except Exception as e:
-            logger.error(f"Error initializing Crew: {str(e)}")
+            logger.error(f"Error initializing Crew: {str(e)}", exc_info=True)
             raise
 
 def run_crew() -> Union[str, None]:
-    """Main function to run the crew."""
     agents_config_path = 'config/agents.yaml'
     tasks_config_path = 'config/tasks.yaml'
 

@@ -86,25 +86,31 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchToolSchema
 
-    # Define llm_config and embedder_config as fields
     llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
     embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
+
+    csv_search_tool: Optional[CSVSearchTool] = None  # Define it as a class attribute or field
 
     def __init__(self, config: Dict):
         super().__init__()
         self.llm_config = config.get("llm_config")
         self.embedder_config = config.get("embedder_config")
 
+        logger.debug("Before Initializing CSVSearchTool")  
         if not self.llm_config or not self.embedder_config:
             raise ValueError("Both llm_config and embedder_config are required.")
 
         try:
-            logger.debug(f"TEDxSearchTool is initializing with CSV file: {LOCAL_CSV_FILE}")
-            self.csv_search_tool = CSVSearchTool(csv=LOCAL_CSV_FILE)
-            logger.debug(f"TEDxSearchTool initialized with CSV file: {LOCAL_CSV_FILE}")
-        except Exception as e:
-            logger.error(f"Failed to initialize CSVSearchTool: {str(e)}")
-            self.csv_search_tool = None
+            logger.debug("Initializing CSVSearchTool")  
+            self.csv_search_tool = CSVSearchTool(
+                csv=LOCAL_CSV_FILE,
+                config=dict(
+                    llm=self.llm_config,
+                    embedder=self.embedder_config,
+                )
+            )
+        except AttributeError:
+            raise ValueError(f"AttributeError: {self.__class__.__name__} object has no field 'csv_search_tool'")
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
         if not self.csv_search_tool:
@@ -139,7 +145,6 @@ class SDGAlignmentTool(StructuredTool):
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignmentInput
 
-    # Define llm_config and embedder_config as fields
     llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
     embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
 
@@ -164,7 +169,6 @@ class SustainabilityImpactAssessorTool(StructuredTool):
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
 
-    # Define llm_config and embedder_config as fields
     llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
     embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
 
