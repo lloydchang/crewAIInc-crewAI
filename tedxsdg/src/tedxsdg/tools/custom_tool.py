@@ -68,6 +68,16 @@ class DuckDuckGoSearchTool(StructuredTool):
     description: str = "Searches the web using DuckDuckGo."
     args_schema: Type[BaseModel] = DuckDuckGoSearchInput
 
+    llm_config: Dict[str, Any] = Field(default_factory=dict)
+    embedder_config: Dict[str, Any] = Field(default_factory=dict)
+
+    def __init__(self, config: Dict):
+        super().__init__()
+        self.llm_config = config.get("llm_config", {})
+        self.embedder_config = config.get("embedder_config", {})
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Missing llm_config or embedder_config")  # More specific error
+
     def _run(self, query: Union[str, Dict[str, Any]]) -> str:
         query_str = extract_query_string(query)
         if not query_str:
@@ -82,17 +92,25 @@ class DuckDuckGoSearchTool(StructuredTool):
             return f"Error during DuckDuckGo search: {str(e)}"
 
 class TEDxSearchTool(StructuredTool):
+    csv_search_tool: CSVSearchTool = Field(default=None)
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchToolSchema
 
-    def __init__(self):
+    llm_config: Dict[str, Any] = Field(default_factory=dict)
+    embedder_config: Dict[str, Any] = Field(default_factory=dict)
+
+    def __init__(self, config: Dict):
         super().__init__()
+        self.llm_config = config.get("llm_config", {})
+        self.embedder_config = config.get("embedder_config", {})
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Missing llm_config or embedder_config")  # More specific error
         self.csv_search_tool = CSVSearchTool(
             csv=LOCAL_CSV_FILE,
             config=dict(
-                llm=dict(provider="ollama", config=dict(model="llama3", temperature=2.0)),
-                embedder=dict(provider="ollama", config=dict(model="nomic-embed-text")),
+                llm=config.get("llm_config", {}),
+                embedder=config.get("embedder_config", {}),
             )
         )
 
@@ -124,6 +142,9 @@ class SDGAlignmentTool(StructuredTool):
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignmentInput
 
+    llm_config: Dict[str, Any] = Field(default_factory=dict)
+    embedder_config: Dict[str, Any] = Field(default_factory=dict)
+
     def __init__(self, config: Dict):
         super().__init__()
         self.llm_config = config.get("llm_config", {})
@@ -144,6 +165,9 @@ class SustainabilityImpactAssessorTool(StructuredTool):
     name: str = "sustainability_impact_assessor"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
+
+    llm_config: Dict[str, Any] = Field(default_factory=dict)
+    embedder_config: Dict[str, Any] = Field(default_factory=dict)
 
     def __init__(self, config: Dict):
         super().__init__()
@@ -171,8 +195,8 @@ def create_custom_tool(tool_name: str, config: Dict = None) -> StructuredTool:
         config = {}
 
     tools = {
-        "tedx_search": TEDxSearchTool(), 
-        "duckduckgo_search": DuckDuckGoSearchTool(), 
+        "tedx_search": TEDxSearchTool(config=config),
+        "duckduckgo_search": DuckDuckGoSearchTool(config=config), 
         "sdg_alignment": SDGAlignmentTool(config=config),
         "sustainability_impact_assessor": SustainabilityImpactAssessorTool(config=config),
     }
