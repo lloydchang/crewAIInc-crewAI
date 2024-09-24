@@ -64,8 +64,8 @@ class SustainabilityImpactInput(BaseModel):
 
 # Tool classes
 class DuckDuckGoSearchTool(StructuredTool):
-    name = "duckduckgo_search"
-    description = "Searches the web using DuckDuckGo."
+    name: str = "duckduckgo_search"
+    description: str = "Searches the web using DuckDuckGo."
     args_schema: Type[BaseModel] = DuckDuckGoSearchInput
 
     def _run(self, query: Union[str, Dict[str, Any]]) -> str:
@@ -86,14 +86,14 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchToolSchema
 
-    csv_search_tool: Optional[CSVSearchTool] = None
-    llm_config: Dict[str, Any]
-    embedder_config: Dict[str, Any]
+    # Define llm_config and embedder_config as fields
+    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
+    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
 
     def __init__(self, config: Dict):
         super().__init__()
-        self.llm_config = config.get("llm_config", {})
-        self.embedder_config = config.get("embedder_config", {})
+        self.llm_config = config.get("llm_config")
+        self.embedder_config = config.get("embedder_config")
 
         if not self.llm_config or not self.embedder_config:
             raise ValueError("Both llm_config and embedder_config are required.")
@@ -135,9 +135,21 @@ class TEDxSearchTool(StructuredTool):
             return f"Error during CSV search: {str(e)}"
 
 class SDGAlignmentTool(StructuredTool):
-    name = "sdg_alignment"
-    description = "Analyzes ideas and aligns them with UN SDGs."
+    name: str = "sdg_alignment"
+    description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignmentInput
+
+    # Define llm_config and embedder_config as fields
+    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
+    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
+
+    def __init__(self, config: Dict):
+        super().__init__()
+        self.llm_config = config.get("llm_config")
+        self.embedder_config = config.get("embedder_config")
+
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Both llm_config and embedder_config are required.")
 
     def _run(self, idea: Union[str, Dict[str, Any]], sdgs: List[Union[str, int]] = []) -> str:
         idea_str = extract_query_string(idea)
@@ -148,9 +160,21 @@ class SDGAlignmentTool(StructuredTool):
         return f"Final Answer: SDG Alignment analysis for idea: '{idea_str}', considering SDGs: {', '.join(sdgs) or 'All SDGs'}."
 
 class SustainabilityImpactAssessorTool(StructuredTool):
-    name = "sustainability_impact_assessor"
-    description = "Assesses the potential sustainability impact of ideas and projects."
+    name: str = "sustainability_impact_assessor"
+    description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
+
+    # Define llm_config and embedder_config as fields
+    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
+    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
+
+    def __init__(self, config: Dict):
+        super().__init__()
+        self.llm_config = config.get("llm_config")
+        self.embedder_config = config.get("embedder_config")
+
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Both llm_config and embedder_config are required.")
 
     def _run(self, project: Union[str, Dict[str, Any]], metrics: List[str]) -> str:
         project_str = extract_query_string(project)
@@ -169,18 +193,11 @@ def create_custom_tool(tool_name: str, config: Dict = None) -> StructuredTool:
     if config is None:
         config = {}
 
-    llm_config = config.get("llm_config", {})
-    embedder_config = config.get("embedder_config", {})
-
-    # Logging the LLM and Embedder configurations
-    logger.debug(f"LLM config: {llm_config}")
-    logger.debug(f"Embedder config: {embedder_config}")
-
     tools = {
         "tedx_search": TEDxSearchTool(config=config),
         "duckduckgo_search": DuckDuckGoSearchTool(),
-        "sdg_alignment": SDGAlignmentTool(),
-        "sustainability_impact_assessor": SustainabilityImpactAssessorTool(),
+        "sdg_alignment": SDGAlignmentTool(config=config),
+        "sustainability_impact_assessor": SustainabilityImpactAssessorTool(config=config),
     }
 
     tool_class = tools.get(tool_name)

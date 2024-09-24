@@ -49,7 +49,7 @@ llm_config = {
 
 # For Crew's memory (boolean)
 crew_memory_env = os.getenv("CREW_MEMORY", "False").lower()
-crew_memory = True if crew_memory_env in ('true', '1', 't') else False
+crew_memory = crew_memory_env in ('true', '1', 't')
 
 llm_memory = crew_memory  # Now a boolean
 
@@ -138,22 +138,23 @@ class CrewAIManager:
         tool_names = agent_config.get("tools", [])
         tools = []
 
-        # Ensure the configurations are properly set before this block
+        # Check if configurations are set
         if not self.llm_config or not self.embedder_config:
             logger.error("Missing configurations: llm_config and/or embedder_config.")
-        else:
-            for tool_name in tool_names:
-                try:
-                    tool = create_custom_tool(tool_name, config={
-                        'llm_config': self.llm_config,
-                        'embedder_config': self.embedder_config
-                    })
-                    if tool:
-                        tools.append(tool)
-                    else:
-                        logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
-                except Exception as e:
-                    logger.error(f"Error creating tool '{tool_name}': {str(e)}")
+            # Attempt to fix missing configurations
+            self.llm_config = llm_config
+            self.embedder_config = embedder_config
+
+        for tool_name in tool_names:
+            try:
+                tool = create_custom_tool(tool_name, config={
+                    'llm_config': self.llm_config,
+                    'embedder_config': self.embedder_config
+                })
+                tools.append(tool)
+            except Exception as e:
+                logger.error(f"Error creating tool '{tool_name}': {str(e)}")
+                logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
 
         try:
             agent = Agent(
