@@ -44,8 +44,10 @@ embedder_config = {
 
 llm_config = {
     "provider": llm_provider,
-    "model": llm_model_name,
-    "temperature": llm_temperature,
+    "config": {
+        "model": llm_model_name,
+        "temperature": llm_temperature,
+    }
 }
 
 llm_memory = True
@@ -73,7 +75,8 @@ class CustomOutputParser(AgentOutputParser):
         if not match:
             # Check for "thought:" or "Thought:" without an action
             thought_match = re.search(r"(thought|Thought):\s*(.*)", llm_output, re.DOTALL)
-        return AgentAction(
+            if thought_match:
+                return AgentAction(
                     tool="thought",
                     tool_input=thought_match.group(2).strip(),
                     log=llm_output
@@ -81,6 +84,7 @@ class CustomOutputParser(AgentOutputParser):
 
         raise ValueError(f"Could not parse LLM output: {llm_output}")
 
+        # Move this code block inside the method
         action = match.group(1).strip()
         action_input = match.group(2).strip()
 
@@ -127,19 +131,17 @@ class CrewAIManager:
         tool_names = agent_config.get("tools", [])
         tools = []
 
-        if not self.llm_config or not self.embedder_config:
-            logger.error("Missing configurations: llm_config and/or embedder_config.")
-            self.llm_config = llm_config
-            self.embedder_config = embedder_config
+        tool_config = {  # Create the tool_config dictionary once outside the loop
+            'llm_config': self.llm_config,
+            'embedder_config': self.embedder_config
+        }
 
         for tool_name in tool_names:
             try:
-                tool_config = {
-                    'llm_config': self.llm_config.copy(),
-                    'embedder_config': self.embedder_config.copy()
-                }
-                tool = create_custom_tool(tool_name, config=tool_config)
+                logger.debug(f"Tool configuration for {tool_name}: {tool_config}")
+                tool = create_custom_tool(tool_name, config=tool_config) # Pass config where needed 
                 tools.append(tool)
+                logger.info(f"Successfully created tool '{tool_name}'.") 
             except Exception as e:
                 logger.error(f"Error creating tool '{tool_name}': {str(e)}", exc_info=True)
                 logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")

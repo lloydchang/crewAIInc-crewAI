@@ -7,7 +7,7 @@ import logging
 import requests
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
-from typing import List, Union, Dict, Any, Type, Optional
+from typing import List, Union, Dict, Any, Type
 from crewai_tools import CSVSearchTool
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 
@@ -86,37 +86,17 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchToolSchema
 
-    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
-    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
-
-    csv_search_tool: Optional[CSVSearchTool] = None  # Define it as a class attribute or field
-
-    def __init__(self, config: Dict):
+    def __init__(self):
         super().__init__()
-        self.llm_config = config.get("llm_config")
-        self.embedder_config = config.get("embedder_config")
-
-        logger.debug("Before Initializing CSVSearchTool")  
-        if not self.llm_config or not self.embedder_config:
-            raise ValueError("Both llm_config and embedder_config are required.")
-
-        try:
-            logger.debug("Initializing CSVSearchTool")  
-            self.csv_search_tool = CSVSearchTool(
-                csv=LOCAL_CSV_FILE,
-                config=dict(
-                    llm=self.llm_config,
-                    embedder=self.embedder_config,
-                )
+        self.csv_search_tool = CSVSearchTool(
+            csv=LOCAL_CSV_FILE,
+            config=dict(
+                llm=dict(provider="ollama", config=dict(model="llama3", temperature=2.0)),
+                embedder=dict(provider="ollama", config=dict(model="nomic-embed-text")),
             )
-        except AttributeError:
-            raise ValueError(f"AttributeError: {self.__class__.__name__} object has no field 'csv_search_tool'")
+        )
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
-        if not self.csv_search_tool:
-            logger.error("CSV search tool not properly initialized. Cannot proceed with search.")
-            return "Error: CSV search tool not properly initialized."
-
         try:
             query_str = extract_query_string(search_query)
             if not query_str:
@@ -128,7 +108,6 @@ class TEDxSearchTool(StructuredTool):
             if not search_result:
                 return "No results found in the CSV."
 
-            logger.info(f"Using LLM with provider: {self.llm_config.get('provider')} and model: {self.llm_config.get('model')}")
             logger.debug(f"CSV search result: {search_result}")
 
             return f"Final Answer: CSV Search Results for '{query_str}':\n{search_result}"
@@ -145,16 +124,13 @@ class SDGAlignmentTool(StructuredTool):
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignmentInput
 
-    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
-    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
-
     def __init__(self, config: Dict):
         super().__init__()
-        self.llm_config = config.get("llm_config")
-        self.embedder_config = config.get("embedder_config")
+        self.llm_config = config.get("llm_config", {})
+        self.embedder_config = config.get("embedder_config", {})
 
         if not self.llm_config or not self.embedder_config:
-            raise ValueError("Both llm_config and embedder_config are required.")
+            raise ValueError("Missing llm_config or embedder_config")  # More specific error
 
     def _run(self, idea: Union[str, Dict[str, Any]], sdgs: List[Union[str, int]] = []) -> str:
         idea_str = extract_query_string(idea)
@@ -169,16 +145,13 @@ class SustainabilityImpactAssessorTool(StructuredTool):
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
 
-    llm_config: Dict[str, Any] = Field(..., description="Configuration for the LLM.")
-    embedder_config: Dict[str, Any] = Field(..., description="Configuration for the embedder.")
-
     def __init__(self, config: Dict):
         super().__init__()
-        self.llm_config = config.get("llm_config")
-        self.embedder_config = config.get("embedder_config")
+        self.llm_config = config.get("llm_config", {})
+        self.embedder_config = config.get("embedder_config", {})
 
         if not self.llm_config or not self.embedder_config:
-            raise ValueError("Both llm_config and embedder_config are required.")
+            raise ValueError("Missing llm_config or embedder_config") # More specific error
 
     def _run(self, project: Union[str, Dict[str, Any]], metrics: List[str]) -> str:
         project_str = extract_query_string(project)
@@ -198,8 +171,8 @@ def create_custom_tool(tool_name: str, config: Dict = None) -> StructuredTool:
         config = {}
 
     tools = {
-        "tedx_search": TEDxSearchTool(config=config),
-        "duckduckgo_search": DuckDuckGoSearchTool(),
+        "tedx_search": TEDxSearchTool(), 
+        "duckduckgo_search": DuckDuckGoSearchTool(), 
         "sdg_alignment": SDGAlignmentTool(config=config),
         "sustainability_impact_assessor": SustainabilityImpactAssessorTool(config=config),
     }
