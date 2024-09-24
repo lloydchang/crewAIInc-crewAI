@@ -2,17 +2,38 @@
 
 # tools/custom_tool.py
 
+import os
 import logging
-import re
+import requests
 from langchain.tools import StructuredTool
-from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from pydantic import BaseModel, Field
 from typing import List, Union, Dict, Any, Type, Optional
 from crewai_tools import CSVSearchTool
+from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 
 # Set up logging with DEBUG level
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Local CSV file location
+LOCAL_CSV_FILE = 'github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+REMOTE_CSV_URL = 'https://raw.githubusercontent.com/lloydchang/mauropelucchi-tedx_dataset/refs/heads/master/update_2024/details.csv'
+
+# Function to download the CSV file if it doesn't exist
+def download_csv_if_not_exists():
+    if not os.path.exists(LOCAL_CSV_FILE):
+        logger.info(f"Downloading CSV file from {REMOTE_CSV_URL}")
+        response = requests.get(REMOTE_CSV_URL)
+        if response.status_code == 200:
+            with open(LOCAL_CSV_FILE, 'wb') as f:
+                f.write(response.content)
+            logger.info(f"CSV file saved to {LOCAL_CSV_FILE}")
+        else:
+            logger.error(f"Failed to download CSV file. Status code: {response.status_code}")
+            raise Exception("Failed to download CSV file")
+
+# Ensure CSV file is downloaded and ready to use
+download_csv_if_not_exists()
 
 def extract_query_string(query_input: Union[str, Dict[str, Any]]) -> str:
     """Extracts a query string from input (string, dict, or other objects)."""
@@ -62,38 +83,50 @@ class DuckDuckGoSearchTool(StructuredTool):
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
-    description: str = "Searches TEDx content from CSV dataset."
+    description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchToolSchema
-    csv_file: str = "https://raw.githubusercontent.com/lloydchang/mauropelucchi-tedx_dataset/refs/heads/master/update_2024/details.csv"
-    csv_search_tool: Optional[CSVSearchTool] = None  # Declare csv_search_tool as an optional attribute
 
-    def __init__(self, csv_file: Optional[str] = None):
+    csv_search_tool: Optional[CSVSearchTool] = None
+    llm_config: Dict[str, Any]
+    embedder_config: Dict[str, Any]
+
+    def __init__(self, config: Dict):
         super().__init__()
-        self.csv_file = csv_file or self.csv_file
+        self.llm_config = config.get("llm_config", {})
+        self.embedder_config = config.get("embedder_config", {})
 
-        # Initialize CSVSearchTool with the provided CSV file
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Both llm_config and embedder_config are required.")
+
         try:
-            self.csv_search_tool = CSVSearchTool(csv=self.csv_file)  # Set the csv_search_tool attribute
-            logger.debug(f"TEDxSearchTool initialized with CSV file: {self.csv_file}")
+            logger.debug(f"TEDxSearchTool is initializing with CSV file: {LOCAL_CSV_FILE}")
+            self.csv_search_tool = CSVSearchTool(csv=LOCAL_CSV_FILE)
+            logger.debug(f"TEDxSearchTool initialized with CSV file: {LOCAL_CSV_FILE}")
         except Exception as e:
             logger.error(f"Failed to initialize CSVSearchTool: {str(e)}")
-            self.csv_search_tool = None  # Ensure csv_search_tool is None in case of failure
+            self.csv_search_tool = None
 
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
         if not self.csv_search_tool:
+            logger.error("CSV search tool not properly initialized. Cannot proceed with search.")
             return "Error: CSV search tool not properly initialized."
 
-        # Extract and prepare the search query
         try:
             query_str = extract_query_string(search_query)
             if not query_str:
                 raise ValueError("No valid search query found.")
 
-            # Perform the search in the CSV
             logger.debug(f"Running CSV search for query: {query_str}")
             search_result = self.csv_search_tool._run(search_query=query_str)
-            return f"Final Answer: Search Results for '{query_str}' in CSV dataset:\n{search_result}"
-    
+
+            if not search_result:
+                return "No results found in the CSV."
+
+            logger.info(f"Using LLM with provider: {self.llm_config.get('provider')} and model: {self.llm_config.get('model')}")
+            logger.debug(f"CSV search result: {search_result}")
+
+            return f"Final Answer: CSV Search Results for '{query_str}':\n{search_result}"
+
         except ValueError as ve:
             logger.error(f"Value error: {str(ve)}")
             return f"Error: {str(ve)}"
@@ -132,14 +165,27 @@ class SustainabilityImpactAssessorTool(StructuredTool):
 # Factory function for creating tools
 def create_custom_tool(tool_name: str, config: Dict = None) -> StructuredTool:
     logger.info(f"Creating custom tool: {tool_name}")
+
+    if config is None:
+        config = {}
+
+    llm_config = config.get("llm_config", {})
+    embedder_config = config.get("embedder_config", {})
+
+    # Logging the LLM and Embedder configurations
+    logger.debug(f"LLM config: {llm_config}")
+    logger.debug(f"Embedder config: {embedder_config}")
+
     tools = {
-        "tedx_search": TEDxSearchTool,
-        "duckduckgo_search": DuckDuckGoSearchTool,
-        "sdg_alignment": SDGAlignmentTool,
-        "sustainability_impact_assessor": SustainabilityImpactAssessorTool,
+        "tedx_search": TEDxSearchTool(config=config),
+        "duckduckgo_search": DuckDuckGoSearchTool(),
+        "sdg_alignment": SDGAlignmentTool(),
+        "sustainability_impact_assessor": SustainabilityImpactAssessorTool(),
     }
+
     tool_class = tools.get(tool_name)
     if tool_class is None:
         logger.warning(f"Tool '{tool_name}' not found. Using DuckDuckGoSearchTool as fallback.")
         return DuckDuckGoSearchTool()
-    return tool_class()
+
+    return tool_class

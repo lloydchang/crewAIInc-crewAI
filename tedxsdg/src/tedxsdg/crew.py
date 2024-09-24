@@ -16,7 +16,6 @@ from langchain.agents import AgentOutputParser
 from langchain.schema import AgentAction, AgentFinish
 
 from tools.custom_tool import create_custom_tool
-# from embedchain import App
 
 # Load environment variables from .env
 load_dotenv()
@@ -53,12 +52,6 @@ crew_memory_env = os.getenv("CREW_MEMORY", "False").lower()
 crew_memory = True if crew_memory_env in ('true', '1', 't') else False
 
 llm_memory = crew_memory  # Now a boolean
-
-# Instantiate Embedchain App with the updated embedder configuration
-# embedchain_app = App(
-#    provider=embedder_config["provider"],
-#    model=embedder_config["config"]["model"]
-#)
 
 # Function to log which LLM is being used
 def log_llm_use(config: Dict):
@@ -120,7 +113,7 @@ class CrewAIManager:
 
         self.llm_config = llm_config
         self.memory = llm_memory
-        self.embedder = embedder_config
+        self.embedder_config = embedder_config
 
         # Log which LLM is being used
         log_llm_use(self.llm_config)
@@ -144,18 +137,23 @@ class CrewAIManager:
         agent_config = self.agents_config[agent_name]
         tool_names = agent_config.get("tools", [])
         tools = []
-        for tool_name in tool_names:
-            # Prepare tool configuration without 'memory'
-            tool_config = {
-                "embedder": self.embedder,
-                # "memory": self.memory  # Removed to prevent schema errors
-            }
-#            tool = create_custom_tool(tool_name, config=tool_config, embedchain_app=embedchain_app)
-            tool = create_custom_tool(tool_name, config=tool_config)
-            if tool:
-                tools.append(tool)
-            else:
-                logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
+
+        # Ensure the configurations are properly set before this block
+        if not self.llm_config or not self.embedder_config:
+            logger.error("Missing configurations: llm_config and/or embedder_config.")
+        else:
+            for tool_name in tool_names:
+                try:
+                    tool = create_custom_tool(tool_name, config={
+                        'llm_config': self.llm_config,
+                        'embedder_config': self.embedder_config
+                    })
+                    if tool:
+                        tools.append(tool)
+                    else:
+                        logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
+                except Exception as e:
+                    logger.error(f"Error creating tool '{tool_name}': {str(e)}")
 
         try:
             agent = Agent(
@@ -238,7 +236,7 @@ class CrewAIManager:
                 tasks=self.tasks,
                 process=Process.sequential,
                 memory=self.memory,  # Passed as a boolean
-                embedder=self.embedder,
+                embedder=self.embedder_config,
                 max_rpm=None,
                 share_crew=False,
                 verbose=True,
