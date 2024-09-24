@@ -1,0 +1,12 @@
+# config/model.yaml
+
+llm:
+  provider: "ollama"  # The provider for the LLM
+  config:
+    model: "llama3"  # The specific LLM model you want to use
+    temperature: 2.0  # Adjust the temperature for the model as needed
+
+embedder:
+  provider: "ollama"  # The provider for the embedder as well
+  config:
+    model: "nomic-embed-text"  # Embedding model to use
