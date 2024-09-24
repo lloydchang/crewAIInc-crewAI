@@ -6,10 +6,10 @@
 launch_eco_friendly_pet_care:
   description: >
     Use the tedx_search tool to research best practices and similar initiatives.
+    Use the duckduckgo_search tool to research best practices and similar initiatives.
     Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
     Use the sdg_alignment tool to align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
     Assess the initiative's sustainability using the sustainability_impact_assessor tool.
-    Finally, use the duckduckgo_search tool to research best practices and similar initiatives.
   agent: sam
   priority: 1  # High priority
   expected_output: >
@@ -22,10 +22,10 @@ launch_eco_friendly_pet_care:
 develop_sustainable_food_supply_chain:
   description: >
     Use the tedx_search tool to find best practices and similar examples.
+    Use the duckduckgo_search tool to find best practices and similar examples.
     Develop and implement a sustainable food supply chain to combat hunger and reduce food waste.
     Use the sdg_alignment tool to align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
     Assess the sustainability impact of the food supply chain using the sustainability_impact_assessor tool.
-    Finally, use the duckduckgo_search tool to find best practices and similar examples.
   agent: alex
   priority: 1  # High priority
   expected_output: >
@@ -34,27 +34,29 @@ develop_sustainable_food_supply_chain:
     2. SDGs 2 and 12 alignment and analysis
     3. List of best practices from web research
 
-provide_expert_advice:
+facilitate_collaboration:
   description: >
-    Use the tedx_search tool to find relevant examples and case studies to support your advice.
-    Address specific questions or challenges related to the implementation of SDG-aligned projects.
-    Use the sdg_alignment tool to ensure advice is in line with SDG goals.
-    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
-    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
-  agent: expert_advisor
-  priority: 1  # Low priority
+    Use the tedx_search tool to find examples of successful collaborations in similar fields.
+    Use the duckduckgo_search tool to find examples of successful collaborations in similar fields.
+    Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities.
+    Use the sdg_alignment tool to identify common SDG goals between projects.
+    Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations.
+  agent: collaboration_facilitator
+  priority: 2  # Medium priority
   expected_output: >
-    Detailed expert advice including:
-    1. Restatement of the user's question or challenge
-    2. Comprehensive answer or solution
-    3. Relevant examples or case studies
-    4. Step-by-step guidance for implementation
-    5. Potential challenges and how to overcome them
-    6. Additional resources or tools for further assistance
+    A collaboration proposal including:
+    1. Overview of the projects considered
+    2. Identified synergies between projects
+    3. Specific collaboration opportunities, with detailed descriptions
+    4. Potential benefits of collaboration for each project
+    5. Overall impact assessment on SDG advancement
+    6. Suggested next steps for initiating partnerships
+    7. Potential challenges in collaboration and how to address them
 
 analyze_idea:
   description: >
     Use the tedx_search tool to find relevant information and examples.
+    Use the duckduckgo_search tool to find relevant information and examples.
     Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_alignment tool with the following structure:
     {
       "idea": "{idea}",
@@ -65,7 +67,6 @@ analyze_idea:
       "project": "{project}",
       "metrics": ["metric1", "metric2", "metric3"]  # List relevant metrics here
     }
-    Finally, use the duckduckgo_search tool to find relevant information and examples.
   agent: idea_analyzer
   priority: 2  # Medium priority
   expected_output: >
@@ -77,13 +78,31 @@ analyze_idea:
     5. Potential challenges or considerations
     6. List of relevant examples or case studies found through web search
 
+provide_expert_advice:
+  description: >
+    Use the tedx_search tool to find relevant examples and case studies to support your advice.
+    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
+    Address specific questions or challenges related to the implementation of SDG-aligned projects.
+    Use the sdg_alignment tool to ensure advice is in line with SDG goals.
+    Use the sustainability_impact_assessor tool to evaluate potential impacts of the advice.
+  agent: expert_advisor
+  priority: 2  # Medium priority
+  expected_output: >
+    Detailed expert advice including:
+    1. Restatement of the user's question or challenge
+    2. Comprehensive answer or solution
+    3. Relevant examples or case studies
+    4. Step-by-step guidance for implementation
+    5. Potential challenges and how to overcome them
+    6. Additional resources or tools for further assistance
+
 generate_action_plan:
   description: >
     Use the tedx_search tool to find best practices and examples for each step of the plan.
+    Use the duckduckgo_search tool to find best practices and examples for each step of the plan.
     Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan.
     Use the sdg_alignment tool to ensure each step aligns with the relevant SDGs.
     Use the sustainability_impact_assessor tool to evaluate the potential impact of each step.
-    Use the duckduckgo_search tool to find best practices and examples for each step of the plan.
   agent: action_plan_generator
   priority: 2  # High priority
   expected_output: >
@@ -97,32 +116,13 @@ generate_action_plan:
     7. Scalability suggestions
     8. Potential challenges and mitigation strategies
 
-facilitate_collaboration:
-  description: >
-    Use the tedx_search tool to find examples of successful collaborations in similar fields.
-    Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities.
-    Use the sdg_alignment tool to identify common SDG goals between projects.
-    Use the sustainability_impact_assessor tool to evaluate the potential impact of collaborations.
-    Use the duckduckgo_search tool to find examples of successful collaborations in similar fields.
-  agent: collaboration_facilitator
-  priority: 2  # Medium priority
-  expected_output: >
-    A collaboration proposal including:
-    1. Overview of the projects considered
-    2. Identified synergies between projects
-    3. Specific collaboration opportunities, with detailed descriptions
-    4. Potential benefits of collaboration for each project
-    5. Overall impact assessment on SDG advancement
-    6. Suggested next steps for initiating partnerships
-    7. Potential challenges in collaboration and how to address them
-
 integrate_data:
   description: >
     Use the tedx_search tool to find relevant datasets and data integration techniques.
+    Use the duckduckgo_search tool to find relevant datasets and data integration techniques.
     Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects.
     Use the sdg_alignment tool to ensure data analysis aligns with SDG goals.
     Use the sustainability_impact_assessor tool to evaluate the potential impact of insights derived from the data.
-    Use the duckduckgo_search tool to find relevant datasets and data integration techniques.
   agent: data_integration_specialist
   priority: 2  # Medium priority
   expected_output: >
@@ -130,7 +130,9 @@ integrate_data:
     1. List of data sources used
     2. Methodology for data integration and analysis
     3. Key findings and insights relevant to the project
-    4. Data visualizations (e.g., charts, graphs)
-    5. Interpretation of results in the context of the project
-    6. Data-driven recommendations for the project
-    7. Limitations of the analysis and areas for further investigation
+    4. Interpretation of results in the context of the project
+    5. Data-driven recommendations for the project
+    6. Limitations of the analysis and areas for further investigation
+    7. Data files that can be displayed in dashboard and visualization tools
+    8. Data visualizations (e.g., charts, graphs)
+ 

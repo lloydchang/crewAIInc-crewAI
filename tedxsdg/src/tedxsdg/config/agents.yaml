@@ -1,6 +1,3 @@
-# TEDxSDG Agents Configuration
-# Each agent has a specific role, goal, backstory, and tools that they can use.
-
 # config/agents.yaml
 
 sam:
@@ -13,9 +10,11 @@ sam:
   allow_delegation: true
   tools:
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
-    - sdg_alignment
-    - sustainability_impact_assessor
+    - sdg_align
+    - sustainability_impact
 
 alex:
   role: "alex"
@@ -27,22 +26,26 @@ alex:
   allow_delegation: true
   tools:
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
-    - sdg_alignment
-    - sustainability_impact_assessor
+    - sdg_align
+    - sustainability_impact
 
-expert_advisor:
-  role: "expert_advisor"
-  goal: "Provide expert advice on SDG-related topics"
+collaboration_facilitator:
+  role: "collaboration_facilitator"
+  goal: "Facilitate collaboration between SDG projects"
   backstory: >
-    You are an expert advisor offering technical insights and best practices for SDG projects.
-    Your knowledge spans across various sustainable development areas, helping to guide and refine project strategies.
+    You are a collaboration facilitator responsible for bringing together different projects with similar SDG goals.
+    Your role is crucial in identifying synergies and fostering partnerships that amplify impact.
   allow_delegation: true
   tools:
-    - sustainability_impact_assessor
-    - sdg_alignment
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
 
 idea_analyzer:
   role: "idea_analyzer"
@@ -53,22 +56,26 @@ idea_analyzer:
   allow_delegation: true
   tools:
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
-    - sdg_alignment
-    - sustainability_impact_assessor
+    - sdg_align
+    - sustainability_impact
 
-data_integration_specialist:
-  role: "data_integration_specialist"
-  goal: "Integrate data to provide insights for SDG projects"
+expert_advisor:
+  role: "expert_advisor"
+  goal: "Provide expert advice on SDG-related topics"
   backstory: >
-    You are a data integration specialist that uses open-source datasets to provide insights for SDG-related projects.
-    Your analysis helps inform decision-making and measure the impact of sustainable development initiatives.
+    You are an expert advisor offering technical insights and best practices for SDG projects.
+    Your knowledge spans across various sustainable development areas, helping to guide and refine project strategies.
   allow_delegation: true
   tools:
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
-    - sdg_alignment
-    - sustainability_impact_assessor
+    - sustainability_impact
+    - sdg_align
 
 action_plan_generator:
   role: "action_plan_generator"
@@ -79,18 +86,23 @@ action_plan_generator:
   allow_delegation: true
   tools:
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
-    - sdg_alignment
-    - sustainability_impact_assessor
+    - sdg_align
+    - sustainability_impact
 
-collaboration_facilitator:
-  role: "collaboration_facilitator"
-  goal: "Facilitate collaboration between SDG projects"
+data_integration_specialist:
+  role: "data_integration_specialist"
+  goal: "Integrate data to provide insights for SDG projects"
   backstory: >
-    You are a collaboration facilitator responsible for bringing together different projects with similar SDG goals.
-    Your role is crucial in identifying synergies and fostering partnerships that amplify impact.
+    You are a data integration specialist that uses open-source datasets to provide insights for SDG-related projects.
+    Your analysis helps inform decision-making and measure the impact of sustainable development initiatives.
   allow_delegation: true
   tools:
-    - sdg_alignment
     - tedx_search
+    - tedx_slug
+    - tedx_transcript
     - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
