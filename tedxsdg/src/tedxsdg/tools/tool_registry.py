@@ -81,10 +81,8 @@ class ToolRegistry:
             if tool_name == "tedx_search":
                 tool = self._create_tool(tool_name, TEDxSearchTool)
             elif tool_name == "tedx_slug":
-                self.get_tool("tedx_search")
                 tool = self._create_tool(tool_name, TEDxSlugTool)
             elif tool_name == "tedx_transcript":
-                self.get_tool("tedx_slug")
                 tool = self._create_tool(tool_name, TEDxTranscriptTool)
             elif tool_name == "sdg_align":
                 tool = self._create_tool(tool_name, SDGAlignTool)

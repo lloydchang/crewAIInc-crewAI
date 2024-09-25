@@ -3,7 +3,7 @@
 import os
 import logging
 import csv
-from typing import Union, Dict, Any, Type, Optional
+from typing import Union, Dict, Any, Optional
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.tedx_search_schema import TEDxSearchInput
@@ -13,37 +13,16 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
-
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchInput
 
-    llm_config: LLMConfig = Field(exclude=True)
-    embedder_config: EmbedderConfig = Field(exclude=True)
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
     data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
     csv_search_tool: Optional[CSVSearchTool] = None  # Declare as a field
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None  # Declare as a field
-
-    def _invalidate_cache(self):
-        logger.info("Invalidating the cache via rm -rf db")
-        os.system("rm -rf db")
-
-    def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
-        try:
-            return CSVSearchTool(
-                csv=self.data_path,
-                config={
-                    "llm": self.llm_config,
-                    "embedder": self.embedder_config,
-                }
-            )
-        except ValueError as e:
-            logger.warning(f"Failed to initialize CSVSearchTool: {e}")
-            return None
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
         super().__init__()
@@ -76,7 +55,28 @@ class TEDxSearchTool(StructuredTool):
 
         self.csv_data = self._load_csv_data()
 
+    def _invalidate_cache(self):
+        logger.info("Invalidating the cache via rm -rf db")
+        try:
+            os.system("rm -rf db")
+        except Exception as e:
+            logger.error(f"Error during cache invalidation: {str(e)}")
+
+    def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
+        try:
+            return CSVSearchTool(
+                csv=self.data_path,
+                config={
+                    "llm": self.llm_config,
+                    "embedder": self.embedder_config,
+                }
+            )
+        except ValueError as e:
+            logger.warning(f"Failed to initialize CSVSearchTool: {e}")
+            return None
+
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
+        """Load TEDx data from the CSV file."""
         try:
             slug_index = {}
             with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
@@ -87,14 +87,15 @@ class TEDxSearchTool(StructuredTool):
                         slug_index[slug] = row
             logger.debug(f"Loaded {len(slug_index)} slugs from CSV file.")
             return slug_index
+        except FileNotFoundError:
+            logger.error(f"File not found: {self.data_path}")
+            raise FileNotFoundError(f"File not found: {self.data_path}")
         except Exception as e:
             logger.error(f"Error loading CSV data: {str(e)}", exc_info=True)
             raise Exception("Failed to load CSV data.")
 
-    def _find_row_by_slug(self, slug: str) -> Optional[Dict[str, Any]]:
-        return self.csv_data.get(slug)
-
     def _run(self, search_query: Union[str, Dict[str, Any]], **kwargs: Any) -> str:
+        """Executes the search on the TEDx dataset based on the search query."""
         try:
             query_str = extract_query_string(search_query)
             if not query_str:
