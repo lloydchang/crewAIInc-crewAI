@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Any, Dict, Optional, Type
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from schemas.tedx_slug_schema import TEDxSlugInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 
@@ -15,12 +15,12 @@ class TEDxSlugTool(StructuredTool):
     description: str = "Retrieves TEDx content details based on a provided slug."
     args_schema: Type[BaseModel] = TEDxSlugInput
 
-    llm_config: LLMConfig = Field(exclude=True)
-    embedder_config: EmbedderConfig = Field(exclude=True)
-    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx data CSV.")
-    csv_data: Optional[Dict[str, Dict[str, Any]]] = None
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
+    data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+    csv_data: Optional[Dict[str, Dict[str, Any]]] = None  # CSV data loaded directly
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str):
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
         super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
@@ -28,6 +28,7 @@ class TEDxSlugTool(StructuredTool):
         self.csv_data = self._load_csv_data()
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
+        """Load CSV data directly without dependency on TEDxSearchTool."""
         try:
             slug_index = {}
             with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
@@ -46,6 +47,7 @@ class TEDxSlugTool(StructuredTool):
             raise
 
     def _run(self, slug: str) -> str:
+        """Retrieve data for the given slug."""
         if not slug:
             return "Error: No slug provided."
 
