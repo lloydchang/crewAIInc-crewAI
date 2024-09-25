@@ -7,9 +7,9 @@ from tools.tool_registry import ToolRegistry
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from typing import Any, Dict, List, Optional, Type, Union
 
-# Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.DEBUG)
 
 class CustomAgentOutputParser(AgentOutputParser):
     def parse(self, output: Any) -> dict:

@@ -12,8 +12,9 @@ from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
+logging.getLogger().setLevel(logging.DEBUG)
 class ToolRegistry:
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
         # Validate types
