@@ -51,16 +51,20 @@ class ToolRegistry:
 
         # Extract and validate configurations
         try:
-            embedder_conf = tool_config.get('embedder_config', {})
-            llm_conf = tool_config.get('llm_config', {})
+            embedder_conf = tool_config.get('embedder_config')
+            llm_conf = tool_config.get('llm_config')
 
-            if not embedder_conf or not llm_conf:
-                raise ValueError(f"Missing required configuration for tool '{tool_name}'.")
+            # Check for the presence of configurations
+            if embedder_conf is None:
+                raise ValueError(f"Missing required 'embedder_config' for tool '{tool_name}'.")
+            if llm_conf is None:
+                raise ValueError(f"Missing required 'llm_config' for tool '{tool_name}'.")
 
-            embedder_conf = EmbedderConfig(**embedder_conf)
-            llm_conf = LLMConfig(**llm_conf)
+            # Validate the structure of the configurations
+            embedder_conf = EmbedderConfig(**embedder_conf)  # This will raise if validation fails
+            llm_conf = LLMConfig(**llm_conf)  # This will raise if validation fails
 
-            data_path = tool_config.get('data_path', None)
+            data_path = tool_config.get('data_path')
             if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
                 raise ValueError(f"Missing data path for tool '{tool_name}'")
 
@@ -74,6 +78,12 @@ class ToolRegistry:
             logger.debug(f"Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
             return tool_class(**tool_kwargs)
 
+        except ValueError as ve:
+            logger.error(f"Configuration error for tool '{tool_name}': {ve}", exc_info=True)
+            raise
+        except ValidationError as ve:
+            logger.error(f"Validation error for tool '{tool_name}': {ve.errors()}", exc_info=True)
+            raise
         except Exception as e:
             logger.error(f"Error creating tool '{tool_name}': {e}", exc_info=True)
             raise
