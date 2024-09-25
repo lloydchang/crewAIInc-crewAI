@@ -14,13 +14,8 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 
 logger = logging.getLogger(__name__)
 
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
-
 class ToolRegistry:
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
-        # Validate the configs
         if not isinstance(llm_config, LLMConfig):
             raise TypeError("Invalid LLMConfig provided.")
         if not isinstance(embedder_config, EmbedderConfig):
@@ -50,14 +45,12 @@ class ToolRegistry:
         embedder_conf = tool_config.get('embedder_config', {})
         data_path = tool_config.get('data_path', None)
         
-        # Convert embedder_conf if necessary
         if not isinstance(embedder_conf, EmbedderConfig):
             embedder_conf = EmbedderConfig(**embedder_conf)
 
         if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
             raise ValueError(f"Missing data path for tool '{tool_name}'")
     
-        # Convert LLMConfig to dictionary
         llm_config_dict = {
             "provider": self.llm_config.provider,
             "config": {
@@ -68,17 +61,13 @@ class ToolRegistry:
             }
         }
 
-        # Create a new dictionary with all the necessary configurations
         tool_kwargs = {
             "llm_config": llm_config_dict,
-            "embedder_config": embedder_conf.dict(),  # Convert EmbedderConfig to dict
+            "embedder_config": embedder_conf.dict(),
             "data_path": data_path
         }
 
-        # Add a debug message before initializing CSVSearchTool
         logger.debug(f"Initialize with the provided configurations: llm_config={llm_config_dict}, embedder_config={embedder_conf.dict()}, data_path={data_path}")
-
-        # Initialize the tool
         return tool_class(**tool_kwargs)
 
     def get_tool(self, tool_name: str) -> StructuredTool:
@@ -92,10 +81,10 @@ class ToolRegistry:
             if tool_name == "tedx_search":
                 tool = self._create_tool(tool_name, TEDxSearchTool)
             elif tool_name == "tedx_slug":
-                self.get_tool("tedx_search")  # Pre-fetch to ensure it's initialized
+                self.get_tool("tedx_search")
                 tool = self._create_tool(tool_name, TEDxSlugTool)
             elif tool_name == "tedx_transcript":
-                self.get_tool("tedx_slug")  # Ensure 'tedx_slug' is created before 'tedx_transcript'
+                self.get_tool("tedx_slug")
                 tool = self._create_tool(tool_name, TEDxTranscriptTool)
             elif tool_name == "sdg_align":
                 tool = self._create_tool(tool_name, SDGAlignTool)

@@ -11,17 +11,13 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
-
 class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
 
-    llm_config: LLMConfig = Field(exclude=True)
-    embedder_config: EmbedderConfig = Field(exclude=True)
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
     data_path: str = Field(default='data/impact_data.csv', description="Path to the sustainability impact data CSV.")
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/impact_data.csv'):
@@ -44,6 +40,9 @@ class SustainabilityImpactTool(StructuredTool):
                     if impact_id:
                         impact_index[impact_id] = row
             logger.debug(f"Loaded {len(impact_index)} impacts from '{self.data_path}'.")
+        except FileNotFoundError:
+            logger.error(f"File not found: {self.data_path}")
+            raise FileNotFoundError(f"File not found: {self.data_path}")
         except Exception as e:
             logger.error(f"Error loading sustainability impact data: {e}", exc_info=True)
             raise Exception("Failed to load impact data.")

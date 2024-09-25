@@ -11,21 +11,17 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
-
 class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignInput
 
-    llm_config: LLMConfig = Field(exclude=True)
-    embedder_config: EmbedderConfig = Field(exclude=True)
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
     data_path: str = Field(default='data/sdg_data.csv', description="Path to the SDG data CSV.")
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
-        super().__init__()  # Ensure proper initialization of the base class
+        super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path
@@ -44,6 +40,9 @@ class SDGAlignTool(StructuredTool):
                     if sdg_id:
                         sdg_index[sdg_id] = row
             logger.debug(f"Loaded {len(sdg_index)} SDGs from '{self.data_path}'.")
+        except FileNotFoundError:
+            logger.error(f"File not found: {self.data_path}")
+            raise FileNotFoundError(f"File not found: {self.data_path}")
         except Exception as e:
             logger.error(f"Error loading SDG data: {e}", exc_info=True)
             raise Exception("Failed to load SDG data.")
