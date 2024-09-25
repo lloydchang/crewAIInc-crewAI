@@ -52,13 +52,13 @@ class CrewAIManager:
             raise FileNotFoundError(f"{config_name.capitalize()} config file not found: {config_path}")
 
     def _log_llm_use(self, llm_config: LLMConfig) -> None:
-        if not llm_config or not llm_config.config.get('model', None):
+        if not llm_config or not hasattr(llm_config, 'config') or not hasattr(llm_config.config, 'model'):
             logger.error("Invalid LLM configuration provided.")
             return
 
         provider = llm_config.provider
-        model = llm_config.config['model']
-        temperature = llm_config.config.get('temperature', 'N/A')
+        model = llm_config.config.model
+        temperature = getattr(llm_config.config, 'temperature', 'N/A')
         logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
 
     def _initialize_tool_config(self) -> ToolConfig:
