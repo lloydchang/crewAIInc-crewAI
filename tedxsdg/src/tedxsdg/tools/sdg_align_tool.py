@@ -1,6 +1,6 @@
 # tools/sdg_align_tool.py
 
- import logging
+import logging
 import csv
 from typing import Any, Dict, List, Type, Union
 from langchain.tools import StructuredTool
