@@ -15,6 +15,7 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
+
 class ToolRegistry:
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
         # Validate types
@@ -37,6 +38,7 @@ class ToolRegistry:
             with open(tools_config_path, 'r') as f:
                 tool_configs = yaml.safe_load(f)
             logger.info(f"Loaded tool configurations from '{tools_config_path}'.")
+            logger.debug(f"Tool configurations: {tool_configs}")
             return tool_configs
         except Exception as e:
             logger.error(f"Error loading tool configurations from '{tools_config_path}': {e}", exc_info=True)
@@ -45,6 +47,7 @@ class ToolRegistry:
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         """Create a tool with the provided tool name and class, using the loaded config."""
         tool_config = self.tool_configs.get(tool_name, {})
+        logger.debug(f"Creating tool '{tool_name}' with config: {tool_config}")
 
         if not tool_config:
             logger.error(f"No configuration found for tool '{tool_name}'.")
@@ -54,6 +57,8 @@ class ToolRegistry:
         try:
             embedder_conf = tool_config.get('embedder_config')
             llm_conf = tool_config.get('llm_config')
+
+            logger.debug(f"Extracted embedder_config: {embedder_conf}, llm_config: {llm_conf}")
 
             # Check for the presence of configurations
             if embedder_conf is None:

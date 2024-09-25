@@ -8,9 +8,11 @@ from pydantic import BaseModel, Field, ValidationError
 from schemas.sustainability_impact_schema import SustainabilityImpactInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-class SustainabilityImpactTool(StructuredTool):
+logging.getLogger().setLevel(logging.DEBUG)
+class SustainabilityImpactTool(StructuredTo
+                               ol):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
