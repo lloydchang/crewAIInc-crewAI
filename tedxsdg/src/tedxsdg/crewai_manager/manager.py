@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from crewai import Crew, Process, Agent, Task
 from crewai_manager.config_loader import load_config
 from crewai_manager.agent_factory import create_agent
-from schemas.config_schemas import ToolConfig
+from schemas.config_schemas import ToolConfig  # Ensure ToolConfig is updated as per new schema
 from tools.tool_registry import ToolRegistry
 from typing import Any, Dict, List, Optional, Type, Union
 
@@ -52,23 +52,24 @@ class CrewAIManager:
             raise FileNotFoundError(f"{config_name.capitalize()} config file not found: {config_path}")
 
     def _log_llm_use(self, llm_config) -> None:
-        if not llm_config or not llm_config.model:
+        # Check for valid LLM configuration
+        if not llm_config or not getattr(llm_config, 'model', None):
             logger.error("Invalid LLM configuration provided.")
             return
 
-        provider = llm_config.provider
+        provider = getattr(llm_config, 'provider', 'unknown')
         model = llm_config.model
-        temperature = llm_config.temperature
+        temperature = getattr(llm_config, 'temperature', 'N/A')
         logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
 
     def _initialize_tool_config(self) -> ToolConfig:
         try:
             logger.debug(f"Model config being passed: {self.model_config}")
-            tool_config = ToolConfig(**self.model_config)
+            tool_config = ToolConfig(**self.tools_config)  # Load from tools_config instead
             logger.debug(f"ToolConfig successfully initialized: {tool_config}")
             return tool_config
         except ValidationError as ve:
-            logger.error(f"Validation error in model configuration: {ve.errors()}", exc_info=True)
+            logger.error(f"Validation error in tool configuration: {ve.errors()}", exc_info=True)
             raise
         except Exception as e:
             logger.error(f"Unexpected error during ToolConfig initialization: {e}", exc_info=True)
