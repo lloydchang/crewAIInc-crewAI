@@ -8,85 +8,73 @@ from crewai_manager.config_loader import load_config
 from crewai_manager.agent_factory import create_agent
 from schemas.config_schemas import ToolConfig
 from tools.tool_registry import ToolRegistry
+from typing import Any, Dict, List, Optional, Type, Union
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)  # Set logging level
 logger = logging.getLogger(__name__)
-
-# logging.getLogger().setLevel(logging.DEBUG)
 
 logger.debug("Debug logging is working at the top of the script.")
 
 class CrewAIManager:
     def __init__(self, agents_config_path: str, tasks_config_path: str, model_config_path: str, tools_config_path: str = "config/tools.yaml"):
         # Ensure config paths are valid
-        self.validate_config_path(agents_config_path, "agents")
-        self.validate_config_path(tasks_config_path, "tasks")
-        self.validate_config_path(model_config_path, "model")
-        self.validate_config_path(tools_config_path, "tools")
+        self._validate_config_path(agents_config_path, "agents")
+        self._validate_config_path(tasks_config_path, "tasks")
+        self._validate_config_path(model_config_path, "model")
+        self._validate_config_path(tools_config_path, "tools")
 
-        # Load configurations for agents, tasks, model, and tools
+        # Load configurations
         self.agents_config = load_config(agents_config_path, "agents")
         self.tasks_config = load_config(tasks_config_path, "tasks")
         self.model_config = load_config(model_config_path, "model")
         self.tools_config = load_config(tools_config_path, "tools")
 
-        self.agents = {}  # To store created agents
-        self.tasks = []  # To store created tasks
+        self.agents = {}
+        self.tasks = []
 
-        # Validate and load the model configuration
+        # Validate and load model configuration
+        self.tool_config = self._initialize_tool_config()
+
+        # Initialize ToolRegistry
+        self.tool_registry = ToolRegistry(
+            llm_config=self.tool_config.llm,
+            embedder_config=self.tool_config.embedder,
+            tools_config_path=tools_config_path
+        )
+
+        self.memory = True  # Enable memory by default
+        self._log_llm_use(self.tool_config.llm)
+
+    def _validate_config_path(self, config_path: str, config_name: str) -> None:
+        if not os.path.exists(config_path):
+            logger.error(f"{config_name.capitalize()} config file not found: {config_path}")
+            raise FileNotFoundError(f"{config_name.capitalize()} config file not found: {config_path}")
+
+    def _log_llm_use(self, llm_config) -> None:
+        if not llm_config or not llm_config.model:
+            logger.error("Invalid LLM configuration provided.")
+            return
+
+        provider = llm_config.provider
+        model = llm_config.model
+        temperature = llm_config.temperature
+        logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
+
+    def _initialize_tool_config(self) -> ToolConfig:
         try:
-            # Initialize ToolConfig based on the model configuration
-            self.tool_config = ToolConfig(**self.model_config)
-            self.llm_config = self.tool_config.llm
-            self.embedder_config = self.tool_config.embedder
-            logger.debug(f"LLM Configuration: {self.llm_config}")
-            logger.debug(f"Embedder Configuration: {self.embedder_config}")
-            logger.debug(f"ToolConfig successfully initialized: {self.tool_config}")
+            logger.debug(f"Model config being passed: {self.model_config}")
+            tool_config = ToolConfig(**self.model_config)
+            logger.debug(f"ToolConfig successfully initialized: {tool_config}")
+            return tool_config
         except ValidationError as ve:
-            logger.error(f"Validation error in model configuration: {ve}", exc_info=True)
+            logger.error(f"Validation error in model configuration: {ve.errors()}", exc_info=True)
             raise
         except Exception as e:
             logger.error(f"Unexpected error during ToolConfig initialization: {e}", exc_info=True)
             raise
 
-        # Initialize ToolRegistry with tool-specific configurations
-        self.tool_registry = ToolRegistry(
-            llm_config=self.llm_config, 
-            embedder_config=self.embedder_config, 
-            tools_config_path=tools_config_path
-        )
-
-        # Memory flag assumption
-        self.memory = True  # Enable memory by default
-        # Log the LLM configuration for debugging purposes
-        self.log_llm_use(self.llm_config)
-
-    def validate_config_path(self, config_path: str, config_name: str):
-        """
-        Validate that a given config path exists.
-        Raise an error if the file does not exist.
-        """
-        if not os.path.exists(config_path):
-            logger.error(f"{config_name.capitalize()} config file not found: {config_path}")
-            raise FileNotFoundError(f"{config_name.capitalize()} config file not found: {config_path}")
-
-    def log_llm_use(self, llm_config):
-        """
-        Log the LLM configuration details.
-        """
-        if not llm_config or not llm_config.config:
-            logger.error("Invalid LLM configuration provided.")
-            return
-
-        # Log the provider, model, and temperature of the LLM
-        provider = llm_config.provider
-        model = llm_config.config.model
-        temperature = llm_config.config.temperature
-        logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
-
-    def create_task(self, task_name: str):
-        """
-        Create a task based on the provided task_name.
-        """
+    def create_task(self, task_name: str) -> None:
         if task_name not in self.tasks_config:
             raise ValueError(f"Task '{task_name}' not found in tasks configuration.")
 
@@ -95,22 +83,7 @@ class CrewAIManager:
 
         # Check if the agent is already created, if not create one
         if agent_name not in self.agents:
-            try:
-                # Validate that LLMConfig and EmbedderConfig are initialized before creating the agent
-                if not self.llm_config or not self.embedder_config:
-                    raise ValueError("LLMConfig or EmbedderConfig not properly initialized.")
-                
-                # Create the agent using the agent configuration, LLM/Embedder configurations, and ToolRegistry
-                self.agents[agent_name] = create_agent(
-                    agent_name, 
-                    self.agents_config[agent_name], 
-                    self.llm_config, 
-                    self.embedder_config, 
-                    self.tool_registry  # Pass ToolRegistry instance
-                )
-            except Exception as e:
-                logger.error(f"Error creating agent '{agent_name}': {e}", exc_info=True)
-                raise
+            self.agents[agent_name] = self._create_agent(agent_name)
 
         # Retrieve the created agent and create the task
         agent = self.agents[agent_name]
@@ -124,10 +97,23 @@ class CrewAIManager:
         logger.info(f"Created task '{task_name}' assigned to agent '{agent_name}' with priority {priority}.")
         self.tasks.append(task)
 
+    def _create_agent(self, agent_name: str) -> Agent:
+        try:
+            if not self.tool_config.llm or not self.tool_config.embedder:
+                raise ValueError("LLMConfig or EmbedderConfig not properly initialized.")
+
+            return create_agent(
+                agent_name,
+                self.agents_config[agent_name],
+                self.tool_config.llm,
+                self.tool_config.embedder,
+                self.tool_registry
+            )
+        except Exception as e:
+            logger.error(f"Error creating agent '{agent_name}': {e}", exc_info=True)
+            raise
+
     def initialize_crew(self) -> Crew:
-        """
-        Initialize the Crew by creating tasks and agents.
-        """
         logger.info("Initializing crew")
         for task_name in self.tasks_config:
             try:
@@ -135,21 +121,20 @@ class CrewAIManager:
             except Exception as e:
                 logger.error(f"Error creating task '{task_name}': {str(e)}", exc_info=True)
 
-        # Ensure at least one agent and one task exist before initializing the crew
+        # Ensure at least one agent and one task exist
         if not self.agents or not self.tasks:
             raise ValueError("At least one agent and one task must be successfully created to initialize the crew.")
 
         try:
-            # Initialize the Crew with the created agents, tasks, and configurations
             crew = Crew(
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
-                process=Process.sequential,  # Sequential processing of tasks
+                process=Process.sequential,
                 memory=self.memory,
-                embedder=self.embedder_config.dict(),  # Embedder configuration used in Crew
-                max_rpm=None,  # RPM not limited
-                share_crew=False,  # Crew sharing is disabled
-                verbose=True,  # Enable verbose logging
+                embedder=self.tool_config.embedder.dict() if self.tool_config.embedder else {},
+                max_rpm=None,
+                share_crew=False,
+                verbose=True,
             )
             logger.info(f"Initialized the crew with {len(self.agents)} agents and {len(self.tasks)} tasks.")
             return crew
