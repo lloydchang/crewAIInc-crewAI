@@ -13,10 +13,6 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
-
 # Get configuration paths from environment variables or use default paths
 AGENTS_CONFIG_PATH = os.getenv("AGENTS_CONFIG_PATH", "config/agents.yaml")
 TASKS_CONFIG_PATH = os.getenv("TASKS_CONFIG_PATH", "config/tasks.yaml")

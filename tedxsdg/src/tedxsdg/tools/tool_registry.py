@@ -45,22 +45,20 @@ class ToolRegistry:
         embedder_conf = tool_config.get('embedder_config', {})
         data_path = tool_config.get('data_path', None)
 
-        # Ensure embedder_conf is converted to an instance of EmbedderConfig if it's a dictionary
         if not isinstance(embedder_conf, EmbedderConfig):
             embedder_conf = EmbedderConfig(**embedder_conf)
 
-        # Check if data_path is provided for relevant tools
         if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
+            logger.error(f"Missing data path for tool '{tool_name}'")
             raise ValueError(f"Missing data path for tool '{tool_name}'")
 
-        # Directly pass the `LLMConfig` and `EmbedderConfig` objects, not dictionaries
         tool_kwargs = {
-            "llm_config": self.llm_config,  # Pass the LLMConfig object
-            "embedder_config": embedder_conf,  # Pass the EmbedderConfig object
+            "llm_config": self.llm_config,
+            "embedder_config": embedder_conf,
             "data_path": data_path
         }
 
-        logger.debug(f"Initialize with the provided configurations: llm_config={self.llm_config}, embedder_config={embedder_conf}, data_path={data_path}")
+        logger.debug(f"Initializing tool '{tool_name}' with provided configurations.")
         return tool_class(**tool_kwargs)
 
     def get_tool(self, tool_name: str) -> StructuredTool:

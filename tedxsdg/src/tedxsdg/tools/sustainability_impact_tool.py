@@ -2,12 +2,11 @@
 
 import logging
 import csv
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Type, Union
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.sustainability_impact_schema import SustainabilityImpactInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
-from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +24,6 @@ class SustainabilityImpactTool(StructuredTool):
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path
-
-        # Load impact data from the provided CSV
         self.impact_data = self._load_impact_data()
 
     def _load_impact_data(self) -> Dict[str, Any]:
@@ -74,7 +71,7 @@ class SustainabilityImpactTool(StructuredTool):
 
     def _run(self, project: Union[str, Dict[str, Any]], metrics: List[str]) -> str:
         """Executes the sustainability impact assessment."""
-        project_str = extract_query_string(project)
+        project_str = project if isinstance(project, str) else project.get('project', "")
         if not project_str:
             return "Error: No valid project provided for sustainability impact assessment."
 
