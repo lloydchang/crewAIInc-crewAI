@@ -1,4 +1,4 @@
-# crewai_manager/manager.py
+# crewaii_manager/manager.py
 
 import logging
 import os
@@ -63,17 +63,42 @@ class CrewAIManager:
         logger.info(f"Using LLM - Provider: {provider}, Model: {model}, Temperature: {temperature}")
 
     def _initialize_tool_config(self) -> ToolConfig:
-        try:
-            logger.debug(f"Model config being passed: {self.model_config}")
-            tool_config = ToolConfig(**self.tools_config)  # Load from tools_config instead
-            logger.debug(f"ToolConfig successfully initialized: {tool_config}")
-            return tool_config
-        except ValidationError as ve:
-            logger.error(f"Validation error in tool configuration: {ve.errors()}", exc_info=True)
-            raise
-        except Exception as e:
-            logger.error(f"Unexpected error during ToolConfig initialization: {e}", exc_info=True)
-            raise
+    try:
+        logger.debug(f"Model config being passed: {self.model_config}")
+
+        # Extract LLM configuration correctly based on the nested structure
+        llm_config = {
+            "provider": self.model_config["llm"]["provider"],
+            "model": self.model_config["llm"]["config"]["model"],  # Accessing model from nested config
+            "temperature": self.model_config["llm"]["config"].get("temperature", 1.0)  # Accessing temperature from nested config
+        }
+
+        # Construct embedder configuration
+        embedder_config = {
+            "provider": "ollama",  # Ensure this matches the expected provider
+            "config": {
+                "model": "nomic-embed-text"  # Adjust this based on your requirements
+            },
+            "data_paths": [
+                tool_config["data_path"] for tool_config in self.tools_config.values()
+            ]
+        }
+
+        # Combine into tool_config_data
+        tool_config_data = {
+            "llm": llm_config,
+            "embedder": embedder_config
+        }
+
+        tool_config = ToolConfig(**tool_config_data)
+        logger.debug(f"ToolConfig successfully initialized: {tool_config}")
+        return tool_config
+    except ValidationError as ve:
+        logger.error(f"Validation error in tool configuration: {ve.errors()}", exc_info=True)
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during ToolConfig initialization: {e}", exc_info=True)
+        raise
 
     def create_task(self, task_name: str) -> None:
         if task_name not in self.tasks_config:
