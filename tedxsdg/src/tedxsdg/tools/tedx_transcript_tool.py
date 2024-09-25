@@ -3,17 +3,12 @@
 import logging
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, Optional, Type
 from schemas.tedx_transcript_schema import TEDxTranscriptInput
 from crewai_tools import WebsiteSearchTool
 from schemas.config_schemas import LLMConfig, EmbedderConfig
-from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
-
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
 
 class TEDxTranscriptTool(StructuredTool):
     name: str = "tedx_transcript"
@@ -24,11 +19,12 @@ class TEDxTranscriptTool(StructuredTool):
     embedder_config: EmbedderConfig = Field(exclude=True)
     data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx data CSV.")
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
-        super().__init__()
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+        super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
-        self.data_path = data_path
+        if data_path:
+            self.data_path = data_path  # Allow overriding the default data path
         self.website_search_tool = WebsiteSearchTool()
 
     def _run(self, slug: str) -> str:

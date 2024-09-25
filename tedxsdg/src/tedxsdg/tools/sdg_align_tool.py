@@ -1,8 +1,8 @@
 # tools/sdg_align_tool.py
 
-import logging
+ import logging
 import csv
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Type, Union
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.sdg_align_schema import SDGAlignInput
@@ -19,9 +19,11 @@ class SDGAlignTool(StructuredTool):
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/sdg_data.csv', description="Path to the SDG data CSV.")
+    
+    sdg_data: Dict[str, Any] = Field(default_factory=dict)  # Use a default factory for mutable types
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
-        super().__init__()
+        super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path

@@ -18,9 +18,11 @@ class SustainabilityImpactTool(StructuredTool):
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/impact_data.csv', description="Path to the sustainability impact data CSV.")
+    
+    impact_data: Dict[str, Any] = Field(default_factory=dict)  # Use a default factory for mutable types
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/impact_data.csv'):
-        super().__init__()
+        super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path

@@ -2,8 +2,7 @@
 
 import logging
 from langchain.tools import StructuredTool
-from typing import Any, Dict, List, Optional, Type, Union
-
+from typing import Any, Dict, Optional, Type, Union
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from pydantic import BaseModel, Field
 from schemas.duckduckgo_search_schema import DuckDuckGoSearchInput
@@ -11,10 +10,6 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
-
-# logging.getLogger().setLevel(logging.DEBUG)
-
-logger.debug("Debug logging is working at the top of the script.")
 
 class DuckDuckGoSearchTool(StructuredTool):
     name: str = "duckduckgo_search"
@@ -25,7 +20,7 @@ class DuckDuckGoSearchTool(StructuredTool):
     embedder_config: EmbedderConfig = Field(exclude=True)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
-        super().__init__()
+        super().__init__()  # Call to parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
 
@@ -49,3 +44,6 @@ class DuckDuckGoSearchTool(StructuredTool):
         except Exception as e:
             logger.error(f"Error during DuckDuckGo search: {str(e)}", exc_info=True)
             return f"Error during DuckDuckGo search: {str(e)}"
+
+# Optional: Logging for script execution
+logger.debug("DuckDuckGoSearchTool module loaded successfully.")

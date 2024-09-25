@@ -1,12 +1,12 @@
 # config/model.yaml
 
 llm:
-  provider: "ollama"  # The provider for the LLM
+  provider: "ollama"  # The provider for the LLM. Ensure this matches your implementation.
   config:
-    model: "ollama/llama3"  # Verify this model name with Ollama to ensure correct naming
-    temperature: 0  # Adjusted to a typical range (0 - 1)
+    model: "ollama/llama3"  # Confirm this model name with Ollama to ensure correct usage.
+    temperature: 0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
 
 embedder:
-  provider: "ollama"  # Verify if 'ollama' supports 'nomic-embed-text'
+  provider: "ollama"  # Verify if 'ollama' supports 'nomic-embed-text'.
   config:
-    model: "nomic-embed-text"  # Confirm the correct model name and provider compatibility
+    model: "nomic-embed-text"  # Confirm the correct model name and ensure compatibility with the provider.

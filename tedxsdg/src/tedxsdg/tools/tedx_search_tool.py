@@ -1,9 +1,7 @@
-# tools/tedx_search_tool.py
-
 import os
 import logging
 import csv
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.tedx_search_schema import TEDxSearchInput
@@ -21,58 +19,50 @@ class TEDxSearchTool(StructuredTool):
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
-    csv_search_tool: Optional[CSVSearchTool] = None  # Declare as a field
-    csv_data: Optional[Dict[str, Dict[str, Any]]] = None  # Declare as a field
+    csv_search_tool: Optional[CSVSearchTool] = None
+    csv_data: Optional[Dict[str, Dict[str, Any]]] = None
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str):
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+        super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
-        self.data_path = data_path
+        if data_path:
+            self.data_path = data_path
 
-        print("Initialize CSVSearchTool with the provided configurations")
+        logger.info("Initializing CSVSearchTool with the provided configurations")
 
-        # First attempt to initialize CSVSearchTool
-        try:
-            self.csv_search_tool = self._initialize_csv_search_tool()
-        except Exception as e:
-            logger.error(f"Error during initial initialization: {str(e)}", exc_info=True)
-            self.csv_search_tool = None
-
-        # If the first initialization fails, invalidate the cache and try again
-        if self.csv_search_tool is None:
-            logger.info("Attempting to invalidate cache and reinitialize CSVSearchTool.")
-            self._invalidate_cache()
-
-            try:
-                self.csv_search_tool = self._initialize_csv_search_tool()
-                if self.csv_search_tool is None:
-                    logger.error("Failed to initialize CSVSearchTool after cache invalidation.")
-                    raise RuntimeError("CSVSearchTool could not be initialized.")
-            except Exception as e:
-                logger.error(f"Error during reinitialization: {str(e)}", exc_info=True)
-                raise RuntimeError("CSVSearchTool could not be initialized after cache invalidation.")
-
-        self.csv_data = self._load_csv_data()
-
-    def _invalidate_cache(self):
-        logger.info("Invalidating the cache via rm -rf db")
-        try:
-            os.system("rm -rf db")
-        except Exception as e:
-            logger.error(f"Error during cache invalidation: {str(e)}")
+        # Initialize the CSV search tool
+        self.csv_search_tool = self._initialize_csv_search_tool()
 
     def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
         try:
-            return CSVSearchTool(
+            self.csv_search_tool = CSVSearchTool(
                 csv=self.data_path,
                 config={
                     "llm": self.llm_config,
                     "embedder": self.embedder_config,
                 }
             )
+            logger.info("CSVSearchTool initialized successfully.")
+            self.csv_data = self._load_csv_data()
         except ValueError as e:
             logger.warning(f"Failed to initialize CSVSearchTool: {e}")
-            return None
+            self.csv_search_tool = None
+        
+        # If the CSV search tool is None, invalidate cache and attempt to reinitialize
+        if self.csv_search_tool is None:
+            logger.info("Invalidating cache and attempting to reinitialize CSVSearchTool.")
+            self._invalidate_cache()
+            self.csv_search_tool = self._initialize_csv_search_tool()  # Retry initialization
+
+        return self.csv_search_tool
+
+    def _invalidate_cache(self):
+        logger.info("Invalidating the cache via rm -rf db")
+        try:
+            os.system("rm -rf db")  # Caution: This will delete the db directory
+        except Exception as e:
+            logger.error(f"Error during cache invalidation: {str(e)}")
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
         """Load TEDx data from the CSV file."""
