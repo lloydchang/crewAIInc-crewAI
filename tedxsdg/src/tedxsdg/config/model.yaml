@@ -4,7 +4,7 @@ llm:
   provider: "ollama"  # The provider for the LLM
   config:
     model: "ollama/llama3"  # Verify this model name with Ollama to ensure correct naming
-    temperature: 0.7  # Adjusted to a typical range (0.0 - 1.0)
+    temperature: 0  # Adjusted to a typical range (0 - 1)
 
 embedder:
   provider: "ollama"  # Verify if 'ollama' supports 'nomic-embed-text'

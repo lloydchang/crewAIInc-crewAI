@@ -1,17 +1,17 @@
 # schemas/config_schemas.py
 
 from pydantic import BaseModel, Field, ValidationError, model_validator
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Optional
 
 class LLMInnerConfig(BaseModel):
     model: str = Field(..., description="Name of the language model to use.")
-    temperature: Optional[float] = Field(0.7, description="Temperature setting for the language model.")
+    temperature: Optional[float] = Field(0, description="Temperature setting for the language model.")
     
     @model_validator(mode='before')
     def validate_temperature(cls, values):
-        temperature = values.get('temperature', 0.7)
-        if not 0.0 <= temperature <= 2.0:
-            raise ValueError("Temperature must be between 0.0 and 2.0")
+        temperature = values.get('temperature', 0)
+        if temperature <= 0:
+            raise ValueError("Temperature must be greater than 0.")
         return values
 
 class LLMConfig(BaseModel):
@@ -52,4 +52,6 @@ class ToolConfig(BaseModel):
         
         if not llm_config or not embedder_config:
             raise ValueError("Both LLM and Embedder configurations must be initialized properly.")
+        
+        # Example validation for known models could be added here if needed
         return values

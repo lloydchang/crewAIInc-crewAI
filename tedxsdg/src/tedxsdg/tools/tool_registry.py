@@ -40,27 +40,31 @@ class ToolRegistry:
             logger.error(f"Error loading tool configurations from '{tools_config_path}': {e}", exc_info=True)
             raise
 
-    def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
-        tool_config = self.tool_configs.get(tool_name, {})
-        embedder_conf = tool_config.get('embedder_config', {})
+def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
+    tool_config = self.tool_configs.get(tool_name, {})
+    embedder_conf = tool_config.get('embedder_config', {})
+    llm_conf = tool_config.get('llm_config', {})
 
-        if not isinstance(embedder_conf, EmbedderConfig):
-            embedder_conf = EmbedderConfig(**embedder_conf)
+    if not isinstance(embedder_conf, EmbedderConfig):
+        embedder_conf = EmbedderConfig(**embedder_conf)
 
-        data_path = tool_config.get('data_path', None)
+    if not isinstance(llm_conf, LLMConfig):
+        llm_conf = LLMConfig(**llm_conf)
 
-        if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
-            logger.error(f"Missing data path for tool '{tool_name}'")
-            raise ValueError(f"Missing data path for tool '{tool_name}'")
+    data_path = tool_config.get('data_path', None)
 
-        tool_kwargs = {
-            "llm_config": self.llm_config,
-            "embedder_config": embedder_conf,
-            "data_path": data_path
-        }
+    if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
+        logger.error(f"Missing data path for tool '{tool_name}'")
+        raise ValueError(f"Missing data path for tool '{tool_name}'")
 
-        logger.debug(f"Initializing tool '{tool_name}' with provided configurations.")
-        return tool_class(**tool_kwargs)
+    tool_kwargs = {
+        "llm_config": llm_conf,
+        "embedder_config": embedder_conf,
+        "data_path": data_path
+    }
+
+    logger.debug(f"Initializing tool '{tool_name}' with provided configurations.")
+    return tool_class(**tool_kwargs)
 
     def get_tool(self, tool_name: str) -> StructuredTool:
         if tool_name in self.tools:

@@ -1,6 +1,11 @@
 # config/tools.yaml
 
 tedx_search:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
@@ -8,6 +13,11 @@ tedx_search:
   data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
 
 tedx_slug:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
@@ -15,6 +25,11 @@ tedx_slug:
   data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
 
 tedx_transcript:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
@@ -22,12 +37,22 @@ tedx_transcript:
   data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
 
 duckduckgo_search:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
       model: "nomic-embed-text"
 
 sdg_align:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
@@ -35,6 +60,11 @@ sdg_align:
   data_path: "data/sdg_data.csv"
 
 sustainability_impact:
+  llm_config:
+    provider: ollama
+    config:
+      model: "ollama/llama3"  # Specify the correct LLM model
+      temperature: 0
   embedder_config:
     provider: ollama
     config:
