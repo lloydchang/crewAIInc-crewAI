@@ -11,14 +11,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Set up logging
-logging.basicConfig(
-    level=logging.DEBUG,  
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]  
-)
 logger = logging.getLogger(__name__)
-logging.getLogger().setLevel(logging.INFO)
+
+# logging.getLogger().setLevel(logging.DEBUG)
 
 logger.debug("Debug logging is working at the top of the script.")
 

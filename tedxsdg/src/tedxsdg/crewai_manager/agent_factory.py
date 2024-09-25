@@ -8,6 +8,10 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 class CustomAgentOutputParser(AgentOutputParser):
     def parse(self, output):
         if isinstance(output, str):

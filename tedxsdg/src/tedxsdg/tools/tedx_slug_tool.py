@@ -13,6 +13,10 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 class TEDxSlugTool(StructuredTool):
     name: str = "tedx_slug"
     description: str = "Retrieves TEDx content details based on a provided slug."

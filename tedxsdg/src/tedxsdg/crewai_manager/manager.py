@@ -11,6 +11,10 @@ from tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 class CrewAIManager:
     def __init__(self, agents_config_path: str, tasks_config_path: str, model_config_path: str, tools_config_path: str = "config/tools.yaml"):
         # Ensure config paths are valid

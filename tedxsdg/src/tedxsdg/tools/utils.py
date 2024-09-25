@@ -5,6 +5,10 @@ from typing import Union, Dict, Any
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 def extract_query_string(query_input: Union[str, Dict[str, Any]]) -> str:
     """Extracts a query string from input (string, dict, or other objects)."""
     try:

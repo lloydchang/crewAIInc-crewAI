@@ -1,6 +1,6 @@
-# tools/tedx_search_tool.py
-
+import os
 import logging
+import sys
 import csv
 from typing import Union, Dict, Any, Type, Optional
 from langchain.tools import StructuredTool
@@ -11,6 +11,10 @@ from crewai_tools import CSVSearchTool
 from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
+
+# logging.getLogger().setLevel(logging.INFO)
+
+logger.debug("Debug logging is working at the top of the script.")
 
 # Local CSV file location is now managed via data_path
 
@@ -23,13 +27,23 @@ class TEDxSearchTool(StructuredTool):
     embedder_config: EmbedderConfig = Field(exclude=True)
     data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
 
+    def _invalidate_cache(self):
+        # Invalidate the cache
+        logger.info(f"Invalidating the cache via rm -rf db")
+        os.system("rm -rf db")
+
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
         super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path
 
-        # Initialize CSVSearchTool with the provided configurations
+        # Force the creation of embeddings by invalidating the cache
+        #
+        # Uncomment to invalidate the cache
+        self._invalidate_cache()
+
+        print(f"Initialize CSVSearchTool with the provided configurations")
         self.csv_search_tool = CSVSearchTool(
             csv=self.data_path,
             config={

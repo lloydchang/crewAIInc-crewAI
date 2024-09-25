@@ -11,6 +11,10 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."

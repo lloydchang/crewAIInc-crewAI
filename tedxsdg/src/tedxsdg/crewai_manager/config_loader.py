@@ -5,6 +5,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# logging.getLogger().setLevel(logging.DEBUG)
+
+logger.debug("Debug logging is working at the top of the script.")
+
 def load_config(config_path: str, config_type: str) -> dict:
     """
     Load YAML configuration from a given path.
