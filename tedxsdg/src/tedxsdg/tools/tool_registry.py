@@ -26,11 +26,9 @@ class ToolRegistry:
         self.embedder_config = embedder_config
         self.tools: Dict[str, StructuredTool] = {}
 
-        # Load tool-specific configurations
         self.tool_configs = self._load_tool_configs(tools_config_path)
 
     def _load_tool_configs(self, tools_config_path: str) -> Dict[str, Dict[str, Any]]:
-        """Loads tool-specific configurations from the tools.yaml file."""
         try:
             with open(tools_config_path, 'r') as f:
                 tool_configs = yaml.safe_load(f)
@@ -45,20 +43,16 @@ class ToolRegistry:
         embedder_conf = tool_config.get('embedder_config', {})
         data_path = tool_config.get('data_path', None)
 
-        # Ensure embedder_conf is converted to an instance of EmbedderConfig if it's a dictionary
         if not isinstance(embedder_conf, EmbedderConfig):
             embedder_conf = EmbedderConfig(**embedder_conf)
 
-        # Check if data_path is provided for relevant tools
-        if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
-            raise ValueError(f"Missing data path for tool '{tool_name}'")
-
-        # Directly pass the `LLMConfig` and `EmbedderConfig` objects, not dictionaries
         tool_kwargs = {
-            "llm_config": self.llm_config,  # Pass the LLMConfig object
-            "embedder_config": embedder_conf,  # Pass the EmbedderConfig object
-            "data_path": data_path
+            "llm_config": self.llm_config,
+            "embedder_config": embedder_conf,
         }
+
+        if data_path and tool_name != "duckduckgo_search":
+            tool_kwargs["data_path"] = data_path
 
         logger.debug(f"Initialize with the provided configurations: llm_config={self.llm_config}, embedder_config={embedder_conf}, data_path={data_path}")
         return tool_class(**tool_kwargs)
