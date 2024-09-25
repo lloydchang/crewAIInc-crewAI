@@ -1,3 +1,5 @@
+# schemas/config_schemas.py
+
 from pydantic import BaseModel, Field, ValidationError, model_validator
 from typing import Any, Dict, List, Optional, Type, Union
 
@@ -45,8 +47,8 @@ class ToolConfig(BaseModel):
 
     @model_validator(mode='after')
     def validate_configs(cls, values):
-        llm_config = values.get('llm')
-        embedder_config = values.get('embedder')
+        llm_config = values.llm
+        embedder_config = values.embedder
         
         if not llm_config or not embedder_config:
             raise ValueError("Both LLM and Embedder configurations must be initialized properly.")
