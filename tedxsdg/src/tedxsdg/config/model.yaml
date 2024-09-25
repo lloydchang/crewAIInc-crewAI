@@ -1,5 +1,3 @@
-# config/model.yaml
-
 llm:
   provider: "ollama"  # The provider for the LLM
   config:
@@ -9,5 +7,4 @@ llm:
 embedder:
   provider: "ollama"  # Verify if 'ollama' supports 'nomic-embed-text'
   config:
-    title: "Nomic Embed Text"  # Added title field
     model: "nomic-embed-text"  # Confirm the correct model name and provider compatibility
