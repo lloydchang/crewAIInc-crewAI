@@ -10,8 +10,8 @@ class LLMInnerConfig(BaseModel):
     @model_validator(mode='before')
     def validate_temperature(cls, values):
         temperature = values.get('temperature', 0)
-        if temperature <= 0:
-            raise ValueError("Temperature must be greater than 0.")
+        if temperature < 0:
+            raise ValueError("Temperature must be equal or greater than 0.")
         return values
 
 class LLMConfig(BaseModel):
