@@ -2,12 +2,11 @@
 
 import logging
 import csv
-from typing import Optional, Dict, Union, Any, Type  # Ensure Optional is imported
+from typing import Any, Dict, Optional, Type
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from schemas.tedx_slug_schema import TEDxSlugInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
-from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +15,9 @@ class TEDxSlugTool(StructuredTool):
     description: str = "Retrieves TEDx content details based on a provided slug."
     args_schema: Type[BaseModel] = TEDxSlugInput
 
-    llm_config: LLMConfig = Field(exclude=True)
-    embedder_config: EmbedderConfig = Field(exclude=True)
-    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx data CSV.")
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
+    data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None  # CSV data loaded directly
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
@@ -40,9 +39,12 @@ class TEDxSlugTool(StructuredTool):
                         slug_index[slug] = row
             logger.debug(f"Loaded {len(slug_index)} slugs from CSV file.")
             return slug_index
+        except FileNotFoundError:
+            logger.error(f"CSV file not found at path: {self.data_path}")
+            raise
         except Exception as e:
             logger.error(f"Error loading CSV data: {e}", exc_info=True)
-            raise Exception("Failed to load CSV data.")
+            raise
 
     def _run(self, slug: str) -> str:
         """Retrieve data for the given slug."""

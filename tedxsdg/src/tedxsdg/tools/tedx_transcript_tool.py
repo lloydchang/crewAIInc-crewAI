@@ -3,7 +3,7 @@
 import logging
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
-from typing import Union, Dict, Any, Type
+from typing import Any, Dict, List, Optional, Type, Union
 from schemas.tedx_transcript_schema import TEDxTranscriptInput
 from crewai_tools import WebsiteSearchTool
 from schemas.config_schemas import LLMConfig, EmbedderConfig

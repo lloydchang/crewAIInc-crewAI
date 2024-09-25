@@ -2,7 +2,7 @@
 
 import logging
 import csv
-from typing import Union, Dict, Any, List, Type
+from typing import Any, Dict, List, Optional, Type, Union
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.sustainability_impact_schema import SustainabilityImpactInput

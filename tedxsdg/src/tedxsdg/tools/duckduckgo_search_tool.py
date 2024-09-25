@@ -2,7 +2,7 @@
 
 import logging
 from langchain.tools import StructuredTool
-from typing import Union, Dict, Any, Type
+from typing import Any, Dict, List, Optional, Type, Union
 
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from pydantic import BaseModel, Field

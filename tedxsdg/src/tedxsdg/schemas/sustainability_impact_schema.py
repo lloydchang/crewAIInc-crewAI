@@ -1,7 +1,7 @@
 # schemas/sustainability_impact_schema.py
 
 from pydantic import BaseModel, Field
-from typing import List, Union, Dict, Any
+from typing import Any, Dict, List, Optional, Type, Union
 
 class SustainabilityImpactInput(BaseModel):
     project: Union[str, Dict[str, Any]] = Field(default="Unnamed Project", description="Project to assess for sustainability impact.")

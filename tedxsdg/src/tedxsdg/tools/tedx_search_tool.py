@@ -3,7 +3,7 @@
 import os
 import logging
 import csv
-from typing import Union, Dict, Any, Optional
+from typing import Any, Dict, List, Optional, Type, Union
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from schemas.tedx_search_schema import TEDxSearchInput
@@ -24,8 +24,7 @@ class TEDxSearchTool(StructuredTool):
     csv_search_tool: Optional[CSVSearchTool] = None  # Declare as a field
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None  # Declare as a field
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
-        super().__init__()
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str):
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path
