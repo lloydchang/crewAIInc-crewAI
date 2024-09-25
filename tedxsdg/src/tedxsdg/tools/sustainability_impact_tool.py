@@ -11,8 +11,7 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
-class SustainabilityImpactTool(StructuredTo
-                               ol):
+class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
