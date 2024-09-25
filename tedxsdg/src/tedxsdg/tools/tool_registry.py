@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 
 class ToolRegistry:
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
-        # Ensure the correct types are passed
+        # Validate types
         if not isinstance(llm_config, LLMConfig):
             raise TypeError("Invalid LLMConfig provided.")
         if not isinstance(embedder_config, EmbedderConfig):
             raise TypeError("Invalid EmbedderConfig provided.")
-        
+
         logger.info("ToolRegistry initialized with valid LLMConfig and EmbedderConfig.")
         self.llm_config = llm_config
         self.embedder_config = embedder_config
@@ -44,38 +44,39 @@ class ToolRegistry:
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         """Create a tool with the provided tool name and class, using the loaded config."""
         tool_config = self.tool_configs.get(tool_name, {})
-        
+
         if not tool_config:
             logger.error(f"No configuration found for tool '{tool_name}'.")
             raise ValueError(f"Tool configuration for '{tool_name}' not found in tools.yaml.")
-        
-        embedder_conf = tool_config.get('embedder_config', {})
-        llm_conf = tool_config.get('llm_config', {})
-        
-        # Validate and convert dictionaries into LLMConfig and EmbedderConfig if necessary
+
+        # Extract and validate configurations
         try:
-            if not isinstance(embedder_conf, EmbedderConfig):
-                embedder_conf = EmbedderConfig(**embedder_conf)  # Convert to EmbedderConfig schema
-            if not isinstance(llm_conf, LLMConfig):
-                llm_conf = LLMConfig(**llm_conf)  # Convert to LLMConfig schema
+            embedder_conf = tool_config.get('embedder_config', {})
+            llm_conf = tool_config.get('llm_config', {})
+
+            if not embedder_conf or not llm_conf:
+                raise ValueError(f"Missing required configuration for tool '{tool_name}'.")
+
+            embedder_conf = EmbedderConfig(**embedder_conf)
+            llm_conf = LLMConfig(**llm_conf)
+
+            data_path = tool_config.get('data_path', None)
+            if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
+                raise ValueError(f"Missing data path for tool '{tool_name}'")
+
+            # Prepare kwargs for initializing the tool
+            tool_kwargs = {
+                "llm_config": llm_conf,
+                "embedder_config": embedder_conf,
+                "data_path": data_path
+            }
+
+            logger.debug(f"Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
+            return tool_class(**tool_kwargs)
+
         except Exception as e:
-            logger.error(f"Error converting configuration for '{tool_name}': {e}", exc_info=True)
-            raise ValueError(f"Invalid configuration for tool '{tool_name}'.")
-
-        data_path = tool_config.get('data_path', None)
-        if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
-            logger.error(f"Missing data path for tool '{tool_name}'")
-            raise ValueError(f"Missing data path for tool '{tool_name}'")
-        
-        # Prepare kwargs for initializing the tool
-        tool_kwargs = {
-            "llm_config": llm_conf,
-            "embedder_config": embedder_conf,
-            "data_path": data_path
-        }
-
-        logger.debug(f"Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
-        return tool_class(**tool_kwargs)
+            logger.error(f"Error creating tool '{tool_name}': {e}", exc_info=True)
+            raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
         """Retrieve a tool by its name from the registry, or create it if not already initialized."""

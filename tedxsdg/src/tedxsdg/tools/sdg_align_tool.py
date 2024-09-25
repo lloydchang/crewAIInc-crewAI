@@ -4,10 +4,9 @@ import logging
 import csv
 from typing import Any, Dict, List, Type, Union
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from schemas.sdg_align_schema import SDGAlignInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
-from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class SDGAlignTool(StructuredTool):
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/sdg_data.csv', description="Path to the SDG data CSV.")
     
-    sdg_data: Dict[str, Any] = Field(default_factory=dict)  # Use a default factory for mutable types
+    sdg_data: Dict[str, Any] = Field(default_factory=dict)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
         super().__init__()  # Call to the parent class initializer
@@ -28,8 +27,11 @@ class SDGAlignTool(StructuredTool):
         self.embedder_config = embedder_config
         self.data_path = data_path
 
-        # Load SDG data from the provided CSV
-        self.sdg_data = self._load_sdg_data()
+        try:
+            self.sdg_data = self._load_sdg_data()
+        except Exception as e:
+            logger.error(f"Failed to initialize SDG Align tool: {e}")
+            raise
 
     def _load_sdg_data(self) -> Dict[str, Any]:
         """Loads SDG-related data from a CSV file."""
@@ -76,13 +78,17 @@ class SDGAlignTool(StructuredTool):
 
     def _run(self, idea: Union[str, Dict[str, Any]], sdgs: List[str] = []) -> str:
         """Executes the SDG alignment analysis."""
-        idea_str = extract_query_string(idea)
+        if isinstance(idea, dict):
+            idea_str = idea.get('idea', "")
+        else:
+            idea_str = str(idea)
+
         if not idea_str:
             logger.error("No valid idea provided for SDG alignment analysis.")
             return "Error: No valid idea provided for SDG alignment analysis."
 
         # Convert all SDG identifiers to strings and remove invalid entries
-        sdgs = [sdg.strip() for sdg in sdgs if sdg.strip()]
+        sdgs = [str(sdg).strip() for sdg in sdgs if sdg]
         logger.debug(f"Running SDG alignment analysis for idea: '{idea_str}'")
 
         # Perform analysis

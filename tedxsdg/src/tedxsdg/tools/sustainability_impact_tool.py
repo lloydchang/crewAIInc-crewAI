@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Any, Dict, List, Type, Union
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from schemas.sustainability_impact_schema import SustainabilityImpactInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 
@@ -19,14 +19,19 @@ class SustainabilityImpactTool(StructuredTool):
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/impact_data.csv', description="Path to the sustainability impact data CSV.")
     
-    impact_data: Dict[str, Any] = Field(default_factory=dict)  # Use a default factory for mutable types
+    impact_data: Dict[str, Any] = Field(default_factory=dict)
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/impact_data.csv'):
         super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path
-        self.impact_data = self._load_impact_data()
+
+        try:
+            self.impact_data = self._load_impact_data()
+        except Exception as e:
+            logger.error(f"Failed to initialize sustainability impact tool: {e}")
+            raise
 
     def _load_impact_data(self) -> Dict[str, Any]:
         """Loads sustainability impact-related data from a CSV file."""
