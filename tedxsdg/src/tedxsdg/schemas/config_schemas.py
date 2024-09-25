@@ -19,7 +19,7 @@ class LLMInnerConfig(BaseModel):
     @field_validator('model')
     def valid_llm_model(cls, v):
         """Ensure that the model is valid based on provider constraints."""
-        valid_models = ['llama3']  # Add valid models as needed
+        valid_models = ['ollama/llama3']  # Add valid models as needed
         if v not in valid_models:
             raise ValueError(f"Invalid LLM model '{v}'. Must be one of: {', '.join(valid_models)}")
         return v
