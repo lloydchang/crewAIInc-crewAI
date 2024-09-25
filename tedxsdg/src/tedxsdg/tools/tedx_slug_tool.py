@@ -17,14 +17,17 @@ class TEDxSlugTool(StructuredTool):
     name: str = "tedx_slug"
     description: str = "Retrieves TEDx content details based on a provided slug."
     args_schema: Type[BaseModel] = TEDxSlugInput
+
     llm_config: LLMConfig = Field(exclude=True)
     embedder_config: EmbedderConfig = Field(exclude=True)
+    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx data CSV.")
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
         super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
-        self.tedx_search_tool = TEDxSearchTool(llm_config=llm_config, embedder_config=embedder_config)
+        self.data_path = data_path
+        self.tedx_search_tool = TEDxSearchTool(llm_config=llm_config, embedder_config=embedder_config, data_path=data_path)
 
     def _run(self, slug: str) -> str:
         try:

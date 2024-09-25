@@ -1,4 +1,4 @@
-# tools/stg_align_tool.py
+# tools/sdg_align_tool.py
 
 import logging
 import csv
@@ -15,8 +15,10 @@ class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignInput
+
     llm_config: LLMConfig = Field(exclude=True)
     embedder_config: EmbedderConfig = Field(exclude=True)
+    data_path: str = Field(default='data/sdg_data.csv', description="Path to the SDG data CSV.")
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
         super().__init__()  # Ensure proper initialization of the base class

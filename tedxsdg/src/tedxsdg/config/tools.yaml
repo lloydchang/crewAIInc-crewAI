@@ -1,0 +1,49 @@
+# config/tools.yaml
+
+tedx_search:
+  embedder_config:
+    title: "TEDx Search Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+
+tedx_slug:
+  embedder_config:
+    title: "TEDx Slug Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+
+tedx_transcript:
+  embedder_config:
+    title: "TEDx Transcript Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+
+duckduckgo_search:
+  embedder_config:
+    title: "DuckDuckGo Search Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+
+sdg_align:
+  embedder_config:
+    title: "SDG Align Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/sdg_data.csv"
+
+sustainability_impact:
+  embedder_config:
+    title: "Sustainability Impact Embedder"
+    provider: ollama
+    config:
+      model: "nomic-embed-text"
+  data_path: "data/impact_data.csv"

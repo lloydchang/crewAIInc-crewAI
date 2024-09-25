@@ -17,13 +17,12 @@ class CustomAgentOutputParser(AgentOutputParser):
         else:
             raise ValueError("Invalid output format")
 
-def create_agent(agent_name: str, agent_config: dict, llm_config: LLMConfig, embedder_config: EmbedderConfig) -> Agent:
+def create_agent(agent_name: str, agent_config: dict, llm_config: LLMConfig, embedder_config: EmbedderConfig, tool_registry: ToolRegistry) -> Agent:
     """
     Creates an agent with the tools and configuration specified in the configuration file.
     """
     tool_names = agent_config.get("tools", [])
     tools = []
-    registry = ToolRegistry(llm_config=llm_config, embedder_config=embedder_config)
 
     # Validate LLM Configuration
     model = llm_config.config.model if llm_config and llm_config.config and hasattr(llm_config.config, 'model') else None
@@ -34,7 +33,7 @@ def create_agent(agent_name: str, agent_config: dict, llm_config: LLMConfig, emb
     for tool_name in tool_names:
         try:
             logger.debug(f"Creating tool '{tool_name}'.")
-            tool = registry.get_tool(tool_name)
+            tool = tool_registry.get_tool(tool_name)
             tools.append(tool)
             logger.info(f"Successfully created tool '{tool_name}'.")
         except Exception as e:

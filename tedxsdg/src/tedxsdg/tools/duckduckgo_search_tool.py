@@ -16,6 +16,7 @@ class DuckDuckGoSearchTool(StructuredTool):
     name: str = "duckduckgo_search"
     description: str = "Searches the web using DuckDuckGo."
     args_schema: Type[BaseModel] = DuckDuckGoSearchInput
+
     llm_config: LLMConfig = Field(exclude=True)
     embedder_config: EmbedderConfig = Field(exclude=True)
 

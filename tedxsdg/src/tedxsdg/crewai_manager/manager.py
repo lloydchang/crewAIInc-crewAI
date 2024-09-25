@@ -7,20 +7,23 @@ from crewai import Crew, Process, Agent, Task
 from crewai_manager.config_loader import load_config
 from crewai_manager.agent_factory import create_agent
 from schemas.config_schemas import ToolConfig
+from tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
 class CrewAIManager:
-    def __init__(self, agents_config_path: str, tasks_config_path: str, model_config_path: str):
+    def __init__(self, agents_config_path: str, tasks_config_path: str, model_config_path: str, tools_config_path: str = "config/tools.yaml"):
         # Ensure config paths are valid
         self.validate_config_path(agents_config_path, "agents")
         self.validate_config_path(tasks_config_path, "tasks")
         self.validate_config_path(model_config_path, "model")
+        self.validate_config_path(tools_config_path, "tools")
 
-        # Load configurations for agents, tasks, and model
+        # Load configurations for agents, tasks, model, and tools
         self.agents_config = load_config(agents_config_path, "agents")
         self.tasks_config = load_config(tasks_config_path, "tasks")
         self.model_config = load_config(model_config_path, "model")
+        self.tools_config = load_config(tools_config_path, "tools")
 
         self.agents = {}  # To store created agents
         self.tasks = []  # To store created tasks
@@ -40,6 +43,13 @@ class CrewAIManager:
         except Exception as e:
             logger.error(f"Unexpected error during ToolConfig initialization: {e}", exc_info=True)
             raise
+
+        # Initialize ToolRegistry with tool-specific configurations
+        self.tool_registry = ToolRegistry(
+            llm_config=self.llm_config, 
+            embedder_config=self.embedder_config, 
+            tools_config_path=tools_config_path
+        )
 
         # Memory flag assumption
         self.memory = True  # Enable memory by default
@@ -86,12 +96,13 @@ class CrewAIManager:
                 if not self.llm_config or not self.embedder_config:
                     raise ValueError("LLMConfig or EmbedderConfig not properly initialized.")
                 
-                # Create the agent using the agent configuration and LLM/Embedder configurations
+                # Create the agent using the agent configuration, LLM/Embedder configurations, and ToolRegistry
                 self.agents[agent_name] = create_agent(
                     agent_name, 
                     self.agents_config[agent_name], 
                     self.llm_config, 
-                    self.embedder_config
+                    self.embedder_config, 
+                    self.tool_registry  # Pass ToolRegistry instance
                 )
             except Exception as e:
                 logger.error(f"Error creating agent '{agent_name}': {e}", exc_info=True)

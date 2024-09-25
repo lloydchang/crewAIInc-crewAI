@@ -12,27 +12,29 @@ from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
 
-# Local CSV file location
-LOCAL_CSV_FILE = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+# Local CSV file location is now managed via data_path
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchInput
+
     llm_config: LLMConfig = Field(exclude=True)
     embedder_config: EmbedderConfig = Field(exclude=True)
+    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'):
         super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
+        self.data_path = data_path
 
         # Initialize CSVSearchTool with the provided configurations
         self.csv_search_tool = CSVSearchTool(
-            csv=LOCAL_CSV_FILE,
+            csv=self.data_path,
             config={
-                "llm": self.llm_config.dict(),
-                "embedder": self.embedder_config.dict(),
+                "llm": self.llm_config,
+                "embedder": self.embedder_config,
             }
         )
 
@@ -43,7 +45,7 @@ class TEDxSearchTool(StructuredTool):
         """Loads the CSV data into a dictionary keyed by slug."""
         try:
             slug_index = {}
-            with open(LOCAL_CSV_FILE, mode='r', encoding='utf-8') as csvfile:
+            with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     slug = row.get('slug', '').strip()

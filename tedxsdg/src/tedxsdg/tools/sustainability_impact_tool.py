@@ -15,11 +15,10 @@ class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: Type[BaseModel] = SustainabilityImpactInput
+
     llm_config: LLMConfig = Field(exclude=True)
     embedder_config: EmbedderConfig = Field(exclude=True)
-
-    llm_config: LLMConfig
-    embedder_config: EmbedderConfig
+    data_path: str = Field(default='data/impact_data.csv', description="Path to the sustainability impact data CSV.")
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/impact_data.csv'):
         super().__init__()
