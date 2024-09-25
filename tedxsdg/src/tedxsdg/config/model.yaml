@@ -1,4 +1,4 @@
-# config/config.yaml
+# config/model.yaml
 
 llm:
   provider: "ollama"  # The provider for the LLM

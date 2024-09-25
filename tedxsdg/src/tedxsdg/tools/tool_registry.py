@@ -43,10 +43,11 @@ class ToolRegistry:
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         tool_config = self.tool_configs.get(tool_name, {})
         embedder_conf = tool_config.get('embedder_config', {})
-        data_path = tool_config.get('data_path', None)
 
         if not isinstance(embedder_conf, EmbedderConfig):
             embedder_conf = EmbedderConfig(**embedder_conf)
+
+        data_path = tool_config.get('data_path', None)
 
         if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
             logger.error(f"Missing data path for tool '{tool_name}'")

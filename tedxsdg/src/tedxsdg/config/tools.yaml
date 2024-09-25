@@ -26,7 +26,6 @@ duckduckgo_search:
     provider: ollama
     config:
       model: "nomic-embed-text"
-  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
 
 sdg_align:
   embedder_config:
