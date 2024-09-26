@@ -53,6 +53,7 @@ class TEDxSlugTool(StructuredTool):
             raise
         except Exception as e:
             logger.error("Error loading CSV data: %s", e, exc_info=True)
+
     def _run(self, slug: str, *args: Any, **kwargs: Any) -> str:
 
     def _run(self, slug: str) -> str:

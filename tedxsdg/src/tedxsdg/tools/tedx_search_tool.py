@@ -68,22 +68,26 @@ class TEDxSearchTool(StructuredTool):
                     if slug:
                         slug_index[slug] = row
             logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
-            raise FileNotFoundError(
-                f"File not found: {self.data_path}"
-            ) from exc
-            raise RuntimeError("Failed to load CSV data.") from e
+        except FileNotFoundError as exc:
+            logger.error("File not found: %s", self.data_path, exc_info=True)
             raise FileNotFoundError(f"File not found: {self.data_path}") from exc
         except Exception as e:
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
         return slug_index
 
-    def _run(self, *args, **kwargs) -> str:
-        """
-        Executes the search on the TEDx dataset based on the search query.
-        """
-            raise Exception("Failed to load CSV data.") from e
-        return slug_index
+    def _run(self, search_query: str) -> str:
+        """Executes the search on the TEDx dataset based on the search query."""
+        logger.debug("Running TEDx search for query: %s", search_query)
+        results = [
+            data for key, data in self.csv_data.items()
+            if search_query.lower() in key.lower()
+        ]
+        
+        if not results:
+            return "No results found."
+
+        return f"Final Answer: TEDx Search Results:\n{results}"
 
     def _run(self, search_query: str) -> str:
         """Executes the search on the TEDx dataset based on the search query."""
