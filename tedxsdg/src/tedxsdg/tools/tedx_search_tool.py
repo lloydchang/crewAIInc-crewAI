@@ -74,6 +74,7 @@ class TEDxSearchTool(StructuredTool):
             raise RuntimeError("Failed to load CSV data.") from e
             raise FileNotFoundError(f"File not found: {self.data_path}") from exc
         except Exception as e:
+
     def _run(self, *args, **kwargs) -> str:
         """
         Executes the search on the TEDx dataset based on the search query.

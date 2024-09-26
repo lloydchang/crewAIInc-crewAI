@@ -4,7 +4,6 @@ import logging
 import csv
 from typing import Dict
 from langchain.tools import StructuredTool
-from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
