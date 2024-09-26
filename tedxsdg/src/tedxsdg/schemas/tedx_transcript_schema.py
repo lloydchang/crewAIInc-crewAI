@@ -1,39 +1,25 @@
-# schemas/sdg_align_schema.py
+# schemas/tedx_transcript_schema.py
 
 """
-Module for defining schemas related to SDG alignment.
+Module for TEDxTranscriptInput schema.
 """
 
-from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 
-class SDGAlignInput(BaseModel):
+class TEDxTranscriptInput(BaseModel):
     """
-    Schema for SDG alignment input.
+    Schema for TEDx transcript input.
     """
-    idea: Union[str, Dict[str, Any]] = Field(
-        ..., description="Idea to analyze for SDG alignment."
-    )
-    sdgs: List[Union[str, int]] = Field(
-        default_factory=list, description="List of SDGs to consider."
+    slug: str = Field(
+        ...,
+        description="The slug of the TEDx talk to retrieve the transcript for."
     )
 
-    @model_validator(mode='before')
-    def check_idea(cls, values):
-        """Validate the idea field."""
-        idea = values.get('idea')
-        if not isinstance(idea, (str, dict)):
-            raise ValueError("idea must be either a string or a dictionary.")
-        return values
-
-    @model_validator(mode='before')
-    def check_sdgs(cls, values):
-        """Validate the sdgs field."""
-        sdgs = values.get('sdgs')
-        if not isinstance(sdgs, list):
-            raise ValueError("sdgs must be a list.")
-        for sdg in sdgs:
-            if not isinstance(sdg, (str, int)):
-                raise ValueError("Each SDG must be a string or integer.")
-        return values
+    @field_validator('slug')
+    def validate_slug(cls, v):
+        if not v:
+            raise ValueError("Slug cannot be empty.")
+        if not isinstance(v, str):
+            raise TypeError("Slug must be a string.")
+        return v.strip()

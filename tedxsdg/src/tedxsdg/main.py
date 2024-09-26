@@ -6,7 +6,7 @@
 
 import os
 import logging
-from crew import main as run_crew  # Importing run function from crew.py
+from crew import main as run_crew  # Importing 'main' as 'run_crew' from crew.py
 
 # Disable the opentelemetry sdk by setting the environment variable
 os.environ['OTEL_SDK_DISABLED'] = 'true'

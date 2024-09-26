@@ -10,7 +10,7 @@ from .tedx_slug_schema import TEDxSlugInput
 from .tedx_transcript_schema import TEDxTranscriptInput
 from .sdg_align_schema import SDGAlignInput
 from .sustainability_impact_schema import SustainabilityImpactInput
-from .config_schemas import ToolConfig
+from .config_schemas import ToolConfig, LLMConfig, EmbedderConfig
 
 __all__ = [
     "DuckDuckGoSearchInput",
@@ -19,5 +19,7 @@ __all__ = [
     "TEDxTranscriptInput",
     "SDGAlignInput",
     "SustainabilityImpactInput",
-    "ToolConfig"
+    "ToolConfig",
+    "LLMConfig",
+    "EmbedderConfig"
 ]

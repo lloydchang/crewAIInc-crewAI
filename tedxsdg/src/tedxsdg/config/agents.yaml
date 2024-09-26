@@ -21,7 +21,7 @@ alex:
   goal: "Develop a sustainable food supply chain"
   backstory: >
     You are Alex, a visionary restaurateur committed to sustainability in the food industry.
-    Your project addresses SDG 2 (Zero Hunger) and SDG 12 (Responsible Consumption and Production).
+    Your project addresses SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
     You aim to combat hunger and reduce food waste through your food supply chain innovations.
   allow_delegation: true
   tools:

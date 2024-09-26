@@ -5,7 +5,7 @@ Module for defining schemas related to sustainability impact.
 """
 
 from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class SustainabilityImpactInput(BaseModel):
@@ -21,24 +21,28 @@ class SustainabilityImpactInput(BaseModel):
         description="List of sustainability metrics."
     )
 
-    @model_validator(mode='before')
-    def check_project(cls, values):
-        """Validate the project field."""
-        project = values.get('project')
-        if not isinstance(project, (str, dict)):
-            raise ValueError("project must be either a string or a dictionary.")
-        return values
+    @field_validator('project')
+    def validate_project(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                raise ValueError("Project string cannot be empty.")
+        elif isinstance(v, dict):
+            if not v:
+                raise ValueError("Project dictionary cannot be empty.")
+        else:
+            raise TypeError("Project must be either a string or a dictionary.")
+        return v
 
-    @model_validator(mode='before')
-    def check_metrics(cls, values):
-        """Validate the metrics field."""
-        metrics = values.get('metrics')
-        if not isinstance(metrics, list):
-            raise ValueError("metrics must be a list.")
-        for metric in metrics:
+    @field_validator('metrics')
+    def validate_metrics(cls, v):
+        if not isinstance(v, list):
+            raise TypeError("Metrics must be provided as a list.")
+        for metric in v:
             if not isinstance(metric, str):
-                raise ValueError("Each metric must be a string.")
-        return values
+                raise TypeError("Each metric must be a string.")
+            if not metric.strip():
+                raise ValueError("Metrics cannot contain empty strings.")
+        return v
 
     class Config:
         """

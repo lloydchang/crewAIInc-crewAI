@@ -5,7 +5,7 @@ Module for defining schemas related to SDG alignment.
 """
 
 from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class SDGAlignInput(BaseModel):
@@ -19,21 +19,23 @@ class SDGAlignInput(BaseModel):
         default_factory=list, description="List of SDGs to consider."
     )
 
-    @model_validator(mode='before')
-    def check_idea(cls, values):
-        """Validate the idea field."""
-        idea = values.get('idea')
-        if not isinstance(idea, (str, dict)):
-            raise ValueError("idea must be either a string or a dictionary.")
-        return values
+    @field_validator('idea')
+    def validate_idea(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                raise ValueError("Idea string cannot be empty.")
+        elif isinstance(v, dict):
+            if not v:
+                raise ValueError("Idea dictionary cannot be empty.")
+        else:
+            raise TypeError("Idea must be either a string or a dictionary.")
+        return v
 
-    @model_validator(mode='before')
-    def check_sdgs(cls, values):
-        """Validate the sdgs field."""
-        sdgs = values.get('sdgs')
-        if not isinstance(sdgs, list):
-            raise ValueError("sdgs must be a list.")
-        for sdg in sdgs:
+    @field_validator('sdgs')
+    def validate_sdgs(cls, v):
+        if not isinstance(v, list):
+            raise TypeError("SDGs must be provided as a list.")
+        for sdg in v:
             if not isinstance(sdg, (str, int)):
-                raise ValueError("Each SDG must be a string or integer.")
-        return values
+                raise TypeError("Each SDG must be either a string or an integer.")
+        return v

@@ -8,7 +8,6 @@ import logging
 from crewai import Agent
 from tools.tool_registry import ToolRegistry
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +16,20 @@ def create_agent(
     agent_config: dict,
     tool_registry: ToolRegistry
 ) -> Agent:
-    """Creates an agent with the tools and configuration specified in the 
-    config file."""
+    """
+    Creates an agent with the tools and configuration specified in the config file.
+    
+    Args:
+        agent_name (str): The name of the agent.
+        agent_config (dict): The configuration dictionary for the agent.
+        tool_registry (ToolRegistry): The registry to fetch tools from.
+    
+    Returns:
+        Agent: The created agent instance.
+    
+    Raises:
+        ValueError: If agent creation fails.
+    """
     tool_names = agent_config.get("tools", [])
     tools = []
 
@@ -37,6 +48,9 @@ def create_agent(
                 tool_name, agent_name
             )
 
+    if not tools:
+        logger.warning("No tools available for agent '%s'. The agent will have no tools assigned.", agent_name)
+
     try:
         agent = Agent(
             name=agent_name,
@@ -53,9 +67,9 @@ def create_agent(
             [tool.name for tool in tools]
         )
         return agent
-    except ValueError as e:
+    except Exception as e:
         logger.error(
             "Error creating agent '%s': %s", agent_name, str(e), 
             exc_info=True
         )
-        raise
+        raise ValueError(f"Failed to create agent '{agent_name}': {str(e)}") from e
