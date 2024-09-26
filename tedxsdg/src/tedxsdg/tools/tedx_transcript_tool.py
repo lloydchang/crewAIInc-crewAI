@@ -5,68 +5,79 @@ Module for TEDxTranscriptTool which retrieves the transcript of a TEDx talk.
 """
 
 import logging
+import csv
 from typing import Any, Dict, Optional
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
-
 
 class TEDxTranscriptToolArgs(BaseModel):
     """Arguments for TEDxTranscriptTool."""
     slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
 
 
-class TEDxTranscriptTool(BaseModel):  # Removed StructuredTool inheritance
+class TEDxTranscriptTool(BaseModel):
     """
     Tool to retrieve the transcript of a TEDx talk based on the provided slug.
     """
     
-    # Class-level attributes
     _name: str = "tedx_transcript"
-    _description: str = (
-        "Retrieves the transcript of a TEDx talk based on the provided slug."
-    )
+    _description: str = "Retrieves the transcript of a TEDx talk based on the provided slug."
     _args_schema = TEDxTranscriptToolArgs
 
-    # Instance-level attributes
-    llm_config: Dict[str, Any]
-    embedder_config: Dict[str, Any]
-    data_path: Optional[str] = "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
-    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
-        if data_path:
-            self.data_path = data_path
-        logger.info("TEDxTranscriptTool initialized")
+    @validator('csv_data', pre=True, always=True)
+    def load_csv_data(cls, v, values):
+        data_path = values.get('data_path')
+        if not data_path:
+            raise ValueError("`data_path` must be provided in the configuration.")
+        logger.info("Loading TEDxTranscriptTool with data_path: %s", data_path)
+        try:
+            transcript_index = {}
+            with open(data_path, mode='r', encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    slug = row.get('slug', '').strip().lower()
+                    transcript = row.get('transcript', '').strip()
+                    if slug:
+                        transcript_index[slug] = row
+            logger.debug("Loaded %d entries from CSV file.", len(transcript_index))
+            return transcript_index
+        except FileNotFoundError as exc:
+            logger.error("File not found: %s", data_path, exc_info=True)
+            raise FileNotFoundError(f"File not found: {data_path}") from exc
+        except Exception as e:
+            logger.error("Error loading CSV data: %s", e, exc_info=True)
+            raise Exception("Failed to load CSV data.") from e
 
     def run(self, slug: str) -> str:
         """
-        Retrieve data for the given slug.
+        Retrieve transcript for the given slug.
+
+        Args:
+            slug (str): The TEDx talk slug.
+
+        Returns:
+            str: The transcript for the TEDx talk.
         """
-        if not slug:
-            logger.error("No slug provided.")
-            return "Error: No slug provided."
+        logger.debug("Running TEDxTranscriptTool for slug: %s", slug)
+        slug_lower = slug.lower()
 
-        logger.debug("Retrieving transcript for slug: %s", slug)
+        if slug_lower not in self.csv_data:
+            return f"No transcript found for slug '{slug}'. Please ensure the slug is correct."
 
-        # Construct the transcript URL
-        transcript_url = f"https://www.ted.com/talks/{slug}/transcript?subtitle=en"
-        logger.debug("Constructed Transcript URL: %s", transcript_url)
+        entry = self.csv_data[slug_lower]
+        transcript = entry.get('transcript', 'No transcript available.')
 
-        # Mock-up for website fetching logic (as the actual fetching tool is not implemented here)
-        # Example response or logic to fetch transcript content should go here
-        transcript_content = "This is a mocked transcript content for TEDx talk."
-
-        if not transcript_content:
-            logger.error("No transcript found at %s.", transcript_url)
-            return f"Error: No transcript found at {transcript_url}."
-
-        logger.debug("Retrieved Transcript Content: %s...", transcript_content[:200])  # Log first 200 chars
-
-        return f"Final Answer: Transcript for '{slug}':\n{transcript_content}"
+        formatted_result = (
+            f"Title: {entry.get('title', 'No Title')}\n"
+            f"Transcript: {transcript}"
+        )
+        
+        logger.debug("Result for slug '%s': %s", slug, formatted_result)
+        return f"Final Answer: Transcript for TEDx talk '{slug}':\n{formatted_result}"
 
     @property
     def name(self) -> str:
