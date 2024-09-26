@@ -19,7 +19,7 @@ class SDGAlignToolArgs(BaseModel):
     )
 
 
-class SDGAlignTool(StructuredTool, BaseModel):
+class SDGAlignTool(BaseModel, StructuredTool):
     """Tool for aligning content with Sustainable Development Goals."""
     name: str = "sdg_align"
     description: str = "Aligns given content with Sustainable Development Goals."
@@ -47,3 +47,6 @@ class SDGAlignTool(StructuredTool, BaseModel):
         self.alignment_results = results
         logger.debug("Alignment results: %s", self.alignment_results)
         return f"Final Answer: Aligned SDGs:\n{self.alignment_results}"
+
+    class Config:
+        arbitrary_types_allowed = True

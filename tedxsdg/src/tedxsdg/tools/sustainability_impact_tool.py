@@ -14,7 +14,7 @@ class SustainabilityImpactToolArgs(BaseModel):
     project: str = Field(..., description="The project to assess for sustainability impact")
 
 
-class SustainabilityImpactTool(StructuredTool, BaseModel):
+class SustainabilityImpactTool(BaseModel, StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: type[BaseModel] = SustainabilityImpactToolArgs
@@ -58,3 +58,6 @@ class SustainabilityImpactTool(StructuredTool, BaseModel):
         if not impact:
             return f"No sustainability impact data found for project '{project}'."
         return f"Final Answer: Sustainability Impact for '{project}':\n{impact}"
+
+    class Config:
+        arbitrary_types_allowed = True

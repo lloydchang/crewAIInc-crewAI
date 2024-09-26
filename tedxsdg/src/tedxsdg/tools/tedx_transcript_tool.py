@@ -18,7 +18,7 @@ class TEDxTranscriptToolArgs(BaseModel):
     slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
 
 
-class TEDxTranscriptTool(StructuredTool, BaseModel):
+class TEDxTranscriptTool(BaseModel, StructuredTool):
     """
     Tool to retrieve the transcript of a TEDx talk based on the provided slug.
     """
@@ -26,7 +26,7 @@ class TEDxTranscriptTool(StructuredTool, BaseModel):
     description: str = (
         "Retrieves the transcript of a TEDx talk based on the provided slug."
     )
-    args_schema: type[BaseModel] = TEDxTranscriptToolArgs
+    args_schema = TEDxTranscriptToolArgs
 
     def __init__(
         self,
@@ -79,3 +79,6 @@ class TEDxTranscriptTool(StructuredTool, BaseModel):
         return (
             f"Final Answer: Transcript for '{slug}':\n{transcript_content}"
         )
+
+    class Config:
+        arbitrary_types_allowed = True

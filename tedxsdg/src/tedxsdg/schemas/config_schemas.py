@@ -83,7 +83,7 @@ class ToolConfig(BaseModel):
     llm: LLMConfig
     embedder: EmbedderConfig
 
-    @validator('llm', 'embedder')
+    @validator('llm', 'embedder', pre=True, always=True)
     def validate_configs(cls, v, field):
         if not v:
             raise ValueError(f"{field.name.upper()} configuration must be provided.")

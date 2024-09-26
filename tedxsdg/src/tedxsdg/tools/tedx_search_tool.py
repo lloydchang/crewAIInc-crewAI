@@ -21,11 +21,11 @@ class TEDxSearchToolArgs(BaseModel):
     )
 
 
-class TEDxSearchTool(StructuredTool, BaseModel):
+class TEDxSearchTool(BaseModel, StructuredTool):
     """Tool for searching TEDx content from a local CSV dataset."""
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
-    args_schema: type[BaseModel] = TEDxSearchToolArgs
+    args_schema = TEDxSearchToolArgs
 
     # Define 'data_path' as a Pydantic field
     data_path: str = Field(..., description="Path to the TEDx dataset CSV")
@@ -114,3 +114,6 @@ class TEDxSearchTool(StructuredTool, BaseModel):
                 "Error during cache invalidation: %s", e, exc_info=True
             )
             raise
+
+    class Config:
+        arbitrary_types_allowed = True

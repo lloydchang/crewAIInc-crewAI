@@ -44,7 +44,7 @@ class ToolRegistry:
             excluded_keys = {'name', 'description', 'args_schema'}
             filtered_config = {k: v for k, v in tool_config.items() if k not in excluded_keys}
 
-            # **tool_config unpacks the dictionary into keyword arguments
+            # **filtered_config unpacks the dictionary into keyword arguments
             tool_instance = tool_class(**filtered_config)
             logger.debug("Tool '%s' created successfully", tool_name)
             self.tools[tool_name] = tool_instance  # Cache the created tool

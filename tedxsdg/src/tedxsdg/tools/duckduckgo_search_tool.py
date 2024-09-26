@@ -19,7 +19,7 @@ class DuckDuckGoSearchToolArgs(BaseModel):
     )
 
 
-class DuckDuckGoSearchTool(StructuredTool, BaseModel):
+class DuckDuckGoSearchTool(BaseModel, StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
 
     # Define class-level attributes without type annotations
@@ -76,3 +76,6 @@ class DuckDuckGoSearchTool(StructuredTool, BaseModel):
         except Exception as e:
             logger.error("An error occurred during DuckDuckGo search: %s", e)
             return f"An error occurred while performing the search: {e}"
+
+    class Config:
+        arbitrary_types_allowed = True
