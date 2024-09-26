@@ -49,6 +49,9 @@ class CrewAIManager:
         # Log LLM use (Assuming all tools use the same LLM)
         self._log_llm_use()
 
+        # Log Embedder use
+        self._log_embedder_use()
+
     def _validate_config_path(self, config_path: str, config_name: str) -> None:
         logger.debug("Validating %s config path: %s", config_name, config_path)
         if not os.path.exists(config_path):
@@ -72,6 +75,23 @@ class CrewAIManager:
                 "Tool '%s' uses LLM - Provider: %s, Model: %s, Temperature: %s", 
                 tool_name, provider, model, temperature
             )
+
+    def _log_embedder_use(self) -> None:
+        """
+        Logs the embedder configurations.
+        """
+        embedder_config = self.tools_config.get('embedder', {}).get('config', {})
+        if not embedder_config or 'model' not in embedder_config:
+            logger.error("Embedder configuration is missing or does not contain a valid model.")
+            return
+
+        provider = self.tools_config.get('embedder', {}).get('provider', 'Unknown')
+        model = embedder_config.get('model')
+        temperature = embedder_config.get('temperature', '0')  # Default temperature to 0
+        logger.info(
+            "Embedder - Provider: %s, Model: %s, Temperature: %s", 
+            provider, model, temperature
+        )
 
     def create_task(self, task_name: str) -> None:
         """
@@ -149,6 +169,9 @@ class CrewAIManager:
                 "At least one agent and one task must be successfully created to initialize the crew."
             )
 
+        # Extract the embedder configuration from tools_config
+        embedder = self.tools_config.get('embedder', None)
+
         try:
             logger.debug(
                 "Initializing Crew with %d agents and %d tasks", 
@@ -158,8 +181,8 @@ class CrewAIManager:
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
                 process=Process.sequential,
-                memory=True,  # Memory is hardcoded as True
-                embedder=None,  # Assuming embedder is handled within tools
+                memory=True,
+                embedder=embedder,  # Pass the embedder configuration if available
                 max_rpm=None,
                 share_crew=False,
                 verbose=True,
