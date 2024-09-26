@@ -3,9 +3,9 @@
 import os
 import logging
 import csv
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Optional, Union
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 from schemas.tedx_search_schema import TEDxSearchInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
@@ -13,54 +13,28 @@ from .utils import extract_query_string
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logging.getLogger().setLevel(logging.DEBUG)
-
-# Define the TEDxSearchConfig model to validate input arguments using Pydantic v2
-class TEDxSearchConfig(BaseModel):
-    llm_config: LLMConfig
-    embedder_config: EmbedderConfig
-    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
-
-    class Config:
-        # Use `arbitrary_types_allowed` to allow custom types like LLMConfig, EmbedderConfig
-        arbitrary_types_allowed = True
-
+logger.setLevel(logging.DEBUG)
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
-    args_schema: Type[BaseModel] = TEDxSearchInput
-
-    # Declare the required attributes explicitly
-    llm_config: LLMConfig
-    embedder_config: EmbedderConfig
-    data_path: str
-    csv_search_tool: Optional[CSVSearchTool] = None
-    csv_data: Optional[Dict[str, Dict[str, Any]]] = None
+    args_schema = TEDxSearchInput
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Validate the configuration using Pydantic v2's `model_validate`
+        # Directly assigning the configurations without using Pydantic's validation mechanisms
         try:
-            validated_config = TEDxSearchConfig.model_validate(
-                {
-                    'llm_config': llm_config,
-                    'embedder_config': embedder_config,
-                    'data_path': data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
-                }
-            )
-            # Assign validated values to instance variables
-            self.llm_config = validated_config.llm_config
-            self.embedder_config = validated_config.embedder_config
-            self.data_path = validated_config.data_path
+            self.llm_config = llm_config
+            self.embedder_config = embedder_config
+            self.data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+            
+            logger.info("Initializing CSVSearchTool with the provided configurations")
+            
+            # Initialize the CSV search tool
+            self.csv_search_tool = self._initialize_csv_search_tool()
 
         except ValidationError as e:
             logger.error(f"Configuration validation failed: {e}")
             raise e
-
-        logger.info("Initializing CSVSearchTool with the provided configurations")
-
-        # Initialize the CSV search tool
-        self.csv_search_tool = self._initialize_csv_search_tool()
 
     def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
         try:
@@ -77,11 +51,11 @@ class TEDxSearchTool(StructuredTool):
             logger.warning(f"Failed to initialize CSVSearchTool: {e}")
             self.csv_search_tool = None
         
-        # If the CSV search tool is None, invalidate cache and attempt to reinitialize
+        # Retry initialization if necessary
         if self.csv_search_tool is None:
             logger.info("Invalidating cache and attempting to reinitialize CSVSearchTool.")
             self._invalidate_cache()
-            self.csv_search_tool = self._initialize_csv_search_tool()  # Retry initialization
+            self.csv_search_tool = self._initialize_csv_search_tool()
 
         return self.csv_search_tool
 
