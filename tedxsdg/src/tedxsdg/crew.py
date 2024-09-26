@@ -41,6 +41,12 @@ def initialize_crew():
             tools_config_path=TOOLS_CONFIG_PATH
         )
         logger.info("Crew initialization successful.")
+        
+        # List available methods
+        methods = [method for method in dir(manager) 
+                   if callable(getattr(manager, method)) and not method.startswith("__")]
+        logger.debug(f"Available methods in CrewAIManager: {methods}")
+        
         return manager
     except (ValueError, TypeError, RuntimeError) as e:
         logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
@@ -55,7 +61,7 @@ def run_crew():
     """
     try:
         crew = initialize_crew()
-        kickoff_result = crew.start()  # Updated method name
+        kickoff_result = crew.run()  # Use the correct method name identified earlier
         logger.info("Crew execution completed successfully.")
         return kickoff_result
     except (ValueError, TypeError, RuntimeError) as e:
