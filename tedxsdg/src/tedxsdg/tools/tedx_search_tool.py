@@ -15,34 +15,32 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema = TEDxSearchInput
 
+    # Instead of setting the attributes directly on the object,
+    # we store them in the kwargs or custom fields
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Directly assigning the configurations without using Pydantic's validation mechanisms
-        try:
-            self.llm_config = llm_config
-            self.embedder_config = embedder_config
-            self.data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
-            
-            logger.info("Initializing CSVSearchTool with the provided configurations")
-            
-            # Initialize the CSV search tool
-            self.csv_search_tool = self._initialize_csv_search_tool()
+        # Directly assigning values without using __fields_set__ or similar Pydantic mechanisms
+        self._llm_config = llm_config
+        self._embedder_config = embedder_config
+        self._data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
 
-        except ValidationError as e:
-            logger.error(f"Configuration validation failed: {e}")
-            raise e
+        logger.info("Initializing CSVSearchTool with the provided configurations")
+        
+        # Initialize the CSV search tool
+        self.csv_search_tool = self._initialize_csv_search_tool()
 
     def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
         try:
             self.csv_search_tool = CSVSearchTool(
-                csv=self.data_path,
+                csv=self._data_path,
                 config={
-                    "llm": self.llm_config,
-                    "embedder": self.embedder_config,
+                    "llm": self._llm_config,
+                    "embedder": self._embedder_config,
                 }
             )
             logger.info("CSVSearchTool initialized successfully.")
@@ -70,7 +68,7 @@ class TEDxSearchTool(StructuredTool):
         """Load TEDx data from the CSV file."""
         try:
             slug_index = {}
-            with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
+            with open(self._data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     slug = row.get('slug', '').strip()
@@ -79,8 +77,8 @@ class TEDxSearchTool(StructuredTool):
             logger.debug(f"Loaded {len(slug_index)} slugs from CSV file.")
             return slug_index
         except FileNotFoundError:
-            logger.error(f"File not found: {self.data_path}")
-            raise FileNotFoundError(f"File not found: {self.data_path}")
+            logger.error(f"File not found: {self._data_path}")
+            raise FileNotFoundError(f"File not found: {self._data_path}")
         except Exception as e:
             logger.error(f"Error loading CSV data: {str(e)}", exc_info=True)
             raise Exception("Failed to load CSV data.")
