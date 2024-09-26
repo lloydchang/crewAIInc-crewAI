@@ -16,7 +16,7 @@ class SDGAlignInput(BaseModel):
         ..., description="Idea to analyze for SDG alignment."
     )
     sdgs: List[Union[str, int]] = Field(
-        default_factory=list, description="List of SDGs to consider."
+        default=list, description="List of SDGs to consider."
     )
 
     @validator('idea')

@@ -17,7 +17,7 @@ class SustainabilityImpactInput(BaseModel):
         description="Project to assess for sustainability impact."
     )
     metrics: List[str] = Field(
-        default_factory=list,
+        default=list,
         description="List of sustainability metrics."
     )
 

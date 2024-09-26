@@ -22,7 +22,7 @@ class SustainabilityImpactTool(StructuredTool):
     assessment_model: str = Field(..., description="Model used for assessment")
 
     # Initialize any additional attributes
-    impact_data: Dict[str, Any] = Field(default_factory=dict)
+    impact_data: Dict[str, Any] = Field(default=dict)
 
     @validator('impact_data', pre=True, always=True)
     def load_impact_data(cls, value, values):

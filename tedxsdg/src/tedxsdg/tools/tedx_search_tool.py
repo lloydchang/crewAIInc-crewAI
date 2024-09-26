@@ -31,7 +31,7 @@ class TEDxSearchTool(StructuredTool):
     data_path: str = Field(..., description="Path to the TEDx dataset CSV")
 
     # Initialize 'csv_data' with a default empty dictionary
-    csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    csv_data: Dict[str, Dict[str, Any]] = Field(default=dict)
 
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):

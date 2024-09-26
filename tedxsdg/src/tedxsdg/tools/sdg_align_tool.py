@@ -28,7 +28,7 @@ class SDGAlignTool(StructuredTool):
     alignment_model: str = Field(..., description="Model used for alignment")
 
     # Initialize any additional attributes
-    alignment_results: Dict[str, Any] = Field(default_factory=dict)
+    alignment_results: Dict[str, Any] = Field(default=dict)
 
     @validator('alignment_model')
     def check_alignment_model(cls, v):

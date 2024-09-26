@@ -32,7 +32,7 @@ class DuckDuckGoSearchTool(StructuredTool):
     base_url: str = Field(..., description="Base URL for DuckDuckGo API")
 
     # Initialize any additional attributes
-    search_results: Dict[str, Any] = Field(default_factory=dict)
+    search_results: Dict[str, Any] = Field(default=dict)
 
     @validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
