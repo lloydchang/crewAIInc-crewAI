@@ -12,11 +12,14 @@ class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
 
-    def __init__(self):
+    def __init__(self, config: dict):
+        # Ensure proper initialization with configuration
         super().__init__()
-        config = load_config('config/tools.yaml', 'tools')
-        self.data_path = config['sdg_align']['data_path']
-
+        self.data_path = config.get('data_path')
+        if not self.data_path:
+            logger.error("No data path provided for SDGAlignTool.")
+            raise ValueError("Data path is required for SDGAlignTool.")
+        
         try:
             self.sdg_data = self._load_sdg_data()
         except Exception as e:

@@ -15,7 +15,10 @@ class TEDxSearchTool(StructuredTool):
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__()
-        self.data_path = config['data_path']
+        self.data_path = config.get('data_path')
+        if not self.data_path:
+            logger.error("No data path provided for TEDxSearchTool.")
+            raise ValueError("Data path is required for TEDxSearchTool.")
 
         logger.info("Initializing TEDxSearchTool.")
         

@@ -12,10 +12,9 @@ logger = logging.getLogger(__name__)
 
 class ToolRegistry:
     def __init__(self):
-        self.tools: Dict[str, StructuredTool] = {}
-
         # Load tool-specific configurations
         self.tool_configs = load_config('config/tools.yaml', 'tools')
+        self.tools: Dict[str, StructuredTool] = {}
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         """Create a tool with the provided tool name and class, using the loaded config."""
