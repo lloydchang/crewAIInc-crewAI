@@ -18,6 +18,9 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 class ToolRegistry:
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
+        # Validate required fields
+        if not llm_config or not embedder_config:
+            raise ValueError("Missing LLM configuration or Embedder configuration.")
         # Validate types
         if not isinstance(llm_config, LLMConfig):
             raise TypeError("Invalid LLMConfig provided.")

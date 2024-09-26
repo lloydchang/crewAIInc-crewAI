@@ -21,6 +21,14 @@ class TEDxSlugTool(StructuredTool):
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict)  # Use default_factory to avoid shared state
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+        # Validate required fields
+        if not llm_config or not embedder_config:
+            raise ValueError("Missing LLM configuration or Embedder configuration.")
+        # Validate types
+        if not isinstance(llm_config, LLMConfig):
+            raise TypeError("Invalid LLMConfig provided.")
+        if not isinstance(embedder_config, EmbedderConfig):
+            raise TypeError("Invalid EmbedderConfig provided.")
         super().__init__()  # Call to the parent class initializer
         self.llm_config = llm_config
         self.embedder_config = embedder_config
