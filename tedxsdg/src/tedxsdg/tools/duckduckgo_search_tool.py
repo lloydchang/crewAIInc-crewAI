@@ -13,43 +13,21 @@ logger = logging.getLogger(__name__)
 
 class DuckDuckGoSearchToolArgs(BaseModel):
     """Arguments for DuckDuckGoSearchTool."""
-    search_query: str = Field(..., _description = "The search query for DuckDuckGo")
+    search_query: str = Field(..., description="The search query for DuckDuckGo")
 
 
-class DuckDuckGoSearchToolArgs(BaseModel):
-:
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def args_schema(self):
-        return self._args_schema
-
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
-
-class DuckDuckGoSearchTool(BaseModel):  # Remove inheritance from StructuredTool
+class DuckDuckGoSearchTool(BaseModel):
     """Tool for performing DuckDuckGo web searches."""
 
-    # Class-level attributes, completely removed from Pydantic and using class properties
+    # Class-level attributes
     _name: str = "duckduckgo_search"
     _description: str = "Performs web searches using DuckDuckGo."
-    __args_schema = DuckDuckGoSearchToolArgs
+    _args_schema = DuckDuckGoSearchToolArgs
 
     # Instance-level fields
-    api_key: str = Field(..., _description = "API key for DuckDuckGo if required")
-    base_url: str = Field(..., _description = "Base URL for DuckDuckGo API")
-    search_results: Dict[str, Any] = Field(default=dict, _description = "Search results")
+    api_key: str = Field(..., description="API key for DuckDuckGo if required")
+    base_url: str = Field(..., description="Base URL for DuckDuckGo API")
+    search_results: Dict[str, Any] = Field(default_factory=dict, description="Search results")
 
     @validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
@@ -78,7 +56,7 @@ class DuckDuckGoSearchTool(BaseModel):  # Remove inheritance from StructuredTool
             logger.error("An error occurred during DuckDuckGo search: %s", e)
             return f"An error occurred while performing the search: {e}"
 
-    # Use simple class properties
+    # Class property methods
     @property
     def name(self) -> str:
         return self._name
