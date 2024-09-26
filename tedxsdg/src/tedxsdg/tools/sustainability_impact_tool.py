@@ -1,46 +1,44 @@
 # tools/sustainability_impact_tool.py
 
+"""
+Module for SustainabilityImpactTool which assesses the sustainability impact of projects.
+"""
+
 import logging
 import csv
 from typing import Dict, Any
-from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
 class SustainabilityImpactToolArgs(BaseModel):
     """Arguments for SustainabilityImpactTool."""
-    project: str = Field(..., _description = "The project to assess for sustainability impact")
+    project: str = Field(..., description="The project to assess for sustainability impact")
 
-class SustainabilityImpactToolArgs(BaseModel):
-:
-    @property
-    def description(self):
-        return self._description
 
-    @property
-    def description(self):
-        return self._description
+class SustainabilityImpactTool(BaseModel):
+    """Tool for assessing sustainability impact of ideas and projects."""
 
-    @property
-    def description(self):
-        return self._description
+    # Class-level attributes
+    _name: str = "sustainability_impact"
+    _description: str = "Assesses the potential sustainability impact of ideas and projects."
+    _args_schema = SustainabilityImpactToolArgs
 
-class SustainabilityImpactTool(StructuredTool):
-    name: str = "sustainability_impact"
-    description: str = "Assesses the potential sustainability impact of ideas and projects."
-    args_schema: type[BaseModel] = SustainabilityImpactToolArgs
+    # Instance-level fields
+    data_path: str = Field(..., description="Path to the sustainability impact data CSV")
+    assessment_model: str = Field(..., description="Model used for assessment")
+    impact_data: Dict[str, Any] = Field(default_factory=dict, description="Impact data")
 
-    # Define required fields
-    data_path: str = Field(..., _description = "Path to the sustainability impact data CSV")
-    assessment_model: str = Field(..., _description = "Model used for assessment")
-
-    # Initialize any additional attributes
-    impact_data: Dict[str, Any] = Field(default=dict)
+    @validator('data_path')
+    def check_data_path(cls, v):
+        """Validator to ensure the data path is provided."""
+        if not v:
+            raise ValueError("data_path must be provided")
+        return v
 
     @validator('impact_data', pre=True, always=True)
     def load_impact_data(cls, value, values):
-        """Loads impact data from a CSV file after model initialization."""
+        """Loads impact data from a CSV file."""
         data_path = values.get('data_path')
         if not data_path:
             logger.error("data_path must be provided.")
@@ -49,19 +47,15 @@ class SustainabilityImpactTool(StructuredTool):
         try:
             with open(data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
-                impact_data = {}
-                for row in reader:
-                    key = row.get('key', '').strip()
-                    if key:
-                        impact_data[key.lower()] = row
+                impact_data = {row['key']: row for row in reader if row.get('key')}
             logger.debug(f"Loaded {len(impact_data)} impacts from '{data_path}'.")
             return impact_data
         except FileNotFoundError:
             logger.error(f"File not found: {data_path}")
-            raise FileNotFoundError(f"File not found: {data_path}")
+            raise
         except Exception as e:
             logger.error(f"Error loading impact data: {e}", exc_info=True)
-            raise Exception("Failed to load impact data.") from e
+            raise
 
     def run(self, project: str) -> str:
         """Assesses the sustainability impact of the given project."""
@@ -71,19 +65,18 @@ class SustainabilityImpactTool(StructuredTool):
             return f"No sustainability impact data found for project '{project}'."
         return f"Final Answer: Sustainability Impact for '{project}':\n{impact}"
 
+    # Class property methods
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @property
+    def args_schema(self) -> BaseModel:
+        return self._args_schema
+
     class Config:
         arbitrary_types_allowed = True
-
-class SustainabilityImpactTool(StructuredTool):
-:
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
