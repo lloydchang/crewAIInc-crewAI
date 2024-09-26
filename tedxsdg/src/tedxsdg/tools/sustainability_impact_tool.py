@@ -2,8 +2,9 @@
 
 import logging
 import csv
-from typing import Any, Dict, List
+from typing import Dict
 from langchain.tools import StructuredTool
+from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -11,10 +12,10 @@ class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
 
-    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: str = 'data/impact_data.csv'):
-        # Validate required fields
-        super().__init__()  # Call to the parent class initializer
-        self.data_path = data_path
+    def __init__(self):
+        super().__init__()
+        config = load_config('config/tools.yaml', 'tools')
+        self.data_path = config['sustainability_impact']['data_path']
 
         try:
             self.impact_data = self._load_impact_data()
@@ -29,7 +30,7 @@ class SustainabilityImpactTool(StructuredTool):
             with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
-                    key = row.get('key', '').strip()  # Replace with your relevant key
+                    key = row.get('key', '').strip()
                     if key:
                         impact_index[key] = row
             logger.debug(f"Loaded {len(impact_index)} impacts from '{self.data_path}'.")

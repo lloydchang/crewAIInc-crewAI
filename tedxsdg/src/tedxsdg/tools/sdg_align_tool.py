@@ -2,8 +2,9 @@
 
 import logging
 import csv
-from typing import Any, Dict, List
+from typing import Any, Dict
 from langchain.tools import StructuredTool
+from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -11,13 +12,10 @@ class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
 
-    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: str = 'data/sdg_data.csv'):
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
+    def __init__(self):
         super().__init__()
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
-        self.data_path = data_path
+        config = load_config('config/tools.yaml', 'tools')
+        self.data_path = config['sdg_align']['data_path']
 
         try:
             self.sdg_data = self._load_sdg_data()
@@ -44,13 +42,12 @@ class SDGAlignTool(StructuredTool):
             raise Exception("Failed to load SDG data.")
         return sdg_index
 
-    def _analyze(self, idea: str, sdgs: List[str]) -> Dict[str, float]:
+    def _analyze(self, idea: str, sdgs: list) -> Dict[str, float]:
         """Analyzes the SDG alignment of an idea based on selected SDGs."""
         results = {}
         for sdg_id, sdg_details in self.sdg_data.items():
             if sdgs and sdg_id not in sdgs:
                 continue
-
             relevant_metrics = sdg_details.get('metrics', '').split(';')
             score = self._calculate_sdg_score(sdg_details, relevant_metrics)
             if score > 0:
@@ -58,7 +55,7 @@ class SDGAlignTool(StructuredTool):
 
         return results
 
-    def _calculate_sdg_score(self, sdg_details: Dict[str, Any], relevant_metrics: List[str]) -> float:
+    def _calculate_sdg_score(self, sdg_details: Dict[str, Any], relevant_metrics: list) -> float:
         """Calculates the SDG alignment score based on relevant metrics."""
         try:
             score_weight = float(sdg_details.get('score_weight', 0))
@@ -68,7 +65,7 @@ class SDGAlignTool(StructuredTool):
             logger.error(f"Error calculating score for SDG '{sdg_details.get('sdg_name')}': {e}", exc_info=True)
             return 0.0
 
-    def _run(self, idea: str, sdgs: List[str] = []) -> str:
+    def _run(self, idea: str, sdgs: list = []) -> str:
         """Executes the SDG alignment analysis."""
         if not idea:
             logger.error("No valid idea provided for SDG alignment analysis.")

@@ -4,16 +4,13 @@ import yaml
 import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)  # Enable debug logging
-
-logger.debug("Debug logging is working at the top of the script.")
 
 def load_config(config_path: str, config_type: str) -> dict:
     """
     Load YAML configuration from a given path.
 
     :param config_path: Path to the YAML config file
-    :param config_type: Type of configuration being loaded (e.g., 'agents', 'tasks', 'model')
+    :param config_type: Type of configuration being loaded (e.g., 'tools', 'agents', 'tasks')
     :return: Parsed YAML as a dictionary
     """
     try:
