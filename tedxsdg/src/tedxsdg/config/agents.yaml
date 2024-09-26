@@ -3,7 +3,7 @@
 agents:
   sam:
     role: "sam"
-    goal: "Launch an eco-friendly pet care initiative"
+    goal: "Launch an eco-friendly pet care initiatives"
     backstory: >
       You are Sam, a dedicated veterinarian passionate about animal welfare and environmental conservation.
       Your project addresses SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
@@ -16,6 +16,8 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    search_query: {}  # Ensure this is defined
+    type: "eco-friendly pet care initiatives"  # Ensure this is defined
 
   alex:
     role: "alex"
@@ -32,6 +34,8 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    search_query: {}  # Ensure this is defined
+    type: "food supply chain innovations"  # Ensure this is defined
 
   collaboration_facilitator:
     role: "collaboration_facilitator"
@@ -47,6 +51,8 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    search_query: {}  # Ensure this is defined
+    type: "collaboration"  # Ensure this is defined
 
   idea_analyzer:
     role: "idea_analyzer"
@@ -62,48 +68,4 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-
-  expert_advisor:
-    role: "expert_advisor"
-    goal: "Provide expert advice on SDG-related topics"
-    backstory: >
-      You are an expert advisor offering technical insights and best practices for SDG projects.
-      Your knowledge spans across various sustainable development areas, helping to guide and refine project strategies.
-    allow_delegation: true
-    tools:
-      - tedx_search
-      - tedx_slug
-      - tedx_transcript
-      - duckduckgo_search
-      - sustainability_impact
-      - sdg_align
-
-  action_plan_generator:
-    role: "action_plan_generator"
-    goal: "Create detailed, actionable SDG-aligned plans"
-    backstory: >
-      You are an action plan generator specializing in breaking down ideas into actionable, SDG-aligned plans.
-      Your plans help turn concepts into reality, ensuring they contribute effectively to sustainable development goals.
-    allow_delegation: true
-    tools:
-      - tedx_search
-      - tedx_slug
-      - tedx_transcript
-      - duckduckgo_search
-      - sdg_align
-      - sustainability_impact
-
-  data_integration_specialist:
-    role: "data_integration_specialist"
-    goal: "Integrate data to provide insights for SDG projects"
-    backstory: >
-      You are a data integration specialist that uses open-source datasets to provide insights for SDG-related projects.
-      Your analysis helps inform decision-making and measure the impact of sustainable development initiatives.
-    allow_delegation: true
-    tools:
-      - tedx_search
-      - tedx_slug
-      - tedx_transcript
-      - duckduckgo_search
-      - sdg_align
-      - sustainability_impact
+ 

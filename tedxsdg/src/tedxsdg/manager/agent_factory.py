@@ -53,13 +53,15 @@ def create_agent(
 
     try:
         agent = Agent(
-            _name = agent_name,
+            _name=agent_name,
             role=agent_config.get("role"),
             goal=agent_config.get("goal"),
             backstory=agent_config.get("backstory"),
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
-            tools=tools
+            tools=tools,
+            search_query=agent_config.get("search_query", {}),  # Ensure search_query is added
+            type=agent_config.get("type")  # Ensure type is included
         )
         logger.info(
             "Created agent '%s' with tools: %s",

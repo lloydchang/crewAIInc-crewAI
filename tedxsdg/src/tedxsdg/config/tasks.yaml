@@ -3,7 +3,7 @@
 tasks:
   launch_eco_friendly_pet_care:
     description: >
-      Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
+      Launch and implement an eco-friendly pet care initiatives to promote responsible ownership and biodiversity.
       Align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
       Assess the initiative's sustainability.
     tools:
@@ -14,17 +14,17 @@ tasks:
     agent: sam
     priority: 1  # High priority
     expected_output: >
-      A detailed report including:
-      1. Summary of the eco-friendly pet care initiative
+      A comprehensive plan with detailed reports including:
+      1. Summary of the eco-friendly pet care initiatives
       2. Primary SDGs addressed (SDG 3 and SDG 15)
       3. Steps for implementation
-      4. Best practices from similar initiatives found via web search
+      4. Best practices from similar initiatives found via web searches
 
   develop_sustainable_food_supply_chain:
     description: >
-      Develop and implement a sustainable food supply chain to combat hunger and reduce food waste.
+      Develop and implement a sustainable food supply chain innovations to combat hunger and reduce food waste.
       Align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
-      Assess the sustainability impact of the food supply chain.
+      Assess the sustainability impact of the food supply chain innovations.
     tools:
       - tedx_search
       - duckduckgo_search
@@ -33,10 +33,11 @@ tasks:
     agent: alex
     priority: 1  # High priority
     expected_output: >
-      A comprehensive food supply chain plan including:
-      1. Detailed steps for developing the food supply chain
-      2. SDGs 2 and 12 alignment and analysis
-      3. List of best practices from web research
+      A comprehensive plan with detailed reports including:
+      1. Summary of the food supply chain innovations
+      2. Primary SDGs addressed (SDG 2 and SDG 12)
+      3. Steps for implementation
+      4. Best practices from similar innovations found via web searches
 
   facilitate_collaboration:
     description: >
