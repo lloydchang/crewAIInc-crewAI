@@ -11,13 +11,11 @@ from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-
 class SDGAlignToolArgs(BaseModel):
     """Arguments for SDGAlignTool."""
     content: str = Field(
         ..., description="The content to align with SDGs"
     )
-
 
 class SDGAlignTool(BaseModel, StructuredTool):
     """Tool for aligning content with Sustainable Development Goals."""

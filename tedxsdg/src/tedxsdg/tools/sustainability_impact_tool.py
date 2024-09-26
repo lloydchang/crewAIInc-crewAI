@@ -8,11 +8,9 @@ from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-
 class SustainabilityImpactToolArgs(BaseModel):
     """Arguments for SustainabilityImpactTool."""
     project: str = Field(..., description="The project to assess for sustainability impact")
-
 
 class SustainabilityImpactTool(BaseModel, StructuredTool):
     name: str = "sustainability_impact"
