@@ -6,7 +6,7 @@ Module for creating agents with specified tools and configurations.
 
 import logging
 from crewai import Agent
-from tedxsdg.crewai_manager.tools.tool_registry import ToolRegistry
+from tools.tool_registry import ToolRegistry
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
