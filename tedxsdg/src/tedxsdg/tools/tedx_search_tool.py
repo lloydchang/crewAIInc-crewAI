@@ -21,10 +21,13 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema = TEDxSearchInput
 
-    # Instead of setting the attributes directly on the object,
-    # we store them in the kwargs or custom fields
+    # Avoid declaring these as Pydantic fields
+    _llm_config: LLMConfig
+    _embedder_config: EmbedderConfig
+    _data_path: str
+
+    # Use a standard Python __init__ without relying on Pydantic field validation
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Directly assigning values without using __fields_set__ or similar Pydantic mechanisms
         self._llm_config = llm_config
         self._embedder_config = embedder_config
         self._data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
