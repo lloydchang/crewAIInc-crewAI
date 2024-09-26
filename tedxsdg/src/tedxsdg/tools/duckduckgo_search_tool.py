@@ -5,7 +5,7 @@ Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 """
 
 import logging
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, ClassVar
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
@@ -23,7 +23,7 @@ class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
     name: str = "duckduckgo_search"
     description: str = "Performs web searches using DuckDuckGo."
-    args_schema: Type[BaseModel] = DuckDuckGoSearchToolArgs
+    args_schema: ClassVar[Type[BaseModel]] = DuckDuckGoSearchToolArgs
 
     # Define any required fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
