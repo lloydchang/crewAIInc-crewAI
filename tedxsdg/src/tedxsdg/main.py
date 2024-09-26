@@ -8,19 +8,26 @@ import os
 import logging
 from crew import main as run_crew  # Importing 'main' as 'run_crew' from crew.py
 
-# Disable the opentelemetry sdk by setting the environment variable
+# Configure the root logger
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
+# Disable the OpenTelemetry SDK by setting the environment variable
 os.environ['OTEL_SDK_DISABLED'] = 'true'
 
-# Get the logger used by opentelemetry (adjust the logger name if necessary)
+# Get the logger used by OpenTelemetry (adjust the logger name if necessary)
 opentelemetry_logger = logging.getLogger('opentelemetry')
-
-# Set the logging level to ERROR to suppress warnings
 opentelemetry_logger.setLevel(logging.ERROR)
 
-# Disable chroma db telemetry
+# Disable Chroma DB telemetry
 os.environ['ANONYMIZED_TELEMETRY'] = 'False'
 
-# Disable embedchain telemetry
+# Disable Embedchain telemetry
 os.environ['EMBEDCHAIN_ANONYMOUS_ID'] = 'False'
 
 # Set verbose logging for litellm via environment variable

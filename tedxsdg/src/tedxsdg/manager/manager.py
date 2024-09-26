@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 from tools.tool_registry import ToolRegistry
 from crewai import Crew, Process, Agent, Task
 from tools.config_loader import load_config

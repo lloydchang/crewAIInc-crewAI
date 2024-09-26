@@ -1,11 +1,11 @@
 # schemas/config_schemas.py
 
 """
-Module for configuration schemas using Pydantic v2.
+Module for configuration schemas using Pydantic v1.
 """
 
 from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, validator
 
 
 class LLMInnerConfig(BaseModel):
@@ -15,13 +15,13 @@ class LLMInnerConfig(BaseModel):
     model: str = Field(..., description="The model name for the LLM.")
     temperature: float = Field(0, ge=0, description="Temperature for the LLM.")
 
-    @field_validator('model')
+    @validator('model')
     def validate_model(cls, v):
         if not v.strip():
             raise ValueError("LLM model name cannot be empty.")
         return v
 
-    @field_validator('temperature')
+    @validator('temperature')
     def validate_temperature(cls, v):
         if v < 0:
             raise ValueError("LLM temperature must be equal to or greater than 0.")
@@ -35,7 +35,7 @@ class LLMConfig(BaseModel):
     provider: str = Field(..., description="Provider name for the LLM.")
     config: LLMInnerConfig
 
-    @field_validator('provider')
+    @validator('provider')
     def validate_provider(cls, v):
         if not v.strip():
             raise ValueError("LLM provider cannot be empty.")
@@ -49,13 +49,13 @@ class EmbedderInnerConfig(BaseModel):
     model: str = Field(..., description="The model name for the Embedder.")
     temperature: float = Field(0, ge=0, description="Temperature for the Embedder.")
 
-    @field_validator('model')
+    @validator('model')
     def validate_model(cls, v):
         if not v.strip():
             raise ValueError("Embedder model name cannot be empty.")
         return v
 
-    @field_validator('temperature')
+    @validator('temperature')
     def validate_temperature(cls, v):
         if v < 0:
             raise ValueError("Embedder temperature must be equal to or greater than 0.")
@@ -69,7 +69,7 @@ class EmbedderConfig(BaseModel):
     provider: str = Field(..., description="Provider name for the Embedder.")
     config: EmbedderInnerConfig
 
-    @field_validator('provider')
+    @validator('provider')
     def validate_provider(cls, v):
         if not v.strip():
             raise ValueError("Embedder provider cannot be empty.")
@@ -83,7 +83,7 @@ class ToolConfig(BaseModel):
     llm: LLMConfig
     embedder: EmbedderConfig
 
-    @field_validator('llm', 'embedder')
+    @validator('llm', 'embedder')
     def validate_configs(cls, v, field):
         if not v:
             raise ValueError(f"{field.name.upper()} configuration must be provided.")

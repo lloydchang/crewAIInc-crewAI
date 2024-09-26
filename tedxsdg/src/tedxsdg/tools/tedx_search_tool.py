@@ -21,7 +21,7 @@ class TEDxSearchToolArgs(BaseModel):
     )
 
 
-class TEDxSearchTool(StructuredTool):
+class TEDxSearchTool(StructuredTool, BaseModel):
     """Tool for searching TEDx content from a local CSV dataset."""
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
@@ -61,10 +61,10 @@ class TEDxSearchTool(StructuredTool):
     def run(self, search_query: str) -> str:
         """
         Executes the search on the TEDx dataset based on the search query.
-        
+
         Args:
             search_query (str): The search query string.
-        
+
         Returns:
             str: Formatted search results.
         """
@@ -78,7 +78,7 @@ class TEDxSearchTool(StructuredTool):
                 results.append(entry)
                 if len(results) >= 3:  # Limit to top 3 results
                     break
-        
+
         if not results:
             return "No results found."
 

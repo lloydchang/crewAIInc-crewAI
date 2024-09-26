@@ -5,7 +5,7 @@ Module for defining schemas related to SDG alignment.
 """
 
 from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, validator
 
 
 class SDGAlignInput(BaseModel):
@@ -19,7 +19,7 @@ class SDGAlignInput(BaseModel):
         default_factory=list, description="List of SDGs to consider."
     )
 
-    @field_validator('idea')
+    @validator('idea')
     def validate_idea(cls, v):
         if isinstance(v, str):
             if not v.strip():
@@ -31,11 +31,8 @@ class SDGAlignInput(BaseModel):
             raise TypeError("Idea must be either a string or a dictionary.")
         return v
 
-    @field_validator('sdgs')
+    @validator('sdgs', each_item=True)
     def validate_sdgs(cls, v):
-        if not isinstance(v, list):
-            raise TypeError("SDGs must be provided as a list.")
-        for sdg in v:
-            if not isinstance(sdg, (str, int)):
-                raise TypeError("Each SDG must be either a string or an integer.")
+        if not isinstance(v, (str, int)):
+            raise TypeError("Each SDG must be either a string or an integer.")
         return v

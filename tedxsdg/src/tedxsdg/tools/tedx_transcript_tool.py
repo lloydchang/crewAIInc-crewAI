@@ -1,3 +1,5 @@
+# tools/tedx_transcript_tool.py
+
 """
 Module for TEDxTranscriptTool which retrieves the transcript of a TEDx talk.
 """
@@ -6,11 +8,17 @@ import logging
 from typing import Any, Dict, Optional
 from langchain.tools import StructuredTool
 from crewai_tools import WebsiteSearchTool
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
 
-class TEDxTranscriptTool(StructuredTool):
+class TEDxTranscriptToolArgs(BaseModel):
+    """Arguments for TEDxTranscriptTool."""
+    slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
+
+
+class TEDxTranscriptTool(StructuredTool, BaseModel):
     """
     Tool to retrieve the transcript of a TEDx talk based on the provided slug.
     """
@@ -18,6 +26,7 @@ class TEDxTranscriptTool(StructuredTool):
     description: str = (
         "Retrieves the transcript of a TEDx talk based on the provided slug."
     )
+    args_schema: type[BaseModel] = TEDxTranscriptToolArgs
 
     def __init__(
         self,
@@ -38,39 +47,35 @@ class TEDxTranscriptTool(StructuredTool):
         )
         self.website_search_tool = WebsiteSearchTool()
 
-    def _run(self, slug: str, *args: Any, **kwargs: Any) -> str:
-        try:
-            if not slug:
-                logger.error("No slug provided.")
-                return "Error: No slug provided."
+    def run(self, slug: str) -> str:
+        """
+        Retrieve data for the given slug.
+        """
+        if not slug:
+            logger.error("No slug provided.")
+            return "Error: No slug provided."
 
-            logger.debug("Retrieving transcript for slug: %s", slug)
+        logger.debug("Retrieving transcript for slug: %s", slug)
 
-            # Construct the transcript URL
-            transcript_url = (
-                f"https://www.ted.com/talks/{slug}/transcript?subtitle=en"
-            )
-            logger.debug("Constructed Transcript URL: %s", transcript_url)
+        # Construct the transcript URL
+        transcript_url = (
+            f"https://www.ted.com/talks/{slug}/transcript?subtitle=en"
+        )
+        logger.debug("Constructed Transcript URL: %s", transcript_url)
 
-            # Use WebsiteSearchTool to fetch the transcript content
-            transcript_content = self.website_search_tool.run(
-                {"url": transcript_url}
-            )
+        # Use WebsiteSearchTool to fetch the transcript content
+        transcript_content = self.website_search_tool.run(
+            {"url": transcript_url}
+        )
 
-            if not transcript_content:
-                logger.error("No transcript found at %s.", transcript_url)
-                return f"Error: No transcript found at {transcript_url}."
+        if not transcript_content:
+            logger.error("No transcript found at %s.", transcript_url)
+            return f"Error: No transcript found at {transcript_url}."
 
-            logger.debug(
-                "Retrieved Transcript Content: %s...", transcript_content[:200]
-            )  # Log first 200 chars
+        logger.debug(
+            "Retrieved Transcript Content: %s...", transcript_content[:200]
+        )  # Log first 200 chars
 
-            return (
-                f"Final Answer: Transcript for '{slug}':\n{transcript_content}"
-            )
-        except Exception as e:
-            logger.error(
-                "Error retrieving transcript for slug '%s': %s", slug, str(e), 
-                exc_info=True
-            )
-            return f"Error retrieving transcript for slug '{slug}': {str(e)}"
+        return (
+            f"Final Answer: Transcript for '{slug}':\n{transcript_content}"
+        )

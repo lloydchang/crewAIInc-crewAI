@@ -4,7 +4,7 @@ import logging
 import csv
 from typing import Dict, Any
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -26,24 +26,30 @@ class SustainabilityImpactTool(StructuredTool, BaseModel):
     # Initialize any additional attributes
     impact_data: Dict[str, Any] = Field(default_factory=dict)
 
-    @model_validator(mode='after')
-    def load_impact_data(cls, model):
+    @validator('impact_data', pre=True, always=True)
+    def load_impact_data(cls, value, values):
         """Loads impact data from a CSV file after model initialization."""
+        data_path = values.get('data_path')
+        if not data_path:
+            logger.error("data_path must be provided.")
+            raise ValueError("data_path must be provided.")
+
         try:
-            with open(model.data_path, mode='r', encoding='utf-8') as csvfile:
+            with open(data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
+                impact_data = {}
                 for row in reader:
                     key = row.get('key', '').strip()
                     if key:
-                        model.impact_data[key.lower()] = row
-            logger.debug(f"Loaded {len(model.impact_data)} impacts from '{model.data_path}'.")
+                        impact_data[key.lower()] = row
+            logger.debug(f"Loaded {len(impact_data)} impacts from '{data_path}'.")
+            return impact_data
         except FileNotFoundError:
-            logger.error(f"File not found: {model.data_path}")
-            raise FileNotFoundError(f"File not found: {model.data_path}")
+            logger.error(f"File not found: {data_path}")
+            raise FileNotFoundError(f"File not found: {data_path}")
         except Exception as e:
             logger.error(f"Error loading impact data: {e}", exc_info=True)
             raise Exception("Failed to load impact data.") from e
-        return model
 
     def run(self, project: str) -> str:
         """Assesses the sustainability impact of the given project."""

@@ -18,7 +18,7 @@ class ToolRegistry:
     """
     Registry for managing and creating tools.
     """
-    
+
     def __init__(self, tool_configs: Dict[str, Any]):
         self.tool_configs = tool_configs
         logger.debug("Loaded tool configurations: %s", self.tool_configs)

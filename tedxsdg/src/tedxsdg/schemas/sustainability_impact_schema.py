@@ -5,7 +5,7 @@ Module for defining schemas related to sustainability impact.
 """
 
 from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, validator
 
 
 class SustainabilityImpactInput(BaseModel):
@@ -21,7 +21,7 @@ class SustainabilityImpactInput(BaseModel):
         description="List of sustainability metrics."
     )
 
-    @field_validator('project')
+    @validator('project')
     def validate_project(cls, v):
         if isinstance(v, str):
             if not v.strip():
@@ -33,15 +33,12 @@ class SustainabilityImpactInput(BaseModel):
             raise TypeError("Project must be either a string or a dictionary.")
         return v
 
-    @field_validator('metrics')
+    @validator('metrics', each_item=True)
     def validate_metrics(cls, v):
-        if not isinstance(v, list):
-            raise TypeError("Metrics must be provided as a list.")
-        for metric in v:
-            if not isinstance(metric, str):
-                raise TypeError("Each metric must be a string.")
-            if not metric.strip():
-                raise ValueError("Metrics cannot contain empty strings.")
+        if not isinstance(v, str):
+            raise TypeError("Each metric must be a string.")
+        if not v.strip():
+            raise ValueError("Metrics cannot contain empty strings.")
         return v
 
     class Config:

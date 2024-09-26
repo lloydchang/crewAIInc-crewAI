@@ -5,7 +5,7 @@ Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 """
 
 import logging
-from typing import Any, Dict, Type, ClassVar
+from typing import Any, Dict, Type
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
@@ -19,9 +19,9 @@ class DuckDuckGoSearchToolArgs(BaseModel):
     )
 
 
-class DuckDuckGoSearchTool(StructuredTool):
+class DuckDuckGoSearchTool(StructuredTool, BaseModel):
     """Tool for performing DuckDuckGo web searches."""
-    
+
     # Define class-level attributes without type annotations
     name = "duckduckgo_search"
     description = "Performs web searches using DuckDuckGo."
@@ -43,7 +43,7 @@ class DuckDuckGoSearchTool(StructuredTool):
             raise ValueError("base_url must start with http or https")
         return base_url
 
-    @validator('search_results', pre=True)
+    @validator('search_results', pre=True, always=True)
     def load_search_results(cls, search_results: Dict[str, Any]) -> Dict[str, Any]:
         """
         Placeholder validator for loading search results if necessary.
@@ -57,7 +57,7 @@ class DuckDuckGoSearchTool(StructuredTool):
         Executes the DuckDuckGo search based on the search query.
         """
         logger.debug("Running DuckDuckGo search for query: %s", search_query)
-        
+
         try:
             # Implement the actual search logic here
             # For demonstration, returning a mock response
@@ -65,14 +65,14 @@ class DuckDuckGoSearchTool(StructuredTool):
             # response = requests.get(f"{self.base_url}/search", params={"q": search_query, "api_key": self.api_key})
             # response.raise_for_status()
             # results = response.json()
-            
+
             # Mock response for demonstration purposes
             results = {"results": ["Result 1", "Result 2", "Result 3"]}
-            
+
             self.search_results = results
             logger.debug("Search results: %s", self.search_results)
             return f"Final Answer: DuckDuckGo Search Results:\n{self.search_results}"
-        
+
         except Exception as e:
             logger.error("An error occurred during DuckDuckGo search: %s", e)
             return f"An error occurred while performing the search: {e}"

@@ -7,7 +7,7 @@ Module for SDGAlignTool which aligns content with Sustainable Development Goals.
 import logging
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -32,18 +32,11 @@ class SDGAlignTool(StructuredTool, BaseModel):
     # Initialize any additional attributes
     alignment_results: Dict[str, Any] = Field(default_factory=dict)
 
-    @model_validator(mode='before')
-    def check_fields(cls, values):
-        alignment_model = values.get('alignment_model')
-        if not alignment_model:
+    @validator('alignment_model')
+    def check_alignment_model(cls, v):
+        if not v:
             raise ValueError("alignment_model must be provided")
-        return values
-
-    @model_validator(mode='after')
-    def load_alignment_model(cls, model):
-        # Placeholder for loading alignment model if necessary
-        # For demonstration, no action
-        return model
+        return v
 
     def run(self, content: str) -> str:
         """Executes the SDG alignment based on the provided content."""
