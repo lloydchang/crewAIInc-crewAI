@@ -5,7 +5,6 @@ import logging
 import csv
 from typing import Any, Dict, Optional, Union
 from langchain.tools import StructuredTool
-from pydantic import ValidationError
 from schemas.tedx_search_schema import TEDxSearchInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
@@ -15,19 +14,18 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema = TEDxSearchInput
 
-    # Define attributes without underscore
+    # Define attributes
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Directly assign values without underscore
+        # Directly assign values to attributes
         self.llm_config = llm_config
         self.embedder_config = embedder_config
         self.data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
