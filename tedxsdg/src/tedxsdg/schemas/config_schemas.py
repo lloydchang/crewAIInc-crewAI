@@ -1,57 +1,54 @@
 # schemas/config_schemas.py
 
-from pydantic import BaseModel, Field, ValidationError, model_validator
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator, ValidationError
+from typing import Optional, Dict, Any
 
+# Inner configuration for the LLM (Language Model)
 class LLMInnerConfig(BaseModel):
     model: str = Field(..., description="Name of the language model to use.")
     temperature: Optional[float] = Field(0, description="Temperature setting for the language model.")
-    
-    @model_validator(mode='before')
-    def validate_temperature(cls, values):
-        temperature = values.get('temperature', 0)
-        if temperature < 0:
-            raise ValueError("Temperature must be equal or greater than 0.")
-        return values
 
+    @field_validator('temperature')
+    def validate_temperature(cls, value):
+        if value is not None and value < 0:
+            raise ValueError("Temperature must be equal to or greater than 0.")
+        return value
+
+# LLM Configuration
 class LLMConfig(BaseModel):
     provider: str = Field(..., description="Provider of the language model.")
     config: LLMInnerConfig
 
-    @model_validator(mode='before')
-    def validate_provider(cls, values):
-        provider = values.get('provider')
+    @field_validator('provider')
+    def validate_provider(cls, value):
         valid_providers = ['ollama']
-        if provider not in valid_providers:
-            raise ValueError(f"Invalid LLM provider '{provider}'. Must be one of: {', '.join(valid_providers)}")
-        return values
+        if value not in valid_providers:
+            raise ValueError(f"Invalid LLM provider '{value}'. Must be one of: {', '.join(valid_providers)}")
+        return value
 
+# Inner configuration for the Embedder
 class EmbedderInnerConfig(BaseModel):
     model: str = Field(..., description="Name of the embedding model.")
 
+# Embedder Configuration
 class EmbedderConfig(BaseModel):
     provider: str = Field(..., description="Provider of the embedding model.")
     config: EmbedderInnerConfig
 
-    @model_validator(mode='before')
-    def validate_provider(cls, values):
-        provider = values.get('provider')
+    @field_validator('provider')
+    def validate_provider(cls, value):
         valid_providers = ['ollama']
-        if provider not in valid_providers:
-            raise ValueError(f"Invalid embedder provider '{provider}'. Must be one of: {', '.join(valid_providers)}")
-        return values
+        if value not in valid_providers:
+            raise ValueError(f"Invalid embedder provider '{value}'. Must be one of: {', '.join(valid_providers)}")
+        return value
 
+# Tool configuration that encapsulates LLM and Embedder configurations
 class ToolConfig(BaseModel):
     llm: LLMConfig
     embedder: EmbedderConfig
 
-    @model_validator(mode='after')
-    def validate_configs(cls, values):
-        llm_config = values.llm
-        embedder_config = values.embedder
-        
-        if not llm_config or not embedder_config:
+    @field_validator('llm', 'embedder')
+    def validate_configs(cls, value):
+        if not value:
             raise ValueError("Both LLM and Embedder configurations must be initialized properly.")
-        
-        # Example validation for known models could be added here if needed
-        return values
+        return value
