@@ -10,13 +10,13 @@ from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
 from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool
-from crewai_manager.config_loader import load_config
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class ToolRegistry:
     def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], tools_config_path: str = "config/tools.yaml"):
+        # Validate required fields
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
 
@@ -26,54 +26,73 @@ class ToolRegistry:
         self.tools: Dict[str, StructuredTool] = {}
 
         # Load tool-specific configurations
-        self.tool_configs = load_config(tools_config_path, "tools")
+        self.tool_configs = self._load_tool_configs(tools_config_path)
+
+    def _load_tool_configs(self, tools_config_path: str) -> Dict[str, Dict[str, Any]]:
+        """Loads tool-specific configurations from the tools.yaml file."""
+        logger.debug(f"Starting to load tool configurations from '{tools_config_path}'")
+        
+        try:
+            with open(tools_config_path, 'r') as f:
+                tool_configs = yaml.safe_load(f)
+                logger.info(f"Loaded tool configurations from '{tools_config_path}'")
+                logger.debug(f"Full tool configurations: {tool_configs}")
+                return tool_configs
+
+        except FileNotFoundError:
+            logger.error(f"The configuration file '{tools_config_path}' was not found.")
+            raise FileNotFoundError(f"The configuration file '{tools_config_path}' was not found.")
+        except yaml.YAMLError as yaml_error:
+            logger.error(f"Error parsing YAML from '{tools_config_path}': {yaml_error}", exc_info=True)
+            raise yaml_error
+        except Exception as e:
+            logger.error(f"An unexpected error occurred while loading tool configurations: {e}", exc_info=True)
+            raise
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
-        logger.debug(f"_create_tool [Line 1] Entering _create_tool for {tool_name}")
-
+        """Create a tool with the provided tool name and class, using the loaded config."""
+        logger.debug(f"Entering _create_tool for '{tool_name}'")
+        
         tool_config = self.tool_configs.get(tool_name, {})
-        logger.debug(f"_create_tool [Line 2] tool_config: {tool_config}")
+        logger.debug(f"Tool config: {tool_config}")
 
         if not tool_config:
-            logger.error(f"_create_tool [Line 3] No configuration found for tool '{tool_name}'.")
+            logger.error(f"No configuration found for tool '{tool_name}'.")
             raise ValueError(f"Tool configuration for '{tool_name}' not found in tools.yaml.")
 
         try:
-            logger.debug("_create_tool [Line 4] Entering try block")
-
             embedder_conf = tool_config.get('embedder_config')
-            logger.debug(f"_create_tool [Line 5] embedder_conf: {embedder_conf}")
-
             llm_conf = tool_config.get('llm_config')
-            logger.debug(f"_create_tool [Line 6] llm_conf: {llm_conf}")
 
             if embedder_conf is None:
-                logger.error("_create_tool [Line 8] Missing embedder_config")
+                logger.error("Missing embedder_config")
                 raise ValueError(f"Missing required 'embedder_config' for tool '{tool_name}'.")
             if llm_conf is None:
-                logger.error("_create_tool [Line 9] Missing llm_config")
+                logger.error("Missing llm_config")
                 raise ValueError(f"Missing required 'llm_config' for tool '{tool_name}'.")
 
             data_path = tool_config.get('data_path')
-            logger.debug(f"_create_tool [Line 10] data_path: {data_path}")
+
+            if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript", "sdg_align", "sustainability_impact"] and not data_path:
+                logger.error("Missing data_path for specific tool")
+                raise ValueError(f"Missing data path for tool '{tool_name}'")
 
             tool_kwargs = {
                 "llm_config": llm_conf,
                 "embedder_config": embedder_conf,
                 "data_path": data_path
             }
-            logger.debug(f"_create_tool [Line 12] tool_kwargs: {tool_kwargs}")
 
-            logger.debug(f"_create_tool [Line 13] Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
+            logger.debug(f"Initializing tool '{tool_name}' with configurations: {tool_kwargs}")
             tool_instance = tool_class(**tool_kwargs)
-            logger.debug("_create_tool [Line 14] Tool instance created successfully")
+            logger.debug("Tool instance created successfully")
             return tool_instance
 
         except ValueError as ve:
-            logger.error(f"_create_tool [Line 15] Configuration error for tool '{tool_name}': {ve}", exc_info=True)
+            logger.error(f"Configuration error for tool '{tool_name}': {ve}", exc_info=True)
             raise
         except Exception as e:
-            logger.error(f"_create_tool [Line 16] Error creating tool '{tool_name}': {e}", exc_info=True)
+            logger.error(f"Error creating tool '{tool_name}': {e}", exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
@@ -105,4 +124,5 @@ class ToolRegistry:
             logger.info(f"Tool '{tool_name}' created and added to registry.")
             return tool
         except Exception as e:
-            logger.error(f"Failed to create tool '{tool_name}': {e}", exc_in
+            logger.error(f"Failed to create tool '{tool_name}': {e}", exc_info=True)
+            raise
