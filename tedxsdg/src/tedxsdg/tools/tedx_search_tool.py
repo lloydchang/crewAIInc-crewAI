@@ -22,12 +22,13 @@ class TEDxSearchTool(BaseModel):
     
     _name: str = "tedx_search"
     _description: str = "Searches TEDx content from the local CSV dataset."
-    _args_schema = TEDxSearchToolArgs
+    _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
     # Instance-level fields
     data_path: str = Field(..., description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
+    # Validator to load CSV data on initialization
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
