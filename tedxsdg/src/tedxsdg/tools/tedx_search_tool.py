@@ -19,9 +19,10 @@ class TEDxSearchTool(StructuredTool):
     def __init__(self, config: Dict[str, Any]):
         super().__init__()
         self.data_path = config.get('data_path')
+        if not self.data_path:
+            raise ValueError("data_path must be provided in the configuration")
         logger.info("Initializing TEDxSearchTool.")
-        try:
-            self.csv_data = self._load_csv_data()
+        self.csv_data = self._load_csv_data()
         except Exception as e:
             logger.error(f"Error initializing TEDxSearchTool: {e}", exc_info=True)
             self.csv_data = None
