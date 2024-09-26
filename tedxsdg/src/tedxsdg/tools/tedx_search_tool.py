@@ -8,19 +8,16 @@ from langchain.tools import StructuredTool
 from crewai_tools import CSVSearchTool
 from .utils import extract_query_string
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
 
     def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
-        # Directly assign values to attributes
         self.llm_config = llm_config
         self.embedder_config = embedder_config
-        self.data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+        self.data_path = data_path or 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
 
         logger.info("Initializing CSVSearchTool with the provided configurations")
         
@@ -29,6 +26,7 @@ class TEDxSearchTool(StructuredTool):
 
     def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
         try:
+            logger.debug("Initializing CSVSearchTool...")
             self.csv_search_tool = CSVSearchTool(
                 csv=self.data_path,
                 config={
@@ -41,7 +39,7 @@ class TEDxSearchTool(StructuredTool):
         except ValueError as e:
             logger.warning(f"Failed to initialize CSVSearchTool: {e}")
             self.csv_search_tool = None
-        
+
         # Retry initialization if necessary
         if self.csv_search_tool is None:
             logger.info("Invalidating cache and attempting to reinitialize CSVSearchTool.")

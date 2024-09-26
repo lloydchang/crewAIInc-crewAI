@@ -15,7 +15,6 @@ from .tedx_transcript_tool import TEDxTranscriptTool
 from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool
 
-# Optional: Logging for import success
 import logging
 logger = logging.getLogger(__name__)
 logger.info("Tool registry module loaded successfully.")

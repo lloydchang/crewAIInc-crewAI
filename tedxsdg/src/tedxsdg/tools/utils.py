@@ -1,11 +1,10 @@
 # tools/utils.py
 
 import logging
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, Union
 
 logger = logging.getLogger(__name__)
-
-# logging.getLogger().setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 logger.debug("Debug logging is working at the top of the script.")
 

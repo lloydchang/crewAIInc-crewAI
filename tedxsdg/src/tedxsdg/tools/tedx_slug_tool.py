@@ -15,25 +15,13 @@ class TEDxSlugTool(StructuredTool):
     description: str = "Retrieves TEDx content details based on a provided slug."
     args_schema: Type[BaseModel] = TEDxSlugInput
 
-    llm_config: LLMConfig
-    embedder_config: EmbedderConfig
-    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
-    csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict)  # Use default_factory to avoid shared state
-
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Validate required fields
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
-        # Validate types
-        if not isinstance(llm_config, LLMConfig):
-            raise TypeError("Invalid LLMConfig provided.")
-        if not isinstance(embedder_config, EmbedderConfig):
-            raise TypeError("Invalid EmbedderConfig provided.")
-        super().__init__()  # Call to the parent class initializer
+        super().__init__()
         self.llm_config = llm_config
         self.embedder_config = embedder_config
-        if data_path:
-            self.data_path = data_path
+        self.data_path = data_path or 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
         self.csv_data = self._load_csv_data()  # Load CSV data upon initialization
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:

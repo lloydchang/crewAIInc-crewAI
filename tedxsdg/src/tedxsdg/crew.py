@@ -37,25 +37,3 @@ def initialize_crew():
     except Exception as e:
         logger.error(f"Failed to initialize crew: {str(e)}", exc_info=True)
         sys.exit(1)
-
-def run_crew():
-    logger.debug("Running crew...")
-    """
-    Run the initialized crew and kick off the process.
-    """
-    crew = initialize_crew()
-
-    try:
-        result = crew.kickoff()  # Run the crew
-        logger.info("Crew execution completed successfully.")
-        return result
-    except Exception as e:
-        logger.error(f"An error occurred while running the crew: {str(e)}", exc_info=True)
-        return f"Error: {str(e)}"
-
-if __name__ == "__main__":
-    result = run_crew()
-    print("\n######################")
-    print("Crew Execution Result:")
-    print(result)
-    print("######################")
