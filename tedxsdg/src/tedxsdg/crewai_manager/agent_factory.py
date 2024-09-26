@@ -4,7 +4,6 @@ import logging
 from crewai import Agent
 from langchain.agents import AgentOutputParser
 from tools.tool_registry import ToolRegistry
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 from typing import Any, Dict
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,8 +24,8 @@ class CustomAgentOutputParser(AgentOutputParser):
 def create_agent(
     agent_name: str,
     agent_config: dict,
-    llm_config: LLMConfig,
-    embedder_config: EmbedderConfig,
+    llm_config: Dict[str, Any],
+    embedder_config: Dict[str, Any],
     tool_registry: ToolRegistry
 ) -> Agent:
     """Creates an agent with the tools and configuration specified in the configuration file."""
@@ -34,7 +33,7 @@ def create_agent(
     tools = []
 
     # Validate LLM Configuration
-    model = llm_config.config.model if llm_config and llm_config.config else None
+    model = llm_config.get("model") if llm_config else None
     if not model:
         logger.error("LLMConfig does not contain a valid model.")
         raise ValueError("LLMConfig must have a valid model.")

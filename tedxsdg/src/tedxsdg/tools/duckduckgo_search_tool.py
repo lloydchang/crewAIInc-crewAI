@@ -2,11 +2,8 @@
 
 import logging
 from langchain.tools import StructuredTool
-from typing import Any, Dict, Type, Union
+from typing import Any, Dict, Union
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
-from pydantic import BaseModel, Field
-from schemas.duckduckgo_search_schema import DuckDuckGoSearchInput
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 from .utils import extract_query_string
 
 logger = logging.getLogger(__name__)
@@ -14,9 +11,8 @@ logger = logging.getLogger(__name__)
 class DuckDuckGoSearchTool(StructuredTool):
     name: str = "duckduckgo_search"
     description: str = "Searches the web using DuckDuckGo."
-    args_schema: Type[BaseModel] = DuckDuckGoSearchInput
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any]):
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
         super().__init__()

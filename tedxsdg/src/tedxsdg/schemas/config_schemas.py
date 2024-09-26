@@ -1,65 +1,47 @@
 # schemas/config_schemas.py
 
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional
+from typing import Dict, Any, Optional
 
 # Inner configuration for the LLM (Language Model)
-class LLMInnerConfig(BaseModel):
-    model: str = Field(..., description="Name of the language model to use.")
-    temperature: Optional[float] = Field(0, description="Temperature setting for the language model.")
-
-    @model_validator(mode='before')
-    def validate_temperature(cls, values):
-        temp = values.get("temperature")
-        if temp is None:
+class LLMInnerConfig:
+    def __init__(self, model: str, temperature: Optional[float] = 0):
+        if temperature is None:
             raise ValueError("Missing LLM temperature.")
-        if temp < 0:
+        if temperature < 0:
             raise ValueError("LLM temperature must be equal to or greater than 0.")
-        return values
+        self.model = model
+        self.temperature = temperature
 
 # LLM Configuration
-class LLMConfig(BaseModel):
-    provider: str = Field(..., description="Provider of the language model.")
-    config: LLMInnerConfig
-
-    @model_validator(mode='before')
-    def validate_provider(cls, values):
-        if not values.get("provider"):
+class LLMConfig:
+    def __init__(self, provider: str, config: LLMInnerConfig):
+        if not provider:
             raise ValueError("Missing LLM provider.")
-        return values
+        self.provider = provider
+        self.config = config
 
 # Inner configuration for the Embedder
-class EmbedderInnerConfig(BaseModel):
-    model: str = Field(..., description="Name of the embedding model.")
-    temperature: Optional[float] = Field(0, description="Temperature setting for the embedding model.")
-
-    @model_validator(mode='before')
-    def validate_temperature(cls, values):
-        temp = values.get("temperature")
-        if temp is None:
+class EmbedderInnerConfig:
+    def __init__(self, model: str, temperature: Optional[float] = 0):
+        if temperature is None:
             raise ValueError("Missing Embedder temperature.")
-        if temp < 0:
+        if temperature < 0:
             raise ValueError("Embedder temperature must be equal to or greater than 0.")
-        return values
+        self.model = model
+        self.temperature = temperature
 
 # Embedder Configuration
-class EmbedderConfig(BaseModel):
-    provider: str = Field(..., description="Provider of the embedding model.")
-    config: EmbedderInnerConfig
-
-    @model_validator(mode='before')
-    def validate_provider(cls, values):
-        if not values.get("provider"):
+class EmbedderConfig:
+    def __init__(self, provider: str, config: EmbedderInnerConfig):
+        if not provider:
             raise ValueError("Missing Embedder provider.")
-        return values
+        self.provider = provider
+        self.config = config
 
 # Tool configuration that encapsulates LLM and Embedder configurations
-class ToolConfig(BaseModel):
-    llm: LLMConfig
-    embedder: EmbedderConfig
-
-    @model_validator(mode='before')
-    def validate_configs(cls, values):
-        if not values.get("llm") or not values.get("embedder"):
+class ToolConfig:
+    def __init__(self, llm: LLMConfig, embedder: EmbedderConfig):
+        if not llm or not embedder:
             raise ValueError("Both LLM and Embedder configurations must be initialized properly.")
-        return values
+        self.llm = llm
+        self.embedder = embedder

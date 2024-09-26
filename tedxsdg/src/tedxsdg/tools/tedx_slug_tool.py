@@ -2,20 +2,16 @@
 
 import logging
 import csv
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
-from schemas.tedx_slug_schema import TEDxSlugInput
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 
 logger = logging.getLogger(__name__)
 
 class TEDxSlugTool(StructuredTool):
     name: str = "tedx_slug"
     description: str = "Retrieves TEDx content details based on a provided slug."
-    args_schema: Type[BaseModel] = TEDxSlugInput
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
         super().__init__()

@@ -2,20 +2,16 @@
 
 import logging
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
-from typing import Any, Dict, Optional, Type
-from schemas.tedx_transcript_schema import TEDxTranscriptInput
+from typing import Any, Dict, Optional
 from crewai_tools import WebsiteSearchTool
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 
 logger = logging.getLogger(__name__)
 
 class TEDxTranscriptTool(StructuredTool):
     name: str = "tedx_transcript"
     description: str = "Retrieves the transcript of a TEDx talk based on the provided slug."
-    args_schema: Type[BaseModel] = TEDxTranscriptInput
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
         super().__init__()

@@ -1,20 +1,17 @@
 # tools/sdg_align_tool.py
 
 import logging
-from typing import Any, Dict, List, Type, Union
+import csv
+from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
-from schemas.sdg_align_schema import SDGAlignInput
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 
 logger = logging.getLogger(__name__)
 
 class SDGAlignTool(StructuredTool):
     name: str = "sdg_align"
     description: str = "Analyzes ideas and aligns them with UN SDGs."
-    args_schema: Type[BaseModel] = SDGAlignInput
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = 'data/sdg_data.csv'):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: str = 'data/sdg_data.csv'):
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
         super().__init__()
@@ -71,21 +68,16 @@ class SDGAlignTool(StructuredTool):
             logger.error(f"Error calculating score for SDG '{sdg_details.get('sdg_name')}': {e}", exc_info=True)
             return 0.0
 
-    def _run(self, idea: Union[str, Dict[str, Any]], sdgs: List[str] = []) -> str:
+    def _run(self, idea: str, sdgs: List[str] = []) -> str:
         """Executes the SDG alignment analysis."""
-        if isinstance(idea, dict):
-            idea_str = idea.get('idea', "")
-        else:
-            idea_str = str(idea)
-
-        if not idea_str:
+        if not idea:
             logger.error("No valid idea provided for SDG alignment analysis.")
             return "Error: No valid idea provided for SDG alignment analysis."
 
         sdgs = [str(sdg).strip() for sdg in sdgs if sdg]
-        logger.debug(f"Running SDG alignment analysis for idea: '{idea_str}'")
+        logger.debug(f"Running SDG alignment analysis for idea: '{idea}'")
 
-        alignment_results = self._analyze(idea_str, sdgs)
+        alignment_results = self._analyze(idea, sdgs)
         if not alignment_results:
             return "No relevant SDG alignments found."
 
