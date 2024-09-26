@@ -1,3 +1,5 @@
+# tools/tool_registry.py
+
 import logging
 import yaml
 from typing import Any, Dict, Type
@@ -9,6 +11,7 @@ from .tedx_transcript_tool import TEDxTranscriptTool
 from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool
 from schemas.config_schemas import LLMConfig, EmbedderConfig
+from pydantic import ValidationError
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
