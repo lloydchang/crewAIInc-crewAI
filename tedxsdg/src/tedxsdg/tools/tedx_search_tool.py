@@ -21,16 +21,16 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema = TEDxSearchInput
 
-    # Avoid declaring these as Pydantic fields
-    _llm_config: LLMConfig
-    _embedder_config: EmbedderConfig
-    _data_path: str
+    # Define attributes without underscore
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
+    data_path: str
 
-    # Use a standard Python __init__ without relying on Pydantic field validation
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        self._llm_config = llm_config
-        self._embedder_config = embedder_config
-        self._data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+        # Directly assign values without underscore
+        self.llm_config = llm_config
+        self.embedder_config = embedder_config
+        self.data_path = data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
 
         logger.info("Initializing CSVSearchTool with the provided configurations")
         
@@ -40,10 +40,10 @@ class TEDxSearchTool(StructuredTool):
     def _initialize_csv_search_tool(self) -> Optional[CSVSearchTool]:
         try:
             self.csv_search_tool = CSVSearchTool(
-                csv=self._data_path,
+                csv=self.data_path,
                 config={
-                    "llm": self._llm_config,
-                    "embedder": self._embedder_config,
+                    "llm": self.llm_config,
+                    "embedder": self.embedder_config,
                 }
             )
             logger.info("CSVSearchTool initialized successfully.")
@@ -71,7 +71,7 @@ class TEDxSearchTool(StructuredTool):
         """Load TEDx data from the CSV file."""
         try:
             slug_index = {}
-            with open(self._data_path, mode='r', encoding='utf-8') as csvfile:
+            with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     slug = row.get('slug', '').strip()
@@ -80,8 +80,8 @@ class TEDxSearchTool(StructuredTool):
             logger.debug(f"Loaded {len(slug_index)} slugs from CSV file.")
             return slug_index
         except FileNotFoundError:
-            logger.error(f"File not found: {self._data_path}")
-            raise FileNotFoundError(f"File not found: {self._data_path}")
+            logger.error(f"File not found: {self.data_path}")
+            raise FileNotFoundError(f"File not found: {self.data_path}")
         except Exception as e:
             logger.error(f"Error loading CSV data: {str(e)}", exc_info=True)
             raise Exception("Failed to load CSV data.")
