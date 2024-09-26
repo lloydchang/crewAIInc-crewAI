@@ -15,18 +15,23 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
 
-# Define the TEDxSearchConfig model to validate input arguments
+# Define the TEDxSearchConfig model to validate input arguments using Pydantic v2
 class TEDxSearchConfig(BaseModel):
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
+
+    class Config:
+        # Use `arbitrary_types_allowed` to allow custom types like LLMConfig, EmbedderConfig
+        arbitrary_types_allowed = True
+
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchInput
 
-    # Declare attributes explicitly so they can be used throughout the tool
+    # Declare the required attributes explicitly
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str
@@ -34,7 +39,7 @@ class TEDxSearchTool(StructuredTool):
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Validate using Pydantic 2's model_validate
+        # Validate the configuration using Pydantic v2's `model_validate`
         try:
             validated_config = TEDxSearchConfig.model_validate(
                 {
@@ -43,7 +48,7 @@ class TEDxSearchTool(StructuredTool):
                     'data_path': data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
                 }
             )
-            # Use validated values to assign instance variables
+            # Assign validated values to instance variables
             self.llm_config = validated_config.llm_config
             self.embedder_config = validated_config.embedder_config
             self.data_path = validated_config.data_path
