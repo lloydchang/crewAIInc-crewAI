@@ -25,11 +25,6 @@ class TEDxSearchTool(StructuredTool):
             raise ValueError("data_path must be provided in the configuration")
         logger.info("Initializing TEDxSearchTool.")
         self.csv_data = self._load_csv_data()
-        except Exception as e:
-            logger.error(f"Error initializing TEDxSearchTool: {e}", exc_info=True)
-            self.csv_data = None
-            self._invalidate_cache()
-            raise
 
     def _invalidate_cache(self):
         """Invalidates the cache by removing the 'db' directory or file."""

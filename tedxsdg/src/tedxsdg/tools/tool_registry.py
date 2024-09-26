@@ -4,9 +4,12 @@ import logging
 from typing import Dict, Type
 from langchain.tools import StructuredTool
 from crewai_manager.config_loader import load_config
-from .sustainability_impact_tool import SustainabilityImpactTool
+from .duckduckgo_search_tool import DuckDuckGoSearchTool
 from .sdg_align_tool import SDGAlignTool
+from .sustainability_impact_tool import SustainabilityImpactTool
 from .tedx_search_tool import TEDxSearchTool
+from .tedx_slug_tool import TEDxSlugTool
+from .tedx_transcript_tool import TEDxTranscriptTool
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +45,13 @@ class ToolRegistry:
 
         # Mapping tool_name to corresponding tool class
         tool_mapping = {
-            "tedx_search": TEDxSearchTool,
-            "sdg_align": SDGAlignTool,
-            "sustainability_impact": SustainabilityImpactTool,
-        }
+             "tedx_search": TEDxSearchTool,
+             "tedx_slug": TEDxSlugTool,
+             "tedx_transcript": TEDxTranscriptTool,
+             "sdg_align": SDGAlignTool,
+             "sustainability_impact": SustainabilityImpactTool,
+             "duckduckgo_search": DuckDuckGoSearchTool
+         }
 
         tool_class = tool_mapping.get(tool_name)
         if not tool_class:
