@@ -10,7 +10,7 @@ import csv
 import shutil
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +28,48 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: type[BaseModel] = TEDxSearchToolArgs
 
-    def __init__(self, config: Dict[str, Any]):
-        super().__init__()
-        self.data_path = config.get('data_path')
-        if not self.data_path:
-            raise ValueError("data_path must be provided in the configuration")
-        logger.info("Initializing TEDxSearchTool.")
-        self.csv_data = self._load_csv_data()
+    # Define 'data_path' as a Pydantic field
+    data_path: str = Field(..., description="Path to the data directory")
+    
+    # Initialize 'csv_data' with a default empty dictionary
+    csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+
+    # Validator to load CSV data after initialization
+    @validator('csv_data', pre=True, always=True)
+    def load_csv_data(cls, v, values):
+        data_path = values.get('data_path')
+        if not data_path:
+            raise ValueError("`data_path` must be provided in the configuration")
+        logger.info("Initializing TEDxSearchTool with data_path: %s", data_path)
+        try:
+            slug_index = {}
+            with open(data_path, mode='r', encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    slug = row.get('slug', '').strip()
+                    if slug:
+                        slug_index[slug] = row
+            logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
+            return slug_index
+        except FileNotFoundError as exc:
+            logger.error("File not found: %s", data_path, exc_info=True)
+            raise FileNotFoundError(f"File not found: {data_path}") from exc
+        except Exception as e:
+            logger.error("Error loading CSV data: %s", e, exc_info=True)
+            raise Exception("Failed to load CSV data.") from e
+
+    def run(self, search_query: str) -> str:
+        """Executes the search on the TEDx dataset based on the search query."""
+        logger.debug("Running TEDx search for query: %s", search_query)
+        results = [
+            data for key, data in self.csv_data.items()
+            if search_query.lower() in key.lower()
+        ]
+        
+        if not results:
+            return "No results found."
+
+        return f"Final Answer: TEDx Search Results:\n{results}"
 
     def _invalidate_cache(self):
         """Invalidates the cache by removing the 'db' directory or file."""
@@ -56,48 +91,3 @@ class TEDxSearchTool(StructuredTool):
                 "Error during cache invalidation: %s", e, exc_info=True
             )
             raise
-
-    def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
-        """Load TEDx data from the CSV file."""
-        slug_index = {}
-        try:
-            with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    slug = row.get('slug', '').strip()
-                    if slug:
-                        slug_index[slug] = row
-            logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
-        except FileNotFoundError as exc:
-            logger.error("File not found: %s", self.data_path, exc_info=True)
-            raise FileNotFoundError(f"File not found: {self.data_path}") from exc
-        except Exception as e:
-            logger.error("Error loading CSV data: %s", e, exc_info=True)
-            raise Exception("Failed to load CSV data.") from e
-        return slug_index
-
-    def _run(self, search_query: str) -> str:
-        """Executes the search on the TEDx dataset based on the search query."""
-        logger.debug("Running TEDx search for query: %s", search_query)
-        results = [
-            data for key, data in self.csv_data.items()
-            if search_query.lower() in key.lower()
-        ]
-        
-        if not results:
-            return "No results found."
-
-        return f"Final Answer: TEDx Search Results:\n{results}"
-
-    def _run(self, search_query: str) -> str:
-        """Executes the search on the TEDx dataset based on the search query."""
-        logger.debug("Running TEDx search for query: %s", search_query)
-        results = [
-            data for key, data in self.csv_data.items()
-            if search_query.lower() in key.lower()
-        ]
-        
-        if not results:
-            return "No results found."
-
-        return f"Final Answer: TEDx Search Results:\n{results}"
