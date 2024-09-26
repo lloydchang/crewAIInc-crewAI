@@ -1,30 +1,30 @@
 # tools/tedx_search_tool.py
 
 """
-Module for TEDxSlugTool which retrieves TEDx content details based on a provided
-slug.
+Module for TEDxSearchTool which searches TEDx content from a local CSV dataset.
 """
 
+import os
 import logging
 import csv
-from typing import Any, Dict
+from typing import Any, Dict, List
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
+class TEDxSearchToolArgs(BaseModel):
+    """Arguments for TEDxSearchTool."""
+    search_query: str = Field(..., description="The search query for TEDx talks")
 
-class TEDxSlugToolArgs(BaseModel):
-    """Arguments for TEDxSlugTool."""
-    slug: str = Field(..., description="The TEDx talk slug to retrieve details for.")
 
+class TEDxSearchTool(BaseModel):
+    """Tool for searching TEDx content from a local CSV dataset."""
+    
+    _name: str = "tedx_search"
+    _description: str = "Searches TEDx content from the local CSV dataset."
+    _args_schema = TEDxSearchToolArgs
 
-class TEDxSlugTool(BaseModel):
-    """Tool to retrieve TEDx content details based on a provided slug."""
-
-    _name: str = "tedx_slug"
-    _description: str = "Retrieves TEDx content details based on a provided slug."
-    _args_schema = TEDxSlugToolArgs
-
+    # Instance-level fields
     data_path: str = Field(..., description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
@@ -33,17 +33,19 @@ class TEDxSlugTool(BaseModel):
         data_path = values.get('data_path')
         if not data_path:
             raise ValueError("`data_path` must be provided in the configuration.")
-        logger.info("Loading TEDxSlugTool with data_path: %s", data_path)
+        logger.info("Loading TEDxSearchTool with data_path: %s", data_path)
         try:
-            slug_index = {}
+            search_index = {}
             with open(data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     slug = row.get('slug', '').strip().lower()
+                    title = row.get('title', '').strip().lower()
+                    description = row.get('description', '').strip().lower()
                     if slug:
-                        slug_index[slug] = row
-            logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
-            return slug_index
+                        search_index[slug] = row
+            logger.debug("Loaded %d entries from CSV file.", len(search_index))
+            return search_index
         except FileNotFoundError as exc:
             logger.error("File not found: %s", data_path, exc_info=True)
             raise FileNotFoundError(f"File not found: {data_path}") from exc
@@ -51,32 +53,38 @@ class TEDxSlugTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def run(self, slug: str) -> str:
+    def run(self, search_query: str) -> str:
         """
-        Retrieve data for the given slug.
+        Executes the search on the TEDx dataset based on the search query.
 
         Args:
-            slug (str): The TEDx talk slug.
+            search_query (str): The search query string.
 
         Returns:
-            str: The details for the TEDx talk.
+            str: Formatted search results.
         """
-        logger.debug("Running TEDxSlugTool for slug: %s", slug)
-        slug_lower = slug.lower()
+        logger.debug("Running TEDx search for query: %s", search_query)
+        search_query_lower = search_query.lower()
+        results: List[Dict[str, Any]] = []
 
-        if slug_lower not in self.csv_data:
-            return f"No data found for slug '{slug}'. Please ensure the slug is correct."
+        for entry in self.csv_data.values():
+            if (search_query_lower in entry.get('title', '').lower()) or \
+               (search_query_lower in entry.get('description', '').lower()):
+                results.append(entry)
+                if len(results) >= 3:  # Limit to top 3 results
+                    break
 
-        entry = self.csv_data[slug_lower]
+        if not results:
+            return "No results found."
 
-        formatted_result = (
-            f"Title: {entry.get('title', 'No Title')}\n"
-            f"Description: {entry.get('description', 'No Description')}\n"
-            f"URL: {entry.get('url', 'No URL')}"
-        )
-        
-        logger.debug("Result for slug '%s': %s", slug, formatted_result)
-        return f"Final Answer: TEDx Talk Details for slug '{slug}':\n{formatted_result}"
+        # Format results for better readability
+        formatted_results = "\n\n".join([
+            f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+            for entry in results
+        ])
+
+        logger.debug("Search results: %s", formatted_results)
+        return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
     # Class property methods
     @property
