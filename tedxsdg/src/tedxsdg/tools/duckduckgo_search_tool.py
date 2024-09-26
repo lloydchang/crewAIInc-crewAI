@@ -1,3 +1,5 @@
+# tools/duckduckgo_search_tool.py
+
 """
 Module for DuckDuckGo search tool.
 """

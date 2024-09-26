@@ -1,3 +1,5 @@
+# schemas/__init__.py
+
 """
 This module initializes the schemas package.
 """

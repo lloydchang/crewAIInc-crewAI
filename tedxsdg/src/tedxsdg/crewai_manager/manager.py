@@ -1,3 +1,5 @@
+# crewai_manager/manager.py
+
 """
 Module for managing CrewAI operations.
 """

@@ -1,3 +1,5 @@
+# schemas/config_schemas.py
+
 """
 Module for configuration schemas.
 """

@@ -1,3 +1,5 @@
+# schemas/tedx_slug_schema.py
+
 """
 Module for TEDxSlugInput schema.
 """

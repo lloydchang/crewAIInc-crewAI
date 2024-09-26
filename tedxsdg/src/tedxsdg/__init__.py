@@ -1,3 +1,5 @@
+# __init__.py
+
 """
 This module initializes the TEDxSDG package by importing necessary tools
 and managers.

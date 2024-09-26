@@ -1,3 +1,5 @@
+# schemas/sustainability_impact_schema.py
+
 """
 Module for defining schemas related to sustainability impact.
 """

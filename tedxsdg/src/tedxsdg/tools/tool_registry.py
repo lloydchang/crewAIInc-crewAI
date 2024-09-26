@@ -1,3 +1,5 @@
+# tools/tool_registry.py
+
 """
 Module for registering and managing tools.
 """

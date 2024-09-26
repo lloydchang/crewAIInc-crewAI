@@ -1,3 +1,5 @@
+# schemas/tedx_search_schema.py
+
 """
 Module for TEDx search schema.
 """

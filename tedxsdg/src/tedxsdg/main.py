@@ -1,7 +1,7 @@
+# main.py
+
 #!/usr/bin/env python
 
-# main.py
-#
 # This module sets up the environment and runs the crew.
 
 import os

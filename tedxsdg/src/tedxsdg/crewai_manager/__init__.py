@@ -1,3 +1,5 @@
+# crewai_manager/__init__.py
+
 """
 This module initializes the crewai_manager package by importing the necessary
 components.

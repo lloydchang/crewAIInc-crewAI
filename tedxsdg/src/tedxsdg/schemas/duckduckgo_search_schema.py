@@ -1,3 +1,5 @@
+# schemas/duckduckgo_search_schema.py
+
 """
 schemas/duckduckgo_search_schema.py
 

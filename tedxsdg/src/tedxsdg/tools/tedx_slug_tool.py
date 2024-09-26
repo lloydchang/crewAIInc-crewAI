@@ -1,3 +1,5 @@
+# tools/tedx_slug_tool.py
+
 """
 Module for TEDxSlugTool which retrieves TEDx content details based on a provided
 slug.

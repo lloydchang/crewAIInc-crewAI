@@ -1,3 +1,5 @@
+# schemas/tedx_transcript_schema.py
+
 """
 Module for TEDx transcript schema.
 """
