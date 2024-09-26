@@ -170,11 +170,11 @@
 │   ├── tedx_search_schema.py
 │   ├── tedx_slug_schema.py
 │   └── tedx_transcript_schema.py
-├── tedx_transcript_tool.py
 └── tools
     ├── __init__.py
     ├── __pycache__
     │   ├── __init__.cpython-312.pyc
+    │   ├── config_loader.cpython-312.pyc
     │   ├── duckduckgo_search_tool.cpython-312.pyc
     │   ├── sdg_align_tool.cpython-312.pyc
     │   ├── sustainability_impact_tool.cpython-312.pyc
