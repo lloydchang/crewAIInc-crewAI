@@ -19,7 +19,7 @@ class DuckDuckGoSearchToolArgs(BaseModel):
     )
 
 
-class DuckDuckGoSearchTool(StructuredTool, BaseModel):
+class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
     
     # Marking class-level attributes as ClassVar to prevent Pydantic from treating them as instance fields
