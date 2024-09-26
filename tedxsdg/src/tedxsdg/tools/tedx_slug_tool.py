@@ -1,5 +1,3 @@
-# tools/tedx_slug_tool.py
-
 """
 Module for TEDxSlugTool which retrieves TEDx content details based on a provided
 slug.
@@ -32,7 +30,6 @@ class TEDxSlugTool(StructuredTool):
             raise ValueError("Data path is required for TEDxSlugTool.")
         # Load CSV data upon initialization
         self.csv_data = self._load_csv_data()
-        self.csv_data = self._load_csv_data()  # Load CSV data upon initialization
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
         """
@@ -53,8 +50,7 @@ class TEDxSlugTool(StructuredTool):
             raise
         except Exception as e:
             logger.error("Error loading CSV data: %s", e, exc_info=True)
-
-    def _run(self, slug: str, *args: Any, **kwargs: Any) -> str:
+            raise
 
     def _run(self, slug: str) -> str:
         """
@@ -66,9 +62,7 @@ class TEDxSlugTool(StructuredTool):
         if not hasattr(self, 'csv_data') or self.csv_data is None:
             return "Error: CSV data is not loaded."
 
-            return (
-                f"No data found for slug '{slug}'. Please ensure the slug is correct."
-            )
+        row = self.csv_data.get(slug)
         if not row:
             return f"No data found for slug '{slug}'. Please ensure the slug is correct."
 

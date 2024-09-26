@@ -1,5 +1,3 @@
-# tools/tedx_transcript_tool.py
-
 """
 Module for TEDxTranscriptTool which retrieves the transcript of a TEDx talk.
 """
@@ -22,7 +20,9 @@ class TEDxTranscriptTool(StructuredTool):
     )
 
     def __init__(
-        self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any]
+        self,
+        llm_config: Dict[str, Any],
+        embedder_config: Dict[str, Any],
         data_path: Optional[str] = None
     ):
         if not llm_config or not embedder_config:
@@ -37,8 +37,8 @@ class TEDxTranscriptTool(StructuredTool):
             'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
         )
         self.website_search_tool = WebsiteSearchTool()
+
     def _run(self, slug: str, *args: Any, **kwargs: Any) -> str:
-    def _run(self, slug: str) -> str:
         try:
             if not slug:
                 logger.error("No slug provided.")
@@ -68,9 +68,8 @@ class TEDxTranscriptTool(StructuredTool):
             return (
                 f"Final Answer: Transcript for '{slug}':\n{transcript_content}"
             )
-        except (ValueError, KeyError, TypeError) as e:
         except Exception as e:
-                "Error retrieving transcript for slug '%s': %s", slug, str(e)
+            logger.error(
                 "Error retrieving transcript for slug '%s': %s", slug, str(e), 
                 exc_info=True
             )
