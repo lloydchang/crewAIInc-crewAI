@@ -10,7 +10,6 @@ from .sustainability_impact_tool import SustainabilityImpactTool
 from .tedx_search_tool import TEDxSearchTool
 from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
-from .sustainability_impact_tool import SustainabilityImpactTool
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ class ToolRegistry:
             # Load the specific tool's configuration and initialize the tool
             tool_config = self.tool_configs[tool_name]
             # **tool_config unpacks the dictionary into keyword arguments
-            tool_instance = tool_class(**tool_config.dict())
+            tool_instance = tool_class(**tool_config)
             logger.debug("Tool '%s' created successfully", tool_name)
             self.tools[tool_name] = tool_instance  # Cache the created tool
             return tool_instance

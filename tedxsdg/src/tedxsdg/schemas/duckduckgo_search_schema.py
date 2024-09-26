@@ -7,26 +7,20 @@ This module defines the schema for DuckDuckGo search input.
 """
 
 from typing import Union, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, model_validator
 
 
 class DuckDuckGoSearchInput(BaseModel):
     """Schema for DuckDuckGo search input."""
 
-    query: Union[str, Dict[str, Any]] = Field(
+    search_query: Union[str, Dict[str, Any]] = Field(
         ..., description="Search query for DuckDuckGo."
     )
 
-    @validator('query')
-    def validate_query(cls, v):
-        """Ensure that the query is either a non-empty string or a dictionary with relevant keys."""
-        if isinstance(v, str):
-            if not v.strip():
-                raise ValueError("Query string cannot be empty.")
-        elif isinstance(v, dict):
-            if not v:
-                raise ValueError("Query dictionary cannot be empty.")
-            # Add more specific validations if needed
-        else:
-            raise ValueError("Query must be either a string or a dictionary.")
-        return v
+    @model_validator(mode='before')
+    def check_search_query(cls, values):
+        """Validate the search_query field."""
+        search_query = values.get('search_query')
+        if not isinstance(search_query, (str, dict)):
+            raise ValueError("search_query must be either a string or a dictionary.")
+        return values

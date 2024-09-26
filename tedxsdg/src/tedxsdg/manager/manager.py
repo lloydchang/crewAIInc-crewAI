@@ -6,6 +6,7 @@ from typing import Any, Dict
 from tools.tool_registry import ToolRegistry
 from crewai import Crew, Process, Agent, Task
 from tools.config_loader import load_config
+from manager.agent_factory import create_agent
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)

@@ -10,3 +10,14 @@ from .tedx_slug_schema import TEDxSlugInput
 from .tedx_transcript_schema import TEDxTranscriptInput
 from .sdg_align_schema import SDGAlignInput
 from .sustainability_impact_schema import SustainabilityImpactInput
+from .config_schemas import ToolConfig
+
+__all__ = [
+    "DuckDuckGoSearchInput",
+    "TEDxSearchInput",
+    "TEDxSlugInput",
+    "TEDxTranscriptInput",
+    "SDGAlignInput",
+    "SustainabilityImpactInput",
+    "ToolConfig"
+]

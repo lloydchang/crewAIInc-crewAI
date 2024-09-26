@@ -4,7 +4,7 @@
 Module for TEDxSlugInput schema.
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, model_validator
 
 
 class TEDxSlugInput(BaseModel):
@@ -13,10 +13,10 @@ class TEDxSlugInput(BaseModel):
     """
     slug: str = Field(..., description="The slug to retrieve data for.")
 
-    @validator('slug')
-    def validate_slug(cls, v):
-        """Ensure that the slug is a non-empty string and follows expected format."""
-        if not v.strip():
-            raise ValueError("Slug cannot be empty.")
-        # Add more specific slug format validations if necessary
-        return v.strip().lower()
+    @model_validator(mode='before')
+    def check_slug(cls, values):
+        """Validate the slug field."""
+        slug = values.get('slug')
+        if not slug or not isinstance(slug, str):
+            raise ValueError("slug must be a non-empty string.")
+        return values

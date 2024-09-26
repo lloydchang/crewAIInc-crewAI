@@ -13,7 +13,6 @@ def main():
         manager = CrewAIManager(
             agents_config_path="config/agents.yaml",
             tasks_config_path="config/tasks.yaml",
-            model_config_path="config/model.yaml",
             tools_config_path="config/tools.yaml"
         )
         crew = manager.initialize_crew()
