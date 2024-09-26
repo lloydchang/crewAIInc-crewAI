@@ -1,5 +1,3 @@
-# crew.py
-
 #!/usr/bin/env python
 
 """
@@ -57,7 +55,7 @@ def run_crew():
     """
     try:
         crew = initialize_crew()
-        kickoff_result = crew.kickoff()  # Run the crew
+        kickoff_result = crew.start()  # Updated method name
         logger.info("Crew execution completed successfully.")
         return kickoff_result
     except (ValueError, TypeError, RuntimeError) as e:
