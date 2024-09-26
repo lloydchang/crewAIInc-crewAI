@@ -97,6 +97,11 @@ class TEDxSearchTool(BaseModel):
         return self._description
 
     @property
+    def args(self) -> TEDxSearchToolArgs:
+        """Return an instance of the argument schema."""
+        return self._args_schema()
+
+    @property
     def args_schema(self) -> BaseModel:
         return self._args_schema
 
