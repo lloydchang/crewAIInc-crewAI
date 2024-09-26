@@ -1,11 +1,9 @@
-# tools/duckduckgo_search_tool.py
-
 """
 Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 """
 
 import logging
-from typing import Any, Dict, Type
+from typing import Any, Dict
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
@@ -22,17 +20,17 @@ class DuckDuckGoSearchToolArgs(BaseModel):
 class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
 
-    # Define class-level attributes without type annotations
-    name = "duckduckgo_search"
-    description = "Performs web searches using DuckDuckGo."
+    # Define class-level attributes
+    name: str = "duckduckgo_search"
+    description: str = "Performs web searches using DuckDuckGo."
     args_schema = DuckDuckGoSearchToolArgs
 
     # Define instance-level fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
     base_url: str = Field(..., description="Base URL for DuckDuckGo API")
 
-    # Initialize any additional attributes
-    search_results: Dict[str, Any] = Field(default=dict)
+    # Use default_factory to safely initialize mutable defaults
+    search_results: Dict[str, Any] = Field(default_factory=dict, description="Search results")
 
     @validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
@@ -79,3 +77,4 @@ class DuckDuckGoSearchTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
+        # Additional options can be added here
