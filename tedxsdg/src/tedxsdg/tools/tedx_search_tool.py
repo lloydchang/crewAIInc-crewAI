@@ -11,7 +11,9 @@ from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
 from .utils import extract_query_string
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.DEBUG)
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
