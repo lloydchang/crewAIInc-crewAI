@@ -11,7 +11,7 @@ class TEDxSlugInput(BaseModel):
     """
     Schema for TEDx slug input.
     """
-    slug: str = Field(..., description="The slug to retrieve data for.")
+    slug: str = Field(..., _description = "The slug to retrieve data for.")
 
     @validator('slug')
     def check_slug(cls, v):
@@ -19,3 +19,9 @@ class TEDxSlugInput(BaseModel):
         if not v or not isinstance(v, str):
             raise ValueError("slug must be a non-empty string.")
         return v.strip()
+
+class TEDxSlugInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description

@@ -13,7 +13,7 @@ class TEDxSearchInput(BaseModel):
     Schema for TEDx search input.
     """
     search_query: Union[str, Dict[str, Any]] = Field(
-        ..., description="Search query for TEDx content."
+        ..., _description = "Search query for TEDx content."
     )
 
     @validator('search_query', pre=True, always=True)
@@ -22,3 +22,9 @@ class TEDxSearchInput(BaseModel):
         if not isinstance(v, (str, dict)):
             raise ValueError("search_query must be either a string or a dictionary.")
         return v
+
+class TEDxSearchInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description

@@ -13,10 +13,10 @@ class SDGAlignInput(BaseModel):
     Schema for SDG alignment input.
     """
     idea: Union[str, Dict[str, Any]] = Field(
-        ..., description="Idea to analyze for SDG alignment."
+        ..., _description = "Idea to analyze for SDG alignment."
     )
     sdgs: List[Union[str, int]] = Field(
-        default=list, description="List of SDGs to consider."
+        default=list, _description = "List of SDGs to consider."
     )
 
     @validator('idea')
@@ -36,3 +36,13 @@ class SDGAlignInput(BaseModel):
         if not isinstance(v, (str, int)):
             raise TypeError("Each SDG must be either a string or an integer.")
         return v
+
+class SDGAlignInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description

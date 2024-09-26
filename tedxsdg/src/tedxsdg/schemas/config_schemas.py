@@ -12,8 +12,8 @@ class LLMInnerConfig(BaseModel):
     """
     Inner configuration for the LLM (Language Model).
     """
-    model: str = Field(..., description="The model name for the LLM.")
-    temperature: float = Field(0, ge=0, description="Temperature for the LLM.")
+    model: str = Field(..., _description = "The model name for the LLM.")
+    temperature: float = Field(0, ge=0, _description = "Temperature for the LLM.")
 
     @validator('model')
     def validate_model(cls, v):
@@ -28,11 +28,37 @@ class LLMInnerConfig(BaseModel):
         return v
 
 
+class LLMInnerConfig(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
 class LLMConfig(BaseModel):
     """
     LLM Configuration.
     """
-    provider: str = Field(..., description="Provider name for the LLM.")
+    provider: str = Field(..., _description = "Provider name for the LLM.")
     config: LLMInnerConfig
 
     @validator('provider')
@@ -42,12 +68,38 @@ class LLMConfig(BaseModel):
         return v
 
 
+class LLMConfig(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
 class EmbedderInnerConfig(BaseModel):
     """
     Inner configuration for the Embedder.
     """
-    model: str = Field(..., description="The model name for the Embedder.")
-    temperature: float = Field(0, ge=0, description="Temperature for the Embedder.")
+    model: str = Field(..., _description = "The model name for the Embedder.")
+    temperature: float = Field(0, ge=0, _description = "Temperature for the Embedder.")
 
     @validator('model')
     def validate_model(cls, v):
@@ -62,11 +114,37 @@ class EmbedderInnerConfig(BaseModel):
         return v
 
 
+class EmbedderInnerConfig(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
 class EmbedderConfig(BaseModel):
     """
     Embedder Configuration.
     """
-    provider: str = Field(..., description="Provider name for the Embedder.")
+    provider: str = Field(..., _description = "Provider name for the Embedder.")
     config: EmbedderInnerConfig
 
     @validator('provider')
@@ -75,6 +153,32 @@ class EmbedderConfig(BaseModel):
             raise ValueError("Embedder provider cannot be empty.")
         return v
 
+
+class EmbedderConfig(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
 
 class ToolConfig(BaseModel):
     """
@@ -88,3 +192,29 @@ class ToolConfig(BaseModel):
         if not v:
             raise ValueError(f"{field.name.upper()} configuration must be provided.")
         return v
+
+class ToolConfig(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description

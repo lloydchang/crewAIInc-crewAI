@@ -14,8 +14,22 @@ logger = logging.getLogger(__name__)
 class SDGAlignToolArgs(BaseModel):
     """Arguments for SDGAlignTool."""
     content: str = Field(
-        ..., description="The content to align with SDGs"
+        ..., _description = "The content to align with SDGs"
     )
+
+class SDGAlignToolArgs(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
 
 class SDGAlignTool(StructuredTool):
     """Tool for aligning content with Sustainable Development Goals."""
@@ -24,8 +38,8 @@ class SDGAlignTool(StructuredTool):
     args_schema: type[BaseModel] = SDGAlignToolArgs
 
     # Define any required fields
-    data_path: str = Field(..., description="Path to the SDG dataset")
-    alignment_model: str = Field(..., description="Model used for alignment")
+    data_path: str = Field(..., _description = "Path to the SDG dataset")
+    alignment_model: str = Field(..., _description = "Model used for alignment")
 
     # Initialize any additional attributes
     alignment_results: Dict[str, Any] = Field(default=dict)
@@ -48,3 +62,17 @@ class SDGAlignTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
+
+class SDGAlignTool(StructuredTool):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description

@@ -13,7 +13,7 @@ class TEDxTranscriptInput(BaseModel):
     """
     slug: str = Field(
         ..., 
-        description="The slug of the TEDx talk to retrieve the transcript for."
+        _description = "The slug of the TEDx talk to retrieve the transcript for."
     )
 
     @validator('slug')
@@ -23,3 +23,9 @@ class TEDxTranscriptInput(BaseModel):
         if not isinstance(v, str):
             raise TypeError("Slug must be a string.")
         return v.strip()
+
+class TEDxTranscriptInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description

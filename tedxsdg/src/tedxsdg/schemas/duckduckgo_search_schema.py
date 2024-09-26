@@ -14,7 +14,7 @@ class DuckDuckGoSearchInput(BaseModel):
     """Schema for DuckDuckGo search input."""
 
     search_query: Union[str, Dict[str, Any]] = Field(
-        ..., description="Search query for DuckDuckGo."
+        ..., _description = "Search query for DuckDuckGo."
     )
 
     @validator('search_query', pre=True, always=True)
@@ -23,3 +23,9 @@ class DuckDuckGoSearchInput(BaseModel):
         if not isinstance(v, (str, dict)):
             raise ValueError("search_query must be either a string or a dictionary.")
         return v
+
+class DuckDuckGoSearchInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description

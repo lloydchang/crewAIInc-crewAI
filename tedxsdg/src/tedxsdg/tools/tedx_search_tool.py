@@ -17,18 +17,36 @@ logger = logging.getLogger(__name__)
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""
     search_query: str = Field(
-        ..., description="The search query for TEDx talks"
+        ..., _description = "The search query for TEDx talks"
     )
 
+
+class TEDxSearchToolArgs(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def args_schema(self):
+        return self._args_schema
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
 
 class TEDxSearchTool(StructuredTool):
     """Tool for searching TEDx content from a local CSV dataset."""
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
-    args_schema = TEDxSearchToolArgs
+    _args_schema = TEDxSearchToolArgs
 
     # Define 'data_path' as a Pydantic field
-    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    data_path: str = Field(..., _description = "Path to the TEDx dataset CSV")
 
     # Initialize 'csv_data' with a default empty dictionary
     csv_data: Dict[str, Dict[str, Any]] = Field(default=dict)
@@ -46,7 +64,7 @@ class TEDxSearchTool(StructuredTool):
                 for row in reader:
                     slug = row.get('slug', '').strip().lower()
                     title = row.get('title', '').strip().lower()
-                    description = row.get('description', '').strip().lower()
+                    _description = row.get('description', '').strip().lower()
                     if slug:
                         search_index[slug] = row
             logger.debug("Loaded %d entries from CSV file.", len(search_index))
@@ -117,3 +135,21 @@ class TEDxSearchTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
+
+class TEDxSearchTool(StructuredTool):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def args_schema(self):
+        return self._args_schema
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description

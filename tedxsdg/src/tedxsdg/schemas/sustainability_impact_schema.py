@@ -14,11 +14,11 @@ class SustainabilityImpactInput(BaseModel):
     """
     project: Union[str, Dict[str, Any]] = Field(
         default="Unnamed Project",
-        description="Project to assess for sustainability impact."
+        _description = "Project to assess for sustainability impact."
     )
     metrics: List[str] = Field(
         default=list,
-        description="List of sustainability metrics."
+        _description = "List of sustainability metrics."
     )
 
     @validator('project')
@@ -51,3 +51,13 @@ class SustainabilityImpactInput(BaseModel):
                 "metrics": ["carbon footprint", "energy efficiency"]
             }
         }
+
+class SustainabilityImpactInput(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description

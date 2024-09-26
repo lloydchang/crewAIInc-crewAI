@@ -88,7 +88,7 @@ class CrewAIManager:
 
         task_config = self.tasks_config[task_name]
         logger.debug("Task config: %s", task_config)
-        agent_name = task_config.get("agent")
+        agent__name = task_config.get("agent")
 
         if agent_name not in self.agents:
             logger.debug("Agent '%s' not found, creating new agent.", agent_name)
@@ -101,7 +101,7 @@ class CrewAIManager:
         logger.debug("Task priority: %s", priority)
 
         task = Task(
-            description=task_config.get("description", ""),
+            _description = task_config.get("description", ""),
             agent=agent,
             priority=priority,
             expected_output=task_config.get("expected_output", "No output specified.")

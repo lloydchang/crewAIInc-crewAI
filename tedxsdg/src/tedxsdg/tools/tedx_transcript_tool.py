@@ -15,8 +15,18 @@ logger = logging.getLogger(__name__)
 
 class TEDxTranscriptToolArgs(BaseModel):
     """Arguments for TEDxTranscriptTool."""
-    slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
+    slug: str = Field(..., _description = "The slug of the TEDx talk to retrieve the transcript for.")
 
+
+class TEDxTranscriptToolArgs(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def args_schema(self):
+        return self._args_schema
 
 class TEDxTranscriptTool(StructuredTool):
     """
@@ -26,7 +36,7 @@ class TEDxTranscriptTool(StructuredTool):
     description: str = (
         "Retrieves the transcript of a TEDx talk based on the provided slug."
     )
-    args_schema = TEDxTranscriptToolArgs
+    _args_schema = TEDxTranscriptToolArgs
 
     def __init__(
         self,
@@ -82,3 +92,13 @@ class TEDxTranscriptTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
+
+class TEDxTranscriptTool(StructuredTool):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def args_schema(self):
+        return self._args_schema

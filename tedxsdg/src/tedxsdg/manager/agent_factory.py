@@ -53,7 +53,7 @@ def create_agent(
 
     try:
         agent = Agent(
-            name=agent_name,
+            _name = agent_name,
             role=agent_config.get("role"),
             goal=agent_config.get("goal"),
             backstory=agent_config.get("backstory"),

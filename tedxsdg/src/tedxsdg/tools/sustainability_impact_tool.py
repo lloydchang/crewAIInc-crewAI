@@ -10,7 +10,21 @@ logger = logging.getLogger(__name__)
 
 class SustainabilityImpactToolArgs(BaseModel):
     """Arguments for SustainabilityImpactTool."""
-    project: str = Field(..., description="The project to assess for sustainability impact")
+    project: str = Field(..., _description = "The project to assess for sustainability impact")
+
+class SustainabilityImpactToolArgs(BaseModel):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
 
 class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
@@ -18,8 +32,8 @@ class SustainabilityImpactTool(StructuredTool):
     args_schema: type[BaseModel] = SustainabilityImpactToolArgs
 
     # Define required fields
-    data_path: str = Field(..., description="Path to the sustainability impact data CSV")
-    assessment_model: str = Field(..., description="Model used for assessment")
+    data_path: str = Field(..., _description = "Path to the sustainability impact data CSV")
+    assessment_model: str = Field(..., _description = "Model used for assessment")
 
     # Initialize any additional attributes
     impact_data: Dict[str, Any] = Field(default=dict)
@@ -59,3 +73,17 @@ class SustainabilityImpactTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
+
+class SustainabilityImpactTool(StructuredTool):
+:
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def description(self):
+        return self._description
