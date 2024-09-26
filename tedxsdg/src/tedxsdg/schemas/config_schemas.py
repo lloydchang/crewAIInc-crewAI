@@ -10,7 +10,7 @@ class LLMInnerConfig(BaseModel):
 
     @field_validator('temperature')
     def validate_temperature(cls, value):
-        if not value:
+        if value is None:
             raise ValueError("Missing LLM temperature.")
         if value < 0:
             raise ValueError("LLM temperature must be equal to or greater than 0.")
@@ -23,7 +23,7 @@ class LLMConfig(BaseModel):
 
     @field_validator('provider')
     def validate_provider(cls, value):
-        if not value:
+        if value is None:
             raise ValueError("Missing LLM provider.")
         return value
 
@@ -34,7 +34,7 @@ class EmbedderInnerConfig(BaseModel):
 
     @field_validator('temperature')
     def validate_temperature(cls, value):
-        if not value:
+        if value is None:
             raise ValueError("Missing Embedder temperature.")
         if value < 0:
             raise ValueError("Embedder temperature must be equal to or greater than 0.")
@@ -47,7 +47,7 @@ class EmbedderConfig(BaseModel):
 
     @field_validator('provider')
     def validate_provider(cls, value):
-        if not value:
+        if value is None:
             raise ValueError("Missing Embedder provider.")
         return value
 
@@ -58,6 +58,6 @@ class ToolConfig(BaseModel):
 
     @field_validator('llm', 'embedder')
     def validate_configs(cls, value):
-        if not value:
+        if value is None:
             raise ValueError("Both LLM and Embedder configurations must be initialized properly.")
         return value
