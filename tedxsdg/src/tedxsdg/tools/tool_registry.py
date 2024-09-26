@@ -10,28 +10,27 @@ from .tedx_search_tool import TEDxSearchTool
 
 logger = logging.getLogger(__name__)
 
+# In tool_registry.py
+
 class ToolRegistry:
     def __init__(self):
-        # Load tool-specific configurations
         self.tool_configs = load_config('config/tools.yaml', 'tools')
         self.tools: Dict[str, StructuredTool] = {}
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
-        """Create a tool with the provided tool name and class, using the loaded config."""
-        logger.debug(f"Entering _create_tool for '{tool_name}'")
+        logger.debug(f"Creating tool '{tool_name}'")
         
         if tool_name not in self.tool_configs:
             logger.error(f"No configuration found for tool '{tool_name}'.")
             raise ValueError(f"Tool configuration for '{tool_name}' not found.")
 
         try:
-            # Pass the configuration dictionary to the tool's constructor
-            tool_instance = tool_class(config=self.tool_configs[tool_name])
-            logger.debug("Tool instance created successfully")
+            tool_config = self.tool_configs[tool_name]
+            tool_instance = tool_class(config=tool_config)
+            logger.debug(f"Tool '{tool_name}' created successfully")
             return tool_instance
-
         except Exception as e:
-            logger.error(f"Error creating tool '{tool_name}': {e}", exc_info=True)
+            logger.error(f"Error creating tool '{tool_name}': {str(e)}", exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
