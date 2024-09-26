@@ -60,8 +60,8 @@ def create_agent(
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
             tools=tools,
-            search_query=agent_config.get("search_query", {}),  # Ensure search_query is added
-            type=agent_config.get("type")  # Ensure type is included
+            search_query=agent_config.get("search_query", None),
+            type=agent_config.get("type", None)
         )
         logger.info(
             "Created agent '%s' with tools: %s",
