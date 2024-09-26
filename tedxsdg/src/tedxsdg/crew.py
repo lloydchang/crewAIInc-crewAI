@@ -2,17 +2,21 @@
 
 #!/usr/bin/env python
 
-"""
-Module for initializing and running the CrewAI.
-"""
-
 import os
 import logging
 import sys
 from dotenv import load_dotenv
-import inspect  # Import inspect for better method introspection
+import inspect
 
-logging.basicConfig(level=logging.DEBUG)
+# Centralized logging configuration
+logging.basicConfig(
+    level=logging.DEBUG,  # Set to DEBUG for detailed logs
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # Log to stdout
+    ]
+)
+
 logger = logging.getLogger(__name__)
 
 try:

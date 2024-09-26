@@ -1,7 +1,7 @@
 # tools/tool_registry.py
 
 import logging
-from typing import Dict, Type
+from typing import Dict, Type, Any  # Added 'Any' here
 from langchain.tools import StructuredTool
 from .config_loader import load_config
 from .duckduckgo_search_tool import DuckDuckGoSearchTool
