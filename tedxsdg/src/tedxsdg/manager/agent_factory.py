@@ -1,4 +1,4 @@
-# crewai_manager/agent_factory.py
+# manager/agent_factory.py
 
 """
 Module for creating agents with specified tools and configurations.

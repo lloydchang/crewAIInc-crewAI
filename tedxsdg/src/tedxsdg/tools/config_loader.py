@@ -1,4 +1,4 @@
-# crewai_manager/config_loader.py
+# manager/config_loader.py
 
 """
 Module for loading configuration files.

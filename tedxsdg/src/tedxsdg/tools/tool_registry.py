@@ -1,9 +1,5 @@
 # tools/tool_registry.py
 
-"""
-Module for registering and managing tools.
-"""
-
 import logging
 from typing import Dict, Type
 from langchain.tools import StructuredTool
@@ -17,25 +13,14 @@ from .tedx_transcript_tool import TEDxTranscriptTool
 
 logger = logging.getLogger(__name__)
 
-
 class ToolRegistry:
     """
     Registry for managing and creating tools.
     """
     
-    def __init__(self):
-        try:
-            self.tool_configs = load_config('config/tools.yaml', 'tools')
-            logger.debug("Loaded tool configurations: %s", self.tool_configs)
-            # Check if 'tedx_search' exists in the loaded configurations
-            if 'tedx_search' not in self.tool_configs:
-                logger.error(
-                    "The 'tedx_search' configuration is missing from tools.yaml!"
-                )
-        except Exception as e:
-            logger.error("Error loading tools.yaml: %s", e)
-            raise
-
+    def __init__(self, tool_configs: Dict[str, Any]):
+        self.tool_configs = tool_configs
+        logger.debug("Loaded tool configurations: %s", self.tool_configs)
         self.tools: Dict[str, StructuredTool] = {}
 
     def _create_tool(

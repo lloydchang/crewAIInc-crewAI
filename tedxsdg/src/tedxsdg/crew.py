@@ -1,3 +1,5 @@
+# crew.py
+
 #!/usr/bin/env python
 
 """
@@ -14,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 try:
-    from crewai_manager.manager import CrewAIManager
+    from manager.manager import CrewAIManager
 except ImportError as e:
     logger.error("Failed to import CrewAIManager: %s", str(e), exc_info=True)
     sys.exit(1)
@@ -31,7 +33,7 @@ TOOLS_CONFIG_PATH = os.getenv("TOOLS_CONFIG_PATH", "config/tools.yaml")
 
 def initialize_crew():
     """
-    Initialize and run the crew based on the configurations provided.
+    Initialize the CrewAIManager and return the Crew instance.
     """
     logger.debug("Initializing crew with configurations.")
     try:
@@ -42,13 +44,16 @@ def initialize_crew():
             tools_config_path=TOOLS_CONFIG_PATH
         )
         logger.info("Crew initialization successful.")
-        
-        # List available methods using inspect
-        methods = inspect.getmembers(manager, predicate=inspect.isfunction)
+
+        # Initialize the crew
+        crew = manager.initialize_crew()
+
+        # List available methods on Crew instance (if needed)
+        methods = inspect.getmembers(crew, predicate=inspect.isfunction)
         method_names = [method[0] for method in methods if not method[0].startswith("__")]
-        logger.debug(f"Available methods in CrewAIManager: {method_names}")
-        
-        return manager
+        logger.debug(f"Available methods in Crew: {method_names}")
+
+        return crew
     except (ValueError, TypeError, RuntimeError) as e:
         logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
     except Exception as e:
@@ -65,16 +70,16 @@ def run_crew():
         if crew is None:
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
-        
-        # Example: Check if a method exists before calling
-        if hasattr(crew, 'execute_crew'):
-            kickoff_result = crew.execute_crew()  # Replace with the actual method name
-        elif hasattr(crew, 'run'):
-            kickoff_result = crew.run()
+
+        # Attempt to run the crew
+        if hasattr(crew, 'run'):
+            kickoff_result = crew.run()  # Replace with the actual method name if different
+        elif hasattr(crew, 'execute'):
+            kickoff_result = crew.execute()
         else:
             logger.error("No suitable method found to execute the crew.")
             return "Error: No suitable method found to execute the crew."
-        
+
         logger.info("Crew execution completed successfully.")
         return kickoff_result
     except (ValueError, TypeError, RuntimeError) as e:

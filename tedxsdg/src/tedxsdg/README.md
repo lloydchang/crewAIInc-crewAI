@@ -5,21 +5,14 @@
 │   ├── __init__.cpython-312.pyc
 │   ├── crew.cpython-312.pyc
 │   └── main.cpython-312.pyc
+├── all_python_files.py
+├── all_yaml_files.yaml
 ├── config
 │   ├── agents.yaml
 │   ├── model.yaml
 │   ├── tasks.yaml
 │   └── tools.yaml
 ├── crew.py
-├── crewai_manager
-│   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-312.pyc
-│   │   ├── agent_factory.cpython-312.pyc
-│   │   ├── config_loader.cpython-312.pyc
-│   │   └── manager.cpython-312.pyc
-│   ├── agent_factory.py
-│   └── manager.py
 ├── data
 │   ├── all_indicators
 │   │   ├── 1-2-1.csv
@@ -152,6 +145,15 @@
 │   └── chroma.sqlite3
 ├── f
 ├── main.py
+├── manager
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── agent_factory.cpython-312.pyc
+│   │   ├── config_loader.cpython-312.pyc
+│   │   └── manager.cpython-312.pyc
+│   ├── agent_factory.py
+│   └── manager.py
 ├── schemas
 │   ├── __init__.py
 │   ├── __pycache__
@@ -193,4 +195,4 @@
     ├── tool_registry.py
     └── utils.py
 
-15 directories, 179 files
+15 directories, 181 files
