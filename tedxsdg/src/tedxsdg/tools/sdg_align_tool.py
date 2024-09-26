@@ -14,7 +14,7 @@ class SDGAlignTool(StructuredTool):
     description: str = "Analyzes ideas and aligns them with UN SDGs."
     args_schema: Type[BaseModel] = SDGAlignInput
 
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: str = 'data/sdg_data.csv'):
+    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = 'data/sdg_data.csv'):
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
         super().__init__()

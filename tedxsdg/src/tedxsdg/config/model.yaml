@@ -1,4 +1,5 @@
 # config/model.yaml
+
 llm:
   provider: "ollama"  # The provider for the LLM. Ensure this matches your implementation.
   config:

@@ -1,4 +1,5 @@
 # config/tools.yaml
+
 tedx_search:
   llm_config:
     provider: "ollama"
