@@ -15,6 +15,11 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
 
+class TEDxSearchConfig(BaseModel):
+    llm_config: LLMConfig
+    embedder_config: EmbedderConfig
+    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
+
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
@@ -22,24 +27,24 @@ class TEDxSearchTool(StructuredTool):
 
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
-    data_path: str = Field(default='data/github-mauropelucchi-tedx_dataset-update_2024-details.csv', description="Path to the TEDx dataset CSV.")
+    data_path: str
     csv_search_tool: Optional[CSVSearchTool] = None
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Validate required fields
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
-        # Validate types
-        if not isinstance(llm_config, LLMConfig):
-            raise TypeError("Invalid LLMConfig provided.")
-        if not isinstance(embedder_config, EmbedderConfig):
-            raise TypeError("Invalid EmbedderConfig provided.")
-        super().__init__()  # Call to the parent class initializer
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
-        if data_path:
-            self.data_path = data_path
+        # Validate using the Pydantic model
+        try:
+            validated_config = TEDxSearchConfig(
+                llm_config=llm_config,
+                embedder_config=embedder_config,
+                data_path=data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+            )
+            self.llm_config = validated_config.llm_config
+            self.embedder_config = validated_config.embedder_config
+            self.data_path = validated_config.data_path
+        except ValidationError as e:
+            logger.error(f"Configuration validation failed: {e}")
+            raise e
 
         logger.info("Initializing CSVSearchTool with the provided configurations")
 
