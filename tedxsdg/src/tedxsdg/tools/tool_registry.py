@@ -7,7 +7,7 @@ Module for registering and managing tools.
 import logging
 from typing import Dict, Type
 from langchain.tools import StructuredTool
-from crewai_manager.config_loader import load_config
+from .config_loaders import load_config
 from .duckduckgo_search_tool import DuckDuckGoSearchTool
 from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool

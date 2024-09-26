@@ -9,7 +9,7 @@ import os
 from typing import Any, Dict
 from tools.tool_registry import ToolRegistry
 from crewai import Crew, Process, Agent, Task
-from crewai_manager.config_loader import load_config
+from tools.config_loader import load_config
 from crewai_manager.agent_factory import create_agent
 
 # Configure logging
