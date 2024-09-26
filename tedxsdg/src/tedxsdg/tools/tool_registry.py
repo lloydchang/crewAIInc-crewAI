@@ -1,5 +1,3 @@
-# tools/tool_registry.py
-
 import logging
 import yaml
 from typing import Any, Dict, Type
@@ -35,46 +33,34 @@ class ToolRegistry:
         # Load tool-specific configurations
         self.tool_configs = self._load_tool_configs(tools_config_path)
 
-def _load_tool_configs(self, tools_config_path: str) -> Dict[str, Dict[str, Any]]:
-    """Loads tool-specific configurations from the tools.yaml file."""
-    logger.debug(f"_load_tool_configs [Line 1] Starting to load tool configurations from '{tools_config_path}'")
-    
-    try:
-        logger.debug(f"_load_tool_configs [Line 2] Attempting to open the tools configuration file at '{tools_config_path}'")
-        
-        with open(tools_config_path, 'r') as f:
-            logger.debug(f"_load_tool_configs [Line 3] Successfully opened the configuration file at '{tools_config_path}'")
-            
-            tool_configs = yaml.safe_load(f)
-            logger.debug(f"_load_tool_configs [Line 4] Parsed the YAML configuration file successfully")
-        
-        logger.info(f"_load_tool_configs [Line 5] Loaded tool configurations from '{tools_config_path}'")
-        logger.debug(f"_load_tool_configs [Line 6] Full tool configurations: {tool_configs}")
-        
-        return tool_configs
-
-    except FileNotFoundError:
-        logger.error(f"_load_tool_configs [Line 7] The configuration file '{tools_config_path}' was not found.")
-        raise
-
-    except yaml.YAMLError as yaml_error:
-        logger.error(f"_load_tool_configs [Line 8] Error parsing YAML from '{tools_config_path}': {yaml_error}", exc_info=True)
-        raise
-
-    except Exception as e:
-        logger.error(f"_load_tool_configs [Line 9] An unexpected error occurred while loading tool configurations from '{tools_config_path}': {e}", exc_info=True)
-        raise
-
     def _load_tool_configs(self, tools_config_path: str) -> Dict[str, Dict[str, Any]]:
         """Loads tool-specific configurations from the tools.yaml file."""
+        logger.debug(f"_load_tool_configs [Line 1] Starting to load tool configurations from '{tools_config_path}'")
+        
         try:
+            logger.debug(f"_load_tool_configs [Line 2] Attempting to open the tools configuration file at '{tools_config_path}'")
+            
             with open(tools_config_path, 'r') as f:
+                logger.debug(f"_load_tool_configs [Line 3] Successfully opened the configuration file at '{tools_config_path}'")
+                
                 tool_configs = yaml.safe_load(f)
-            logger.info(f"Loaded tool configurations from '{tools_config_path}'.")
-            logger.debug(f"Tool configurations: {tool_configs}")
+                logger.debug(f"_load_tool_configs [Line 4] Parsed the YAML configuration file successfully")
+            
+            logger.info(f"_load_tool_configs [Line 5] Loaded tool configurations from '{tools_config_path}'")
+            logger.debug(f"_load_tool_configs [Line 6] Full tool configurations: {tool_configs}")
+            
             return tool_configs
+
+        except FileNotFoundError:
+            logger.error(f"_load_tool_configs [Line 7] The configuration file '{tools_config_path}' was not found.")
+            raise
+
+        except yaml.YAMLError as yaml_error:
+            logger.error(f"_load_tool_configs [Line 8] Error parsing YAML from '{tools_config_path}': {yaml_error}", exc_info=True)
+            raise
+
         except Exception as e:
-            logger.error(f"Error loading tool configurations from '{tools_config_path}': {e}", exc_info=True)
+            logger.error(f"_load_tool_configs [Line 9] An unexpected error occurred while loading tool configurations from '{tools_config_path}': {e}", exc_info=True)
             raise
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
