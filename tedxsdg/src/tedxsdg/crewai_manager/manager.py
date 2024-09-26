@@ -96,17 +96,21 @@ class CrewAIManager:
         try:
             logger.debug(f"[Line 28] Model config being passed: {self.model_config}")
 
-            # Log the actual llm and embedder configs
-            logger.debug(f"[Line 29] LLM Config: {self.model_config.get('llm')}")
-            logger.debug(f"[Line 30] Embedder Config: {self.model_config.get('embedder')}")
+            # Adjust the code to handle the 'config' section within 'llm' and 'embedder'
+            llm_config = self.model_config.get('llm', {}).get('config', {})
+            embedder_config = self.model_config.get('embedder', {}).get('config', {})
+
+            if not llm_config or 'model' not in llm_config:
+                logger.error("[Line 31] LLM configuration is missing or does not contain a valid model.")
+                raise ValueError("LLM configuration must contain a valid 'model'.")
 
             tool_config_data = {
-                "llm": self.model_config["llm"],
-                "embedder": self.model_config["embedder"]
+                "llm": llm_config,
+                "embedder": embedder_config
             }
 
-            logger.debug(f"[Line 31] Tool config data before validation: {tool_config_data}")
-            return tool_config_data  # Return the configuration data as a dictionary
+            logger.debug(f"[Line 32] Tool config data: {tool_config_data}")
+            return tool_config_data
         except Exception as e:
             logger.error(f"[Line 34] Unexpected error during ToolConfig initialization: {e}", exc_info=True)
             raise
