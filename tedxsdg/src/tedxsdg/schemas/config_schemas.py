@@ -10,8 +10,10 @@ class LLMInnerConfig(BaseModel):
 
     @field_validator('temperature')
     def validate_temperature(cls, value):
+        if not value:
+            raise ValueError(f"Missing LLM temperature.")
         if value is not None and value < 0:
-            raise ValueError("Temperature must be equal to or greater than 0.")
+            raise ValueError("LLM temperature must be equal to or greater than 0.")
         return value
 
 # LLM Configuration
@@ -21,9 +23,8 @@ class LLMConfig(BaseModel):
 
     @field_validator('provider')
     def validate_provider(cls, value):
-        valid_providers = ['ollama']
-        if value not in valid_providers:
-            raise ValueError(f"Invalid LLM provider '{value}'. Must be one of: {', '.join(valid_providers)}")
+        if not value:
+            raise ValueError(f"Missing LLM provider.")
         return value
 
 # Inner configuration for the Embedder
@@ -37,9 +38,8 @@ class EmbedderConfig(BaseModel):
 
     @field_validator('provider')
     def validate_provider(cls, value):
-        valid_providers = ['ollama']
-        if value not in valid_providers:
-            raise ValueError(f"Invalid embedder provider '{value}'. Must be one of: {', '.join(valid_providers)}")
+        if not value:
+            raise ValueError(f"Missing Embedder provider.")
         return value
 
 # Tool configuration that encapsulates LLM and Embedder configurations
