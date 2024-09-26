@@ -1,25 +1,25 @@
-# tools/tedx_search_tool.py
-
 import os
 import logging
 import csv
+import shutil
 from typing import Any, Dict
 from langchain.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
+
+class TEDxSearchToolArgs(BaseModel):
+    search_query: str = Field(..., description="The search query for TEDx talks")
 
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
+    args_schema: type[BaseModel] = TEDxSearchToolArgs
 
     def __init__(self, config: Dict[str, Any]):
-        # Ensure proper initialization with configuration
         super().__init__()
         self.data_path = config.get('data_path')
-
         logger.info("Initializing TEDxSearchTool.")
-        
-        # Initialize the CSV search tool
         try:
             self.csv_data = self._load_csv_data()
         except Exception as e:
