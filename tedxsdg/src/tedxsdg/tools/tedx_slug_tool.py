@@ -1,27 +1,41 @@
-# tools/tedx_slug_tool.py
+"""
+Module for TEDxSlugTool which retrieves TEDx content details based on a provided
+slug.
+"""
 
 import logging
 import csv
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from langchain.tools import StructuredTool
 
 logger = logging.getLogger(__name__)
 
+
 class TEDxSlugTool(StructuredTool):
+    """
+    Tool to retrieve TEDx content details based on a provided slug.
+    """
     name: str = "tedx_slug"
-    description: str = "Retrieves TEDx content details based on a provided slug."
+    description: str = (
+        "Retrieves TEDx content details based on a provided slug."
+    )
 
     def __init__(self, config: Dict[str, Any]):
-        # Ensure proper initialization with configuration
+        """
+        Initialize the TEDxSlugTool with the given configuration.
+        """
         super().__init__()
         self.data_path = config.get('data_path')
         if not self.data_path:
             raise ValueError("Data path is required for TEDxSlugTool.")
-        
+        # Load CSV data upon initialization
+        self.csv_data = self._load_csv_data()
         self.csv_data = self._load_csv_data()  # Load CSV data upon initialization
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
-        """Load CSV data directly without dependency on TEDxSearchTool."""
+        """
+        Load CSV data directly without dependency on TEDxSearchTool.
+        """
         try:
             slug_index = {}
             with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
@@ -30,21 +44,28 @@ class TEDxSlugTool(StructuredTool):
                     slug = row.get('slug', '').strip()
                     if slug:
                         slug_index[slug] = row
-            logger.debug(f"Loaded {len(slug_index)} slugs from CSV file.")
+            logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
             return slug_index
         except FileNotFoundError:
-            logger.error(f"CSV file not found at path: {self.data_path}")
+            logger.error("CSV file not found at path: %s", self.data_path)
             raise
         except Exception as e:
-            logger.error(f"Error loading CSV data: {e}", exc_info=True)
-            raise
+            logger.error("Error loading CSV data: %s", e, exc_info=True)
+    def _run(self, slug: str, *args: Any, **kwargs: Any) -> str:
 
     def _run(self, slug: str) -> str:
-        """Retrieve data for the given slug."""
+        """
+        Retrieve data for the given slug.
+        """
         if not slug:
             return "Error: No slug provided."
 
-        row = self.csv_data.get(slug)
+        if not hasattr(self, 'csv_data') or self.csv_data is None:
+            return "Error: CSV data is not loaded."
+
+            return (
+                f"No data found for slug '{slug}'. Please ensure the slug is correct."
+            )
         if not row:
             return f"No data found for slug '{slug}'. Please ensure the slug is correct."
 

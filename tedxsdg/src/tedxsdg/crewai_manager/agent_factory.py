@@ -1,18 +1,22 @@
-# crewai_manager/agent_factory.py
+"""
+Module for creating agents with specified tools and configurations.
+"""
 
 import logging
 from crewai import Agent
-from tools.tool_registry import ToolRegistry
+from tedxsdg.crewai_manager.tools.tool_registry import ToolRegistry
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 
 def create_agent(
     agent_name: str,
     agent_config: dict,
     tool_registry: ToolRegistry
 ) -> Agent:
-    """Creates an agent with the tools and configuration specified in the configuration file."""
+    """Creates an agent with the tools and configuration specified in the 
+    config file."""
     tool_names = agent_config.get("tools", [])
     tools = []
 
@@ -20,10 +24,16 @@ def create_agent(
         try:
             tool = tool_registry.get_tool(tool_name)
             tools.append(tool)
-            logger.info(f"Successfully created tool '{tool_name}'.")
-        except Exception as e:
-            logger.error(f"Error creating tool '{tool_name}': {str(e)}", exc_info=True)
-            logger.warning(f"Tool '{tool_name}' could not be created and will be skipped.")
+            logger.info("Successfully created tool '%s'.", tool_name)
+        except KeyError as e:
+            logger.error(
+                "Error creating tool '%s': %s", tool_name, str(e), 
+                exc_info=True
+            )
+            logger.warning(
+                "Tool '%s' could not be created and will be skipped.", 
+                tool_name
+            )
 
     try:
         agent = Agent(
@@ -35,8 +45,15 @@ def create_agent(
             verbose=True,
             tools=tools
         )
-        logger.info(f"Created agent '{agent_name}' with tools: {[tool.name for tool in tools]}")
+        logger.info(
+            "Created agent '%s' with tools: %s",
+            agent_name,
+            [tool.name for tool in tools]
+        )
         return agent
-    except Exception as e:
-        logger.error(f"Error creating agent '{agent_name}': {str(e)}", exc_info=True)
+    except ValueError as e:
+        logger.error(
+            "Error creating agent '%s': %s", agent_name, str(e), 
+            exc_info=True
+        )
         raise

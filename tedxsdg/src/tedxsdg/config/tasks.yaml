@@ -2,11 +2,14 @@
 
 launch_eco_friendly_pet_care:
   description: >
-    Use the tedx_search tool to research best practices and similar initiatives.
-    Use the duckduckgo_search tool to research best practices and similar initiatives.
     Launch and implement an eco-friendly pet care initiative to promote responsible ownership and biodiversity.
-    Use the sdg_align tool to align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
-    Assess the initiative's sustainability using the sustainability_impact tool.
+    Align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
+    Assess the initiative's sustainability.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: sam
   priority: 1  # High priority
   expected_output: >
@@ -18,11 +21,14 @@ launch_eco_friendly_pet_care:
 
 develop_sustainable_food_supply_chain:
   description: >
-    Use the tedx_search tool to find best practices and similar examples.
-    Use the duckduckgo_search tool to find best practices and similar examples.
     Develop and implement a sustainable food supply chain to combat hunger and reduce food waste.
-    Use the sdg_align tool to align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
-    Assess the sustainability impact of the food supply chain using the sustainability_impact tool.
+    Align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
+    Assess the sustainability impact of the food supply chain.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: alex
   priority: 1  # High priority
   expected_output: >
@@ -33,11 +39,14 @@ develop_sustainable_food_supply_chain:
 
 facilitate_collaboration:
   description: >
-    Use the tedx_search tool to find examples of successful collaborations in similar fields.
-    Use the duckduckgo_search tool to find examples of successful collaborations in similar fields.
     Analyze multiple TEDxSDG projects and identify potential synergies or collaboration opportunities.
-    Use the sdg_align tool to identify common SDG goals between projects.
-    Use the sustainability_impact tool to evaluate the potential impact of collaborations.
+    Identify common SDG goals between projects.
+    Evaluate the potential impact of collaborations.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: collaboration_facilitator
   priority: 2  # Medium priority
   expected_output: >
@@ -52,18 +61,13 @@ facilitate_collaboration:
 
 analyze_idea:
   description: >
-    Use the tedx_search tool to find relevant information and examples.
-    Use the duckduckgo_search tool to find relevant information and examples.
-    Analyze the given idea and determine its alignment with UN SDGs. Use the sdg_align tool with the following structure:
-    {
-      "idea": "{idea}",
-      "sdgs": [2, 3, 12, 15, 17]  # List relevant SDGs here
-    }
-    Then, assess the sustainability impact using the sustainability_impact tool with the structure:
-    {
-      "project": "{project}",
-      "metrics": ["metric1", "metric2", "metric3", "metric4", "metric5"]  # List relevant metrics here
-    }
+    Analyze the given idea and determine its alignment with UN SDGs.
+    Assess the sustainability impact.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: idea_analyzer
   priority: 2  # Medium priority
   expected_output: >
@@ -77,11 +81,14 @@ analyze_idea:
 
 provide_expert_advice:
   description: >
-    Use the tedx_search tool to find relevant examples and case studies to support your advice.
-    Use the duckduckgo_search tool to find relevant examples and case studies to support your advice.
     Address specific questions or challenges related to the implementation of SDG-aligned projects.
-    Use the sdg_align tool to ensure advice is in line with SDG goals.
-    Use the sustainability_impact tool to evaluate potential impacts of the advice.
+    Ensure advice is in line with SDG goals.
+    Evaluate potential impacts of the advice.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: expert_advisor
   priority: 2  # Medium priority
   expected_output: >
@@ -95,11 +102,14 @@ provide_expert_advice:
 
 generate_action_plan:
   description: >
-    Use the tedx_search tool to find best practices and examples for each step of the plan.
-    Use the duckduckgo_search tool to find best practices and examples for each step of the plan.
     Based on the analyzed idea and its SDG alignment, create a detailed, step-by-step action plan.
-    Use the sdg_align tool to ensure each step aligns with the relevant SDGs.
-    Use the sustainability_impact tool to evaluate the potential impact of each step.
+    Ensure each step aligns with the relevant SDGs.
+    Evaluate the potential impact of each step.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: action_plan_generator
   priority: 2  # High priority
   expected_output: >
@@ -115,11 +125,14 @@ generate_action_plan:
 
 integrate_data:
   description: >
-    Use the tedx_search tool to find relevant datasets and data integration techniques.
-    Use the duckduckgo_search tool to find relevant datasets and data integration techniques.
     Integrate and analyze data from multiple open-source datasets to provide insights for TEDxSDG projects.
-    Use the sdg_align tool to ensure data analysis aligns with SDG goals.
-    Use the sustainability_impact tool to evaluate the potential impact of insights derived from the data.
+    Ensure data analysis aligns with SDG goals.
+    Evaluate the potential impact of insights derived from the data.
+  tools:
+    - tedx_search
+    - duckduckgo_search
+    - sdg_align
+    - sustainability_impact
   agent: data_integration_specialist
   priority: 2  # Medium priority
   expected_output: >

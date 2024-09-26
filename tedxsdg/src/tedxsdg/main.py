@@ -1,9 +1,12 @@
-# main.py
-
 #!/usr/bin/env python
+
+# main.py
+#
+# This module sets up the environment and runs the crew.
 
 import os
 import logging
+from crew import run_crew  # Importing run_crew from your crew file
 
 # Disable the opentelemetry sdk by setting the environment variable
 os.environ['OTEL_SDK_DISABLED'] = 'true'
@@ -23,14 +26,19 @@ os.environ['EMBEDCHAIN_ANONYMOUS_ID'] = 'False'
 # Set verbose logging for litellm via environment variable
 os.environ['LITELLM_LOG'] = 'DEBUG'  # Enables verbose mode for litellm
 
-# Importing run_crew from your crew file
-from crew import run_crew
 
 def run():
+    """
+    Run the crew function and handle any exceptions.
+    """
     try:
         run_crew()
+    except RuntimeError as e:
+        logging.error("A runtime error occurred while running the crew: %s", e)
     except Exception as e:
-        logging.error("An error occurred while running the crew: %s", e)
+        logging.error("An unexpected error occurred while running the crew: %s", e)
+
 
 if __name__ == "__main__":
+    
     run()

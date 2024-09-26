@@ -1,4 +1,6 @@
-# schemas/__init__.py
+"""
+This module initializes the schemas package.
+"""
 
 from .duckduckgo_search_schema import DuckDuckGoSearchInput
 from .tedx_search_schema import TEDxSearchInput

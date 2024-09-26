@@ -1,7 +1,15 @@
-# schemas/tedx_search_schema.py
+"""
+Module for TEDx search schema.
+"""
 
-from pydantic import BaseModel, Field
 from typing import Union, Dict, Any
+from pydantic import BaseModel, Field
+
 
 class TEDxSearchInput(BaseModel):
-    search_query: Union[str, Dict[str, Any]] = Field(..., description="Search query for TEDx content.")
+    """
+    Schema for TEDx search input.
+    """
+    __root__: Union[str, Dict[str, Any]] = Field(
+        ..., description="Search query for TEDx content."
+    )
