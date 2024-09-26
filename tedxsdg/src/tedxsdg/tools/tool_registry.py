@@ -39,8 +39,13 @@ class ToolRegistry:
         try:
             # Load the specific tool's configuration and initialize the tool
             tool_config = self.tool_configs[tool_name]
+            
+            # Exclude class-level attributes to prevent Pydantic from processing them
+            excluded_keys = {'name', 'description', 'args_schema'}
+            filtered_config = {k: v for k, v in tool_config.items() if k not in excluded_keys}
+
             # **tool_config unpacks the dictionary into keyword arguments
-            tool_instance = tool_class(**tool_config)
+            tool_instance = tool_class(**filtered_config)
             logger.debug("Tool '%s' created successfully", tool_name)
             self.tools[tool_name] = tool_instance  # Cache the created tool
             return tool_instance
