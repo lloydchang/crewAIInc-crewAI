@@ -8,55 +8,32 @@ import os
 import logging
 import csv
 from typing import Any, Dict, List
-from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""
-    search_query: str = Field(
-        ..., _description = "The search query for TEDx talks"
-    )
+    search_query: str = Field(..., description="The search query for TEDx talks")
 
 
-class TEDxSearchToolArgs(BaseModel):
-:
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def args_schema(self):
-        return self._args_schema
-
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
-
-class TEDxSearchTool(StructuredTool):
+class TEDxSearchTool(BaseModel):
     """Tool for searching TEDx content from a local CSV dataset."""
-    name: str = "tedx_search"
-    description: str = "Searches TEDx content from the local CSV dataset."
+    
+    _name: str = "tedx_search"
+    _description: str = "Searches TEDx content from the local CSV dataset."
     _args_schema = TEDxSearchToolArgs
 
-    # Define 'data_path' as a Pydantic field
-    data_path: str = Field(..., _description = "Path to the TEDx dataset CSV")
-
-    # Initialize 'csv_data' with a default empty dictionary
-    csv_data: Dict[str, Dict[str, Any]] = Field(default=dict)
+    # Instance-level fields
+    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
         if not data_path:
-            raise ValueError("`data_path` must be provided in the configuration")
-        logger.info("Initializing TEDxSearchTool with data_path: %s", data_path)
+            raise ValueError("`data_path` must be provided in the configuration.")
+        logger.info("Loading TEDxSearchTool with data_path: %s", data_path)
         try:
             search_index = {}
             with open(data_path, mode='r', encoding='utf-8') as csvfile:
@@ -64,7 +41,7 @@ class TEDxSearchTool(StructuredTool):
                 for row in reader:
                     slug = row.get('slug', '').strip().lower()
                     title = row.get('title', '').strip().lower()
-                    _description = row.get('description', '').strip().lower()
+                    description = row.get('description', '').strip().lower()
                     if slug:
                         search_index[slug] = row
             logger.debug("Loaded %d entries from CSV file.", len(search_index))
@@ -109,47 +86,18 @@ class TEDxSearchTool(StructuredTool):
         logger.debug("Search results: %s", formatted_results)
         return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
-    def _invalidate_cache(self):
-        """
-        Invalidates the cache by removing the 'db' directory or file.
-        This can be useful if the underlying data has changed.
-        """
-        logger.info("Invalidating the cache.")
-        try:
-            db_path = "db"
-            if os.path.exists(db_path):
-                if os.path.isfile(db_path):
-                    os.remove(db_path)
-                    logger.debug("Removed file: %s", db_path)
-                elif os.path.isdir(db_path):
-                    shutil.rmtree(db_path)
-                    logger.debug("Removed directory: %s", db_path)
-                logger.info("Cache invalidation completed successfully.")
-            else:
-                logger.info("No cache to invalidate. 'db' does not exist.")
-        except Exception as e:
-            logger.error(
-                "Error during cache invalidation: %s", e, exc_info=True
-            )
-            raise
+    # Class property methods
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @property
+    def args_schema(self) -> BaseModel:
+        return self._args_schema
 
     class Config:
         arbitrary_types_allowed = True
-
-class TEDxSearchTool(StructuredTool):
-:
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def args_schema(self):
-        return self._args_schema
-
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
