@@ -74,6 +74,9 @@ class TEDxSearchTool(StructuredTool):
             raise RuntimeError("Failed to load CSV data.") from e
             raise FileNotFoundError(f"File not found: {self.data_path}") from exc
         except Exception as e:
+            logger.error("Error loading CSV data: %s", e, exc_info=True)
+            raise Exception("Failed to load CSV data.") from e
+        return slug_index
 
     def _run(self, *args, **kwargs) -> str:
         """
