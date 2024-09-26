@@ -13,10 +13,9 @@ class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
 
-    def __init__(self):
+    def __init__(self, config: Dict[str, Any]):
         super().__init__()
-        config = load_config('config/tools.yaml', 'tools')
-        self.data_path = config['tedx_search']['data_path']
+        self.data_path = config['data_path']
 
         logger.info("Initializing TEDxSearchTool.")
         
@@ -25,7 +24,7 @@ class TEDxSearchTool(StructuredTool):
             self.csv_data = self._load_csv_data()
         except Exception as e:
             logger.error(f"Error initializing TEDxSearchTool: {e}", exc_info=True)
-            self.csv_search_tool = None
+            self.csv_data = None
             self._invalidate_cache()
             raise
 

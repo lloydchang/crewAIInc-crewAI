@@ -26,7 +26,8 @@ class ToolRegistry:
             raise ValueError(f"Tool configuration for '{tool_name}' not found.")
 
         try:
-            tool_instance = tool_class()
+            # Pass the configuration dictionary to the tool's constructor
+            tool_instance = tool_class(config=self.tool_configs[tool_name])
             logger.debug("Tool instance created successfully")
             return tool_instance
 
