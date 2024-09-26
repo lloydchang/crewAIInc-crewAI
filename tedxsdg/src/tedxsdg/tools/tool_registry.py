@@ -10,23 +10,16 @@ from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
 from .sdg_align_tool import SDGAlignTool
 from .sustainability_impact_tool import SustainabilityImpactTool
-from schemas.config_schemas import LLMConfig, EmbedderConfig
-from pydantic import ValidationError
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
 
 class ToolRegistry:
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, tools_config_path: str = "config/tools.yaml"):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], tools_config_path: str = "config/tools.yaml"):
         # Validate required fields
         if not llm_config or not embedder_config:
             raise ValueError("Missing LLM configuration or Embedder configuration.")
-        # Validate types
-        if not isinstance(llm_config, LLMConfig):
-            raise TypeError("Invalid LLMConfig provided.")
-        if not isinstance(embedder_config, EmbedderConfig):
-            raise TypeError("Invalid EmbedderConfig provided.")
 
         logger.info("ToolRegistry initialized with valid LLMConfig and EmbedderConfig.")
         self.llm_config = llm_config
@@ -95,20 +88,11 @@ class ToolRegistry:
                 logger.error("_create_tool [Line 9] Missing llm_config")
                 raise ValueError(f"Missing required 'llm_config' for tool '{tool_name}'.")
 
-            # Validate configuration using Pydantic 2 model_validate
-            logger.debug("_create_tool [Line 10] Validating embedder_conf")
-            embedder_conf = EmbedderConfig.model_validate(embedder_conf)
-            logger.debug("_create_tool [Line 11] embedder_conf validation passed")
-            
-            logger.debug("_create_tool [Line 12] Validating llm_conf")
-            llm_conf = LLMConfig.model_validate(llm_conf)
-            logger.debug("_create_tool [Line 13] llm_conf validation passed")
-
             data_path = tool_config.get('data_path')
-            logger.debug(f"_create_tool [Line 14] data_path: {data_path}")
+            logger.debug(f"_create_tool [Line 10] data_path: {data_path}")
             
             if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript", "sdg_align", "sustainability_impact"] and not data_path:
-                logger.error("_create_tool [Line 15] Missing data_path for specific tool")
+                logger.error("_create_tool [Line 11] Missing data_path for specific tool")
                 raise ValueError(f"Missing data path for tool '{tool_name}'")
 
             tool_kwargs = {
@@ -116,22 +100,18 @@ class ToolRegistry:
                 "embedder_config": embedder_conf,
                 "data_path": data_path
             }
-            logger.debug(f"_create_tool [Line 16] tool_kwargs: {tool_kwargs}")
+            logger.debug(f"_create_tool [Line 12] tool_kwargs: {tool_kwargs}")
 
-            logger.debug(f"_create_tool [Line 17] Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
-            logger.debug(f"_create_tool [Line 18] tool_class: {tool_class}")
+            logger.debug(f"_create_tool [Line 13] Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
             tool_instance = tool_class(**tool_kwargs)
-            logger.debug("_create_tool [Line 19] Tool instance created successfully")
+            logger.debug("_create_tool [Line 14] Tool instance created successfully")
             return tool_instance
 
         except ValueError as ve:
-            logger.error(f"_create_tool [Line 20] Configuration error for tool '{tool_name}': {ve}", exc_info=True)
-            raise
-        except ValidationError as ve:
-            logger.error(f"_create_tool [Line 21] Validation error for tool '{tool_name}': {ve.errors()}", exc_info=True)
+            logger.error(f"_create_tool [Line 15] Configuration error for tool '{tool_name}': {ve}", exc_info=True)
             raise
         except Exception as e:
-            logger.error(f"_create_tool [Line 22] Error creating tool '{tool_name}': {e}", exc_info=True)
+            logger.error(f"_create_tool [Line 16] Error creating tool '{tool_name}': {e}", exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:

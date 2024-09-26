@@ -5,8 +5,6 @@ import logging
 import csv
 from typing import Any, Dict, Optional, Union
 from langchain.tools import StructuredTool
-from schemas.tedx_search_schema import TEDxSearchInput
-from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
 from .utils import extract_query_string
 
@@ -17,14 +15,8 @@ logger.setLevel(logging.DEBUG)
 class TEDxSearchTool(StructuredTool):
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."
-    args_schema = TEDxSearchInput
 
-    # Define attributes
-    llm_config: LLMConfig
-    embedder_config: EmbedderConfig
-    data_path: str
-
-    def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
+    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
         # Directly assign values to attributes
         self.llm_config = llm_config
         self.embedder_config = embedder_config
