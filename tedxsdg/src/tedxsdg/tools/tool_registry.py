@@ -95,12 +95,13 @@ class ToolRegistry:
                 logger.error("_create_tool [Line 9] Missing llm_config")
                 raise ValueError(f"Missing required 'llm_config' for tool '{tool_name}'.")
 
+            # Validate configuration using Pydantic 2 model_validate
             logger.debug("_create_tool [Line 10] Validating embedder_conf")
-            embedder_conf = EmbedderConfig(**embedder_conf)
+            embedder_conf = EmbedderConfig.model_validate(embedder_conf)
             logger.debug("_create_tool [Line 11] embedder_conf validation passed")
             
             logger.debug("_create_tool [Line 12] Validating llm_conf")
-            llm_conf = LLMConfig(**llm_conf)
+            llm_conf = LLMConfig.model_validate(llm_conf)
             logger.debug("_create_tool [Line 13] llm_conf validation passed")
 
             data_path = tool_config.get('data_path')
