@@ -77,7 +77,7 @@ class ToolRegistry:
                 logger.error("Missing data_path for specific tool")
                 raise ValueError(f"Missing data path for tool '{tool_name}'")
 
-            logger.debug(f"Initializing tool '{tool_name}'.)
+            logger.debug(f"Initializing tool '{tool_name}'.")
             tool_instance = tool_class()
             logger.debug("Tool instance created successfully")
             return tool_instance
