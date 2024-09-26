@@ -1,7 +1,7 @@
 # schemas/config_schemas.py
 
 from pydantic import BaseModel, Field, model_validator
-from typing import Optional, Dict, Any
+from typing import Optional
 
 # Inner configuration for the LLM (Language Model)
 class LLMInnerConfig(BaseModel):
