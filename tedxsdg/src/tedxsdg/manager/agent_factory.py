@@ -26,15 +26,15 @@ def create_agent(
         try:
             tool = tool_registry.get_tool(tool_name)
             tools.append(tool)
-            logger.info("Successfully created tool '%s'.", tool_name)
-        except KeyError as e:
+            logger.info("Successfully created tool '%s' for agent '%s'.", tool_name, agent_name)
+        except ValueError as e:
             logger.error(
-                "Error creating tool '%s': %s", tool_name, str(e), 
+                "Error creating tool '%s' for agent '%s': %s", tool_name, agent_name, str(e), 
                 exc_info=True
             )
             logger.warning(
-                "Tool '%s' could not be created and will be skipped.", 
-                tool_name
+                "Tool '%s' could not be created and will be skipped for agent '%s'.", 
+                tool_name, agent_name
             )
 
     try:
