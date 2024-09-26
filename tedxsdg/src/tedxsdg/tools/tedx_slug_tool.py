@@ -11,13 +11,13 @@ class TEDxSlugTool(StructuredTool):
     name: str = "tedx_slug"
     description: str = "Retrieves TEDx content details based on a provided slug."
 
-    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: Optional[str] = None):
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
+    def __init__(self, config: Dict[str, Any]):
+        # Ensure proper initialization with configuration
         super().__init__()
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
-        self.data_path = data_path or 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+        self.data_path = config.get('data_path')
+        if not self.data_path:
+            raise ValueError("Data path is required for TEDxSlugTool.")
+        
         self.csv_data = self._load_csv_data()  # Load CSV data upon initialization
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:

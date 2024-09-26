@@ -5,7 +5,6 @@ import logging
 import csv
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +13,9 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
 
     def __init__(self, config: Dict[str, Any]):
+        # Ensure proper initialization with configuration
         super().__init__()
         self.data_path = config.get('data_path')
-        if not self.data_path:
-            logger.error("No data path provided for TEDxSearchTool.")
-            raise ValueError("Data path is required for TEDxSearchTool.")
 
         logger.info("Initializing TEDxSearchTool.")
         
@@ -31,13 +28,30 @@ class TEDxSearchTool(StructuredTool):
             self._invalidate_cache()
             raise
 
+import os
+import shutil
+import logging
+
+logger = logging.getLogger(__name__)
+
     def _invalidate_cache(self):
-        """Invalidates the cache."""
-        logger.info("Invalidating the cache via 'rm -rf db'.")
+        """Invalidates the cache by removing the 'db' directory or file."""
+        logger.info("Invalidating the cache.")
         try:
-            os.system("rm -rf db")
+            db_path = "db"
+            if os.path.exists(db_path):
+                if os.path.isfile(db_path):
+                    os.remove(db_path)
+                    logger.debug(f"Removed file: {db_path}")
+                elif os.path.isdir(db_path):
+                    shutil.rmtree(db_path)
+                    logger.debug(f"Removed directory: {db_path}")
+                logger.info("Cache invalidation completed successfully.")
+            else:
+                logger.info("No cache to invalidate. 'db' does not exist.")
         except Exception as e:
             logger.error(f"Error during cache invalidation: {e}", exc_info=True)
+            raise
 
     def _load_csv_data(self) -> Dict[str, Dict[str, Any]]:
         """Load TEDx data from the CSV file."""

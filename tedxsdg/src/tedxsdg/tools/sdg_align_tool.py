@@ -4,7 +4,6 @@ import logging
 import csv
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ class SDGAlignTool(StructuredTool):
         if not self.data_path:
             logger.error("No data path provided for SDGAlignTool.")
             raise ValueError("Data path is required for SDGAlignTool.")
-        
+
         try:
             self.sdg_data = self._load_sdg_data()
         except Exception as e:

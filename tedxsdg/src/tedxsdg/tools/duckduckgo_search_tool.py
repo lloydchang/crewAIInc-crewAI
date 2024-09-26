@@ -12,12 +12,13 @@ class DuckDuckGoSearchTool(StructuredTool):
     name: str = "duckduckgo_search"
     description: str = "Searches the web using DuckDuckGo."
 
-    def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any]):
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
+    def __init__(self, config: Dict[str, Any]):
+        # Ensure proper initialization with configuration
         super().__init__()
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
+        self.llm_config = config.get('llm_config')
+        self.embedder_config = config.get('embedder_config')
+        if not self.llm_config or not self.embedder_config:
+            raise ValueError("Missing LLM configuration or Embedder configuration.")
 
     def _run(self, query: Union[str, Dict[str, Any]]) -> str:
         query_str = extract_query_string(query)
