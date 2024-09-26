@@ -49,52 +49,69 @@ class ToolRegistry:
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         """Create a tool with the provided tool name and class, using the loaded config."""
+        logger.debug(f"[Line 1] Entering _create_tool for {tool_name}")
+        
         tool_config = self.tool_configs.get(tool_name, {})
-        logger.debug(f"Creating tool '{tool_name}' with config: {tool_config}")
+        logger.debug(f"[Line 2] tool_config: {tool_config}")
 
         if not tool_config:
-            logger.error(f"No configuration found for tool '{tool_name}'.")
+            logger.error(f"[Line 3] No configuration found for tool '{tool_name}'.")
             raise ValueError(f"Tool configuration for '{tool_name}' not found in tools.yaml.")
 
-        # Extract and validate configurations
         try:
+            logger.debug("[Line 4] Entering try block")
+            
             embedder_conf = tool_config.get('embedder_config')
+            logger.debug(f"[Line 5] embedder_conf: {embedder_conf}")
+            
             llm_conf = tool_config.get('llm_config')
+            logger.debug(f"[Line 6] llm_conf: {llm_conf}")
 
-            logger.debug(f"Extracted embedder_config: {embedder_conf}, llm_config: {llm_conf}")
+            logger.debug(f"[Line 7] Extracted embedder_config: {embedder_conf}, llm_config: {llm_conf}")
 
-            # Check for the presence of configurations
             if embedder_conf is None:
+                logger.error("[Line 8] Missing embedder_config")
                 raise ValueError(f"Missing required 'embedder_config' for tool '{tool_name}'.")
             if llm_conf is None:
+                logger.error("[Line 9] Missing llm_config")
                 raise ValueError(f"Missing required 'llm_config' for tool '{tool_name}'.")
 
-            # Validate the structure of the configurations
-            embedder_conf = EmbedderConfig(**embedder_conf)  # This will raise if validation fails
-            llm_conf = LLMConfig(**llm_conf)  # This will raise if validation fails
+            logger.debug("[Line 10] Validating embedder_conf")
+            embedder_conf = EmbedderConfig(**embedder_conf)
+            logger.debug("[Line 11] embedder_conf validation passed")
+            
+            logger.debug("[Line 12] Validating llm_conf")
+            llm_conf = LLMConfig(**llm_conf)
+            logger.debug("[Line 13] llm_conf validation passed")
 
             data_path = tool_config.get('data_path')
-            if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript"] and not data_path:
+            logger.debug(f"[Line 14] data_path: {data_path}")
+            
+            if tool_name in ["tedx_search", "tedx_slug", "tedx_transcript", "sdg_align", "sustainability_impact"] and not data_path:
+                logger.error("[Line 15] Missing data_path for specific tool")
                 raise ValueError(f"Missing data path for tool '{tool_name}'")
 
-            # Prepare kwargs for initializing the tool
             tool_kwargs = {
                 "llm_config": llm_conf,
                 "embedder_config": embedder_conf,
                 "data_path": data_path
             }
+            logger.debug(f"[Line 16] tool_kwargs: {tool_kwargs}")
 
-            logger.debug(f"Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
-            return tool_class(**tool_kwargs)
+            logger.debug(f"[Line 17] Initializing tool '{tool_name}' with provided configurations: {tool_kwargs}")
+            logger.debug(f"[Line 18] tool_class: {tool_class}")
+            tool_instance = tool_class(**tool_kwargs)
+            logger.debug("[Line 19] Tool instance created successfully")
+            return tool_instance
 
         except ValueError as ve:
-            logger.error(f"Configuration error for tool '{tool_name}': {ve}", exc_info=True)
+            logger.error(f"[Line 20] Configuration error for tool '{tool_name}': {ve}", exc_info=True)
             raise
         except ValidationError as ve:
-            logger.error(f"Validation error for tool '{tool_name}': {ve.errors()}", exc_info=True)
+            logger.error(f"[Line 21] Validation error for tool '{tool_name}': {ve.errors()}", exc_info=True)
             raise
         except Exception as e:
-            logger.error(f"Error creating tool '{tool_name}': {e}", exc_info=True)
+            logger.error(f"[Line 22] Error creating tool '{tool_name}': {e}", exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
