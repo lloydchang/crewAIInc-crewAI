@@ -1,49 +1,33 @@
 # tools/sustainability_impact_tool.py
 
-"""
-Module for assessing the potential sustainability impact of ideas and projects.
-"""
-
 import logging
 import csv
+from typing import Dict
 from langchain.tools import StructuredTool
+from crewai_manager.config_loader import load_config
 
 logger = logging.getLogger(__name__)
 
-
 class SustainabilityImpactTool(StructuredTool):
-    """
-    Tool to assess the potential sustainability impact of ideas and projects.
-    """
     name: str = "sustainability_impact"
-    description: str = (
-        "Assesses the potential sustainability impact of ideas and projects."
-    )
+    description: str = "Assesses the potential sustainability impact of ideas and projects."
 
     def __init__(self, config: dict):
-        """
-        Initialize the tool with the given configuration.
-        """
+        # Ensure proper initialization with configuration
         super().__init__(**config)
         self.data_path = config.get('data_path')
         if not self.data_path:
             logger.error("No data path provided for SustainabilityImpactTool.")
-            raise ValueError(
-                "Data path is required for SustainabilityImpactTool."
-            )
+            raise ValueError("Data path is required for SustainabilityImpactTool.")
 
         try:
             self.impact_data = self._load_impact_data()
         except Exception as e:
-            logger.error(
-                "Failed to initialize sustainability impact tool: %s", e
-            )
+            logger.error(f"Failed to initialize sustainability impact tool: {e}")
             raise RuntimeError("Failed to load impact data.") from e
 
     def _load_impact_data(self):
-        """
-        Loads impact data from a CSV file.
-        """
+        """Loads impact data from a CSV file."""
         impact_index = {}
         try:
             with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
@@ -52,15 +36,58 @@ class SustainabilityImpactTool(StructuredTool):
                     key = row.get('key', '').strip()
                     if key:
                         impact_index[key] = row
-            logger.debug(
-                "Loaded %d impacts from '%s'.",
-                len(impact_index),
-                self.data_path
-            )
-            except FileNotFoundError as e:
-                logger.error("File not found: %s", self.data_path, exc_info=True)
-                raise FileNotFoundError(f"File not found: {self.data_path}") from e
+            logger.debug(f"Loaded {len(impact_index)} impacts from '{self.data_path}'.")
+        except FileNotFoundError:
+            logger.error(f"File not found: {self.data_path}")
+            raise FileNotFoundError(f"File not found: {self.data_path}")
+        except Exception as e:
+            logger.error(f"Error loading impact data: {e}", exc_info=True)
+            raise Exception("Failed to load impact data.")
+        return impact_index
+
+    # tools/sustainability_impact_tool.py
+
+    import logging
+    import csv
+    from typing import Dict
+    from langchain.tools import StructuredTool
+    from crewai_manager.config_loader import load_config
+
+    logger = logging.getLogger(__name__)
+
+    class SustainabilityImpactTool(StructuredTool):
+        name: str = "sustainability_impact"
+        description: str = "Assesses the potential sustainability impact of ideas and projects."
+
+        def __init__(self, config: dict):
+            # Ensure proper initialization with configuration
+            super().__init__()
+            self.data_path = config.get('data_path')
+            if not self.data_path:
+                logger.error("No data path provided for SustainabilityImpactTool.")
+                raise ValueError("Data path is required for SustainabilityImpactTool.")
+
+            try:
+                self.impact_data = self._load_impact_data()
             except Exception as e:
-                logger.error("Error loading impact data: %s", e, exc_info=True)
-                raise RuntimeError("Failed to load impact data.") from e
+                logger.error(f"Failed to initialize sustainability impact tool: {e}")
+                raise
+
+        def _load_impact_data(self):
+            """Loads impact data from a CSV file."""
+            impact_index = {}
+            try:
+                with open(self.data_path, mode='r', encoding='utf-8') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    for row in reader:
+                        key = row.get('key', '').strip()
+                        if key:
+                            impact_index[key] = row
+                logger.debug(f"Loaded {len(impact_index)} impacts from '{self.data_path}'.")
+            except FileNotFoundError:
+                logger.error(f"File not found: {self.data_path}")
+                raise FileNotFoundError(f"File not found: {self.data_path}")
+            except Exception as e:
+                logger.error(f"Error loading impact data: {e}", exc_info=True)
+                raise Exception("Failed to load impact data.")
             return impact_index
