@@ -28,12 +28,6 @@ class TEDxSearchTool(StructuredTool):
             self._invalidate_cache()
             raise
 
-import os
-import shutil
-import logging
-
-logger = logging.getLogger(__name__)
-
     def _invalidate_cache(self):
         """Invalidates the cache by removing the 'db' directory or file."""
         logger.info("Invalidating the cache.")
