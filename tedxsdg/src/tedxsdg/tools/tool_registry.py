@@ -77,14 +77,8 @@ class ToolRegistry:
                 logger.error("Missing data_path for specific tool")
                 raise ValueError(f"Missing data path for tool '{tool_name}'")
 
-            tool_kwargs = {
-                "llm_config": llm_conf,
-                "embedder_config": embedder_conf,
-                "data_path": data_path
-            }
-
-            logger.debug(f"Initializing tool '{tool_name}' with configurations: {tool_kwargs}")
-            tool_instance = tool_class(**tool_kwargs)
+            logger.debug(f"Initializing tool '{tool_name}'.)
+            tool_instance = tool_class()
             logger.debug("Tool instance created successfully")
             return tool_instance
 

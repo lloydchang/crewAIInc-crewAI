@@ -13,12 +13,7 @@ class SustainabilityImpactTool(StructuredTool):
 
     def __init__(self, llm_config: Dict[str, Any], embedder_config: Dict[str, Any], data_path: str = 'data/impact_data.csv'):
         # Validate required fields
-        if not llm_config or not embedder_config:
-            raise ValueError("Missing LLM configuration or Embedder configuration.")
-
         super().__init__()  # Call to the parent class initializer
-        self.llm_config = llm_config
-        self.embedder_config = embedder_config
         self.data_path = data_path
 
         try:
