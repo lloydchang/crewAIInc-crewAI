@@ -25,8 +25,8 @@ class SDGAlignTool(StructuredTool):
     description: str = "Aligns given content with Sustainable Development Goals."
     args_schema: type[BaseModel] = SDGAlignToolArgs
 
-    # Define any required fields
-    data_path: str = Field(..., description="Path to the SDG dataset")
+    # Define required fields
+    data_path: str = Field(..., description="Path to the SDG dataset CSV")
     alignment_model: str = Field(..., description="Model used for alignment")
 
     # Initialize any additional attributes

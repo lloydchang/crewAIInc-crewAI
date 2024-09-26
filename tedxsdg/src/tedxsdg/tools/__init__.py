@@ -1,14 +1,17 @@
 # tools/__init__.py
 
-"""
-Tool Registry Module
+from .duckduckgo_search_tool import DuckDuckGoSearchTool
+from .sdg_align_tool import SDGAlignTool
+from .sustainability_impact_tool import SustainabilityImpactTool
+from .tedx_search_tool import TEDxSearchTool
+from .tedx_slug_tool import TEDxSlugTool
+from .tedx_transcript_tool import TEDxTranscriptTool
 
-This module imports various tools for searching TEDx content,
-aligning with SDGs, and assessing sustainability impacts.
-"""
-
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.info("Tool registry module loaded successfully.")
+__all__ = [
+    "DuckDuckGoSearchTool",
+    "SDGAlignTool",
+    "SustainabilityImpactTool",
+    "TEDxSearchTool",
+    "TEDxSlugTool",
+    "TEDxTranscriptTool",
+]

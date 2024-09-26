@@ -5,7 +5,7 @@ Module for defining schemas related to sustainability impact.
 """
 
 from typing import List, Union, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class SustainabilityImpactInput(BaseModel):
@@ -13,12 +13,10 @@ class SustainabilityImpactInput(BaseModel):
     Schema for sustainability impact input.
     """
     project: Union[str, Dict[str, Any]] = Field(
-        default="Unnamed Project",
-        description="Project to assess for sustainability impact."
+        ..., description="Project to assess for sustainability impact."
     )
     metrics: List[str] = Field(
-        default_factory=list,
-        description="List of sustainability metrics."
+        ..., description="List of sustainability metrics."
     )
 
     class Config:
@@ -32,28 +30,23 @@ class SustainabilityImpactInput(BaseModel):
             }
         }
 
-        @classmethod
-        def get_schema_extra(cls):
-            """
-            Returns the schema extra configuration.
-            """
-            return cls.schema_extra
+    @validator('project')
+    def validate_project(cls, v):
+        """Ensure that the project field is non-empty."""
+        if isinstance(v, str):
+            if not v.strip():
+                raise ValueError("Project name cannot be empty.")
+        elif isinstance(v, dict):
+            if not v:
+                raise ValueError("Project details dictionary cannot be empty.")
+            # Add more specific validations if needed
+        else:
+            raise ValueError("Project must be either a string or a dictionary.")
+        return v
 
-        @classmethod
-        def set_schema_extra(cls, example: Dict[str, Any]):
-            """
-            Sets a new schema extra configuration.
-            """
-            cls.schema_extra = example
-
-        def get_example(self):
-            """
-            Returns the example schema.
-            """
-            return SustainabilityImpactInput.Config.schema_extra["example"]
-
-        def set_example(self, example: Dict[str, Any]):
-            """
-            Sets a new example schema.
-            """
-            SustainabilityImpactInput.Config.schema_extra["example"] = example
+    @validator('metrics', each_item=True)
+    def validate_metrics(cls, v):
+        """Ensure that each metric is a non-empty string."""
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError("Each metric must be a non-empty string.")
+        return v.strip()

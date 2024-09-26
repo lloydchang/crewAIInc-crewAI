@@ -5,120 +5,56 @@ Module for configuration schemas.
 """
 
 from typing import Optional
+from pydantic import BaseModel, Field, validator
 
 
-class LLMInnerConfig:
+class LLMInnerConfig(BaseModel):
     """
     Inner configuration for the LLM (Language Model).
     """
-    def __init__(self, model: str, temperature: Optional[float] = 0):
-        if temperature is None:
-            raise ValueError("Missing LLM temperature.")
-        if temperature < 0:
-            raise ValueError(
-                "LLM temperature must be equal to or greater than 0."
-            )
-        self.model = model
-        self.temperature = temperature
+    model: str = Field(..., description="The model name for the LLM.")
+    temperature: float = Field(0, ge=0, description="The temperature setting for the LLM.")
 
-    def get_model(self) -> str:
-        """
-        Get the model name.
-    def get_temperature(self) -> float:
-        """
-        Get the temperature value.
-        """
-        return self.model
-
-    def get_temperature(self) -> float:
-        return self.temperature
+    @validator('temperature')
+    def validate_temperature(cls, v):
+        if v < 0:
+            raise ValueError("LLM temperature must be equal to or greater than 0.")
+        return v
 
 
-class LLMConfig:
+class LLMConfig(BaseModel):
     """
     LLM Configuration.
     """
-    def get_provider(self) -> str:
-        """
-        Get the provider name.
-    def get_config(self) -> LLMInnerConfig:
-        """
-        Get the LLM inner configuration.
-        """
-        if not provider:
-            raise ValueError("Missing LLM provider.")
-        self.provider = provider
-        self.config = config
-
-    def get_provider(self) -> str:
-        return self.provider
-
-    def get_config(self) -> LLMInnerConfig:
-        return self.config
+    provider: str = Field(..., description="The provider for the LLM.")
+    config: LLMInnerConfig = Field(..., description="Inner configuration for the LLM.")
 
 
-class EmbedderInnerConfig:
+class EmbedderInnerConfig(BaseModel):
     """
     Inner configuration for the Embedder.
     """
-    def __init__(self, model: str, temperature: Optional[float] = 0):
-        if temperature is None:
-            raise ValueError("Missing Embedder temperature.")
-        if temperature < 0:
-            raise ValueError(
-                "Embedder temperature must be equal to or greater than 0."
-            )
-        self.model = model
-        self.temperature = temperature
+    model: str = Field(..., description="The model name for the Embedder.")
+    temperature: float = Field(0, ge=0, description="The temperature setting for the Embedder.")
 
-    def get_model(self) -> str:
-        return self.model
-
-    def get_temperature(self) -> float:
-        return self.temperature
+    @validator('temperature')
+    def validate_temperature(cls, v):
+        if v < 0:
+            raise ValueError("Embedder temperature must be equal to or greater than 0.")
+        return v
 
 
-class EmbedderConfig:
-    def get_config(self) -> EmbedderInnerConfig:
-        """
-        Get the Embedder inner configuration.
-        """
+class EmbedderConfig(BaseModel):
+    """
     Embedder Configuration.
     """
-    def __init__(self, provider: str, config: EmbedderInnerConfig):
-        if not provider:
-            raise ValueError("Missing Embedder provider.")
-        self.provider = provider
-        self.config = config
-                "Both LLM and Embedder configurations must be initialized "
-                "properly."
-    def get_provider(self) -> str:
-        return self.provider
-
-    def get_llm(self) -> LLMConfig:
-        """
-        Get the LLM configuration.
-    def get_embedder(self) -> EmbedderConfig:
-        """
-        Get the Embedder configuration.
-        """
-        return self.config
+    provider: str = Field(..., description="The provider for the Embedder.")
+    config: EmbedderInnerConfig = Field(..., description="Inner configuration for the Embedder.")
 
 
-class ToolConfig:
+class ToolConfig(BaseModel):
     """
     Tool configuration that encapsulates LLM and Embedder configurations.
     """
-    def __init__(self, llm: LLMConfig, embedder: EmbedderConfig):
-        if not llm or not embedder:
-            raise ValueError(
-                "Both LLM and Embedder configurations must be initialized properly."
-            )
-        self.llm = llm
-        self.embedder = embedder
-
-    def get_llm(self) -> LLMConfig:
-        return self.llm
-
-    def get_embedder(self) -> EmbedderConfig:
-        return self.embedder
+    llm: LLMConfig = Field(..., description="LLM configuration.")
+    embedder: EmbedderConfig = Field(..., description="Embedder configuration.")

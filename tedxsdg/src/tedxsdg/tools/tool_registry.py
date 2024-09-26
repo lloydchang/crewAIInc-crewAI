@@ -1,7 +1,7 @@
 # tools/tool_registry.py
 
 import logging
-from typing import Dict, Type, Any  # Ensured 'Any' is imported
+from typing import Dict, Type, Any
 from langchain.tools import StructuredTool
 from .config_loader import load_config
 from .duckduckgo_search_tool import DuckDuckGoSearchTool
@@ -10,6 +10,7 @@ from .sustainability_impact_tool import SustainabilityImpactTool
 from .tedx_search_tool import TEDxSearchTool
 from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
+from .sustainability_impact_tool import SustainabilityImpactTool
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class ToolRegistry:
             # Load the specific tool's configuration and initialize the tool
             tool_config = self.tool_configs[tool_name]
             # **tool_config unpacks the dictionary into keyword arguments
-            tool_instance = tool_class(**tool_config)
+            tool_instance = tool_class(**tool_config.dict())
             logger.debug("Tool '%s' created successfully", tool_name)
             self.tools[tool_name] = tool_instance  # Cache the created tool
             return tool_instance

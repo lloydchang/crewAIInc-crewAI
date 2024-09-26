@@ -7,8 +7,7 @@ Module for TEDxSearchTool which searches TEDx content from a local CSV dataset.
 import os
 import logging
 import csv
-import shutil
-from typing import Any, Dict
+from typing import Any, Dict, List
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
@@ -29,12 +28,11 @@ class TEDxSearchTool(StructuredTool):
     args_schema: type[BaseModel] = TEDxSearchToolArgs
 
     # Define 'data_path' as a Pydantic field
-    data_path: str = Field(..., description="Path to the data directory")
-    
+    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+
     # Initialize 'csv_data' with a default empty dictionary
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
 
-    # Validator to load CSV data after initialization
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
@@ -42,15 +40,17 @@ class TEDxSearchTool(StructuredTool):
             raise ValueError("`data_path` must be provided in the configuration")
         logger.info("Initializing TEDxSearchTool with data_path: %s", data_path)
         try:
-            slug_index = {}
+            search_index = {}
             with open(data_path, mode='r', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
-                    slug = row.get('slug', '').strip()
+                    slug = row.get('slug', '').strip().lower()
+                    title = row.get('title', '').strip().lower()
+                    description = row.get('description', '').strip().lower()
                     if slug:
-                        slug_index[slug] = row
-            logger.debug("Loaded %d slugs from CSV file.", len(slug_index))
-            return slug_index
+                        search_index[slug] = row
+            logger.debug("Loaded %d entries from CSV file.", len(search_index))
+            return search_index
         except FileNotFoundError as exc:
             logger.error("File not found: %s", data_path, exc_info=True)
             raise FileNotFoundError(f"File not found: {data_path}") from exc
@@ -59,20 +59,43 @@ class TEDxSearchTool(StructuredTool):
             raise Exception("Failed to load CSV data.") from e
 
     def run(self, search_query: str) -> str:
-        """Executes the search on the TEDx dataset based on the search query."""
+        """
+        Executes the search on the TEDx dataset based on the search query.
+        
+        Args:
+            search_query (str): The search query string.
+        
+        Returns:
+            str: Formatted search results.
+        """
         logger.debug("Running TEDx search for query: %s", search_query)
-        results = [
-            data for key, data in self.csv_data.items()
-            if search_query.lower() in key.lower()
-        ]
+        search_query_lower = search_query.lower()
+        results: List[Dict[str, Any]] = []
+
+        for entry in self.csv_data.values():
+            if (search_query_lower in entry.get('title', '').lower()) or \
+               (search_query_lower in entry.get('description', '').lower()):
+                results.append(entry)
+                if len(results) >= 3:  # Limit to top 3 results
+                    break
         
         if not results:
             return "No results found."
 
-        return f"Final Answer: TEDx Search Results:\n{results}"
+        # Format results for better readability
+        formatted_results = "\n\n".join([
+            f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+            for entry in results
+        ])
+
+        logger.debug("Search results: %s", formatted_results)
+        return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
     def _invalidate_cache(self):
-        """Invalidates the cache by removing the 'db' directory or file."""
+        """
+        Invalidates the cache by removing the 'db' directory or file.
+        This can be useful if the underlying data has changed.
+        """
         logger.info("Invalidating the cache.")
         try:
             db_path = "db"
