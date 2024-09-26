@@ -7,7 +7,7 @@ Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 import logging
 from typing import Any, Dict, Type, ClassVar
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ class DuckDuckGoSearchToolArgs(BaseModel):
 class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
     
-    # Marking class-level attributes as ClassVar to prevent Pydantic from treating them as instance fields
-    name: ClassVar[str] = "duckduckgo_search"
-    description: ClassVar[str] = "Performs web searches using DuckDuckGo."
-    args_schema: ClassVar[Type[BaseModel]] = DuckDuckGoSearchToolArgs
+    # Define class-level attributes without type annotations
+    name = "duckduckgo_search"
+    description = "Performs web searches using DuckDuckGo."
+    args_schema = DuckDuckGoSearchToolArgs
 
     # Define instance-level fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
@@ -34,22 +34,22 @@ class DuckDuckGoSearchTool(StructuredTool):
     # Initialize any additional attributes
     search_results: Dict[str, Any] = Field(default_factory=dict)
 
-    @field_validator('base_url')
+    @validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
         """
         Validates that the base_url starts with 'http' or 'https'.
         """
         if not base_url.startswith(("http://", "https://")):
-            raise ValueError("base_url must be a valid URL starting with http or https")
+            raise ValueError("base_url must start with http or https")
         return base_url
 
-    @field_validator('search_results', mode='before')
+    @validator('search_results', pre=True)
     def load_search_results(cls, search_results: Dict[str, Any]) -> Dict[str, Any]:
         """
         Placeholder validator for loading search results if necessary.
         Currently, it simply returns the existing search_results.
         """
-        # You can implement additional logic here if needed
+        # Implement additional logic here if needed
         return search_results
 
     def run(self, search_query: str) -> str:
@@ -58,9 +58,9 @@ class DuckDuckGoSearchTool(StructuredTool):
         """
         logger.debug("Running DuckDuckGo search for query: %s", search_query)
         
-        # Implement the actual search logic here
-        # For demonstration, returning a mock response
         try:
+            # Implement the actual search logic here
+            # For demonstration, returning a mock response
             # Example: Make an API call to DuckDuckGo (pseudo-code)
             # response = requests.get(f"{self.base_url}/search", params={"q": search_query, "api_key": self.api_key})
             # response.raise_for_status()
