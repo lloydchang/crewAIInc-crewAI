@@ -5,8 +5,10 @@ This module initializes the TEDxSDG package by importing necessary tools
 and managers.
 """
 
-from .crewai_manager import CrewAIManager, load_config
+from .crewai_manager import CrewAIManager
+
 from .tools.tool_registry import (
+    load_config,
     ToolRegistry,
     DuckDuckGoSearchTool,
     TEDxSearchTool,
