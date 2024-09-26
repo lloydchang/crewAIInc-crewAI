@@ -5,7 +5,7 @@ Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Type
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field, validator
 
