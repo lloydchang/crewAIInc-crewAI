@@ -1,13 +1,12 @@
 # config/tools.yaml
-
 tedx_search:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0
@@ -15,12 +14,12 @@ tedx_search:
 
 tedx_slug:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0
@@ -28,12 +27,12 @@ tedx_slug:
 
 tedx_transcript:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0
@@ -41,24 +40,24 @@ tedx_transcript:
 
 duckduckgo_search:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0
 
 sdg_align:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0
@@ -66,12 +65,12 @@ sdg_align:
 
 sustainability_impact:
   llm_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "ollama/llama3"
       temperature: 0
   embedder_config:
-    provider: ollama
+    provider: "ollama"
     config:
       model: "nomic-embed-text"
       temperature: 0

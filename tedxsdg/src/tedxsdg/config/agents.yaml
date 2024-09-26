@@ -1,5 +1,4 @@
 # config/agents.yaml
-
 sam:
   role: "sam"
   goal: "Launch an eco-friendly pet care initiative"
