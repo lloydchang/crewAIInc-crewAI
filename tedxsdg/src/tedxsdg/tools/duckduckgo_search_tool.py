@@ -22,10 +22,10 @@ class DuckDuckGoSearchToolArgs(BaseModel):
 class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
 
-    # Class-level attributes (these shouldn't be copied, just metadata)
-    name: str = "duckduckgo_search"
-    description: str = "Performs web searches using DuckDuckGo."
-    args_schema = DuckDuckGoSearchToolArgs
+    # Class-level attributes moved out of Pydantic scope
+    _name: str = "duckduckgo_search"
+    _description: str = "Performs web searches using DuckDuckGo."
+    _args_schema = DuckDuckGoSearchToolArgs
 
     # Instance-level fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
@@ -75,11 +75,20 @@ class DuckDuckGoSearchTool(StructuredTool):
             logger.error("An error occurred during DuckDuckGo search: %s", e)
             return f"An error occurred while performing the search: {e}"
 
+    @property
+    def name(self) -> str:
+        """Getter for the tool name."""
+        return self._name
+
+    @property
+    def description(self) -> str:
+        """Getter for the tool description."""
+        return self._description
+
+    @property
+    def args_schema(self) -> Type[BaseModel]:
+        """Getter for the tool args schema."""
+        return self._args_schema
+
     class Config:
         arbitrary_types_allowed = True
-        # Exclude class-level attributes from deepcopy or serialization
-        fields = {
-            'name': {'exclude': True},
-            'description': {'exclude': True},
-            'args_schema': {'exclude': True},
-        }
