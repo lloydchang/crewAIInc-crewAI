@@ -1,82 +1,83 @@
 # config/tools.yaml
 
-tedx_search:
-  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+tools:
+  tedx_search:
+    data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
-tedx_slug:
-  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+  tedx_slug:
+    data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
-tedx_transcript:
-  data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+  tedx_transcript:
+    data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
-duckduckgo_search:
-  api_key: "your_duckduckgo_api_key"  # Replace with your actual API key
-  base_url: "https://api.duckduckgo.com/"
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+  duckduckgo_search:
+    api_key: "your_duckduckgo_api_key"  # Replace with your actual API key
+    base_url: "https://api.duckduckgo.com/"
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
-sdg_align:
-  data_path: "data/sdg_data.csv"
-  alignment_model: "your_alignment_model"  # Replace with your actual alignment model
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+  sdg_align:
+    data_path: "data/sdg_data.csv"
+    alignment_model: "your_alignment_model"  # Replace with your actual alignment model
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
-sustainability_impact:
-  data_path: "data/impact_data.csv"
-  assessment_model: "your_assessment_model"  # Replace with your actual assessment model
-  llm_config:
-    provider: "ollama"
-    config:
-      model: "ollama/llama3"
-      temperature: 0
-  embedder_config:
-    provider: "ollama"
-    config:
-      model: "nomic-embed-text"
-      temperature: 0
+  sustainability_impact:
+    data_path: "data/impact_data.csv"
+    assessment_model: "your_assessment_model"  # Replace with your actual assessment model
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
