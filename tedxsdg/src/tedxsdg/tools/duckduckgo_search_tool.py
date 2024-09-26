@@ -1,3 +1,5 @@
+# tools/duckduckgo_search_tool.py
+
 """
 Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 """
@@ -20,16 +22,14 @@ class DuckDuckGoSearchToolArgs(BaseModel):
 class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
 
-    # Define class-level attributes
+    # Class-level attributes (these shouldn't be copied, just metadata)
     name: str = "duckduckgo_search"
     description: str = "Performs web searches using DuckDuckGo."
     args_schema = DuckDuckGoSearchToolArgs
 
-    # Define instance-level fields
+    # Instance-level fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
     base_url: str = Field(..., description="Base URL for DuckDuckGo API")
-
-    # Use default_factory to safely initialize mutable defaults
     search_results: Dict[str, Any] = Field(default_factory=dict, description="Search results")
 
     @validator('base_url')
@@ -77,4 +77,9 @@ class DuckDuckGoSearchTool(StructuredTool):
 
     class Config:
         arbitrary_types_allowed = True
-        # Additional options can be added here
+        # Exclude class-level attributes from deepcopy or serialization
+        fields = {
+            'name': {'exclude': True},
+            'description': {'exclude': True},
+            'args_schema': {'exclude': True},
+        }
