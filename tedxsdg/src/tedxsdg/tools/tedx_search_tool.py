@@ -5,7 +5,7 @@ import logging
 import csv
 from typing import Any, Dict, Optional, Type, Union
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from schemas.tedx_search_schema import TEDxSearchInput
 from schemas.config_schemas import LLMConfig, EmbedderConfig
 from crewai_tools import CSVSearchTool
@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
 
+# Define the TEDxSearchConfig model to validate input arguments
 class TEDxSearchConfig(BaseModel):
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
@@ -39,9 +40,11 @@ class TEDxSearchTool(StructuredTool):
                 embedder_config=embedder_config,
                 data_path=data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
             )
+            # Use validated values to assign instance variables
             self.llm_config = validated_config.llm_config
             self.embedder_config = validated_config.embedder_config
             self.data_path = validated_config.data_path
+
         except ValidationError as e:
             logger.error(f"Configuration validation failed: {e}")
             raise e
