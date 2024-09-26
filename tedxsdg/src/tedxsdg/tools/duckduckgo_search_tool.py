@@ -7,7 +7,7 @@ Module for DuckDuckGoSearchTool which performs web searches using DuckDuckGo.
 import logging
 from typing import Any, Dict, Type, ClassVar
 from langchain.tools import StructuredTool
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 logger = logging.getLogger(__name__)
 
@@ -19,20 +19,22 @@ class DuckDuckGoSearchToolArgs(BaseModel):
     )
 
 
-class DuckDuckGoSearchTool(StructuredTool):
+class DuckDuckGoSearchTool(StructuredTool, BaseModel):
     """Tool for performing DuckDuckGo web searches."""
-    name: str = "duckduckgo_search"
-    description: str = "Performs web searches using DuckDuckGo."
+    
+    # Marking class-level attributes as ClassVar to prevent Pydantic from treating them as instance fields
+    name: ClassVar[str] = "duckduckgo_search"
+    description: ClassVar[str] = "Performs web searches using DuckDuckGo."
     args_schema: ClassVar[Type[BaseModel]] = DuckDuckGoSearchToolArgs
 
-    # Define any required fields
+    # Define instance-level fields
     api_key: str = Field(..., description="API key for DuckDuckGo if required")
     base_url: str = Field(..., description="Base URL for DuckDuckGo API")
 
     # Initialize any additional attributes
     search_results: Dict[str, Any] = Field(default_factory=dict)
 
-    @validator('base_url')
+    @field_validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
         """
         Validates that the base_url starts with 'http' or 'https'.
@@ -41,8 +43,8 @@ class DuckDuckGoSearchTool(StructuredTool):
             raise ValueError("base_url must be a valid URL starting with http or https")
         return base_url
 
-    @validator('search_results', always=True)
-    def load_search_results(cls, search_results: Dict[str, Any], values: Dict[str, Any]) -> Dict[str, Any]:
+    @field_validator('search_results', mode='before')
+    def load_search_results(cls, search_results: Dict[str, Any]) -> Dict[str, Any]:
         """
         Placeholder validator for loading search results if necessary.
         Currently, it simply returns the existing search_results.
