@@ -1,3 +1,5 @@
+# tools/tedx_slug_tool.py
+
 """
 Module for TEDxSlugTool which retrieves TEDx content details based on a provided
 slug.
@@ -20,12 +22,12 @@ class TEDxSlugTool(StructuredTool):
         "Retrieves TEDx content details based on a provided slug."
     )
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, data_path: str, config: Dict[str, Any] = None):
         """
-        Initialize the TEDxSlugTool with the given configuration.
+        Initialize the TEDxSlugTool with the given data path and optional configuration.
         """
         super().__init__()
-        self.data_path = config.get('data_path')
+        self.data_path = data_path
         if not self.data_path:
             raise ValueError("Data path is required for TEDxSlugTool.")
         # Load CSV data upon initialization
