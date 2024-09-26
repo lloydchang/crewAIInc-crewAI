@@ -3,7 +3,7 @@
 import os
 import logging
 import csv
-from typing import Dict
+from typing import Any, Dict
 from langchain.tools import StructuredTool
 from crewai_manager.config_loader import load_config
 
