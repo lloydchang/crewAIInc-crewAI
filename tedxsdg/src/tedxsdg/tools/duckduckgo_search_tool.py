@@ -70,5 +70,22 @@ class DuckDuckGoSearchTool(StructuredTool):
     def args_schema(self) -> Type[BaseModel]:
         return self._args_schema
 
+    # Prevent deep copy of specific class fields
+    def __getstate__(self):
+        """Customize what gets pickled or deepcopied."""
+        state = self.__dict__.copy()
+        # Remove any classmethods or non-pickleable objects from state
+        if '_name' in state:
+            del state['_name']
+        if '_description' in state:
+            del state['_description']
+        if '_args_schema' in state:
+            del state['_args_schema']
+        return state
+
+    def __setstate__(self, state):
+        """Restore state from deep copy or pickle."""
+        self.__dict__.update(state)
+
     class Config:
         arbitrary_types_allowed = True
