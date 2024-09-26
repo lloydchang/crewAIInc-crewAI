@@ -26,6 +26,7 @@ class TEDxSearchTool(StructuredTool):
     description: str = "Searches TEDx content from the local CSV dataset."
     args_schema: Type[BaseModel] = TEDxSearchInput
 
+    # Declare attributes explicitly so they can be used throughout the tool
     llm_config: LLMConfig
     embedder_config: EmbedderConfig
     data_path: str
@@ -33,12 +34,14 @@ class TEDxSearchTool(StructuredTool):
     csv_data: Optional[Dict[str, Dict[str, Any]]] = None
 
     def __init__(self, llm_config: LLMConfig, embedder_config: EmbedderConfig, data_path: Optional[str] = None):
-        # Validate using the Pydantic model
+        # Validate using Pydantic 2's model_validate
         try:
-            validated_config = TEDxSearchConfig(
-                llm_config=llm_config,
-                embedder_config=embedder_config,
-                data_path=data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+            validated_config = TEDxSearchConfig.model_validate(
+                {
+                    'llm_config': llm_config,
+                    'embedder_config': embedder_config,
+                    'data_path': data_path if data_path else 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+                }
             )
             # Use validated values to assign instance variables
             self.llm_config = validated_config.llm_config
