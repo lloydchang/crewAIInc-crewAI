@@ -19,7 +19,7 @@ class DuckDuckGoSearchToolArgs(BaseModel):
     )
 
 
-class DuckDuckGoSearchTool(BaseModel, StructuredTool):
+class DuckDuckGoSearchTool(StructuredTool):
     """Tool for performing DuckDuckGo web searches."""
 
     # Define class-level attributes without type annotations

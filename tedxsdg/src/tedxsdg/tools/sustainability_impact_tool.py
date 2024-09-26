@@ -12,7 +12,7 @@ class SustainabilityImpactToolArgs(BaseModel):
     """Arguments for SustainabilityImpactTool."""
     project: str = Field(..., description="The project to assess for sustainability impact")
 
-class SustainabilityImpactTool(BaseModel, StructuredTool):
+class SustainabilityImpactTool(StructuredTool):
     name: str = "sustainability_impact"
     description: str = "Assesses the potential sustainability impact of ideas and projects."
     args_schema: type[BaseModel] = SustainabilityImpactToolArgs

@@ -21,7 +21,7 @@ class TEDxSearchToolArgs(BaseModel):
     )
 
 
-class TEDxSearchTool(BaseModel, StructuredTool):
+class TEDxSearchTool(StructuredTool):
     """Tool for searching TEDx content from a local CSV dataset."""
     name: str = "tedx_search"
     description: str = "Searches TEDx content from the local CSV dataset."

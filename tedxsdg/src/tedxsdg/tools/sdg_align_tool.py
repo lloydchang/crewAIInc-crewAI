@@ -17,7 +17,7 @@ class SDGAlignToolArgs(BaseModel):
         ..., description="The content to align with SDGs"
     )
 
-class SDGAlignTool(BaseModel, StructuredTool):
+class SDGAlignTool(StructuredTool):
     """Tool for aligning content with Sustainable Development Goals."""
     name: str = "sdg_align"
     description: str = "Aligns given content with Sustainable Development Goals."

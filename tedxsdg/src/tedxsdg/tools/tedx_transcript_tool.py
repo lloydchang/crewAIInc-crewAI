@@ -18,7 +18,7 @@ class TEDxTranscriptToolArgs(BaseModel):
     slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
 
 
-class TEDxTranscriptTool(BaseModel, StructuredTool):
+class TEDxTranscriptTool(StructuredTool):
     """
     Tool to retrieve the transcript of a TEDx talk based on the provided slug.
     """
