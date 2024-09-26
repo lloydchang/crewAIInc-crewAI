@@ -5,6 +5,7 @@ from crewai import Agent
 from langchain.agents import AgentOutputParser
 from tools.tool_registry import ToolRegistry
 from schemas.config_schemas import LLMConfig, EmbedderConfig
+from typing import Any, Dict
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -63,4 +64,17 @@ def create_agent(
                 f"You have access to the following tools: {', '.join([tool.name for tool in tools])}.\n"
                 "Use these tools to complete your tasks. You can provide either a string or a dictionary as input.\n"
                 "For example:\n"
-                '- String input: "search q
+                '- String input: "search query"\n'
+                '- Dictionary input: {"query": "search query", "additional_info": "extra details"}\n'
+                "Important:\n\n"
+                "- Always choose an action from the available tools when you need to perform a task.\n"
+                "- Do not output 'Action: N/A', 'Action: None' or any action that is not listed in the available tools.\n"
+                "- If you need to think or reason internally, use 'Thought:' followed by your reasoning.\n\n"
+                "When you have a final answer or conclusion, use the 'Final Answer:' prefix to submit it."
+            )
+        )
+        logger.info(f"Created agent '{agent_name}' with tools: {[tool.name for tool in tools]}")
+        return agent
+    except Exception as e:
+        logger.error(f"Error creating agent '{agent_name}': {str(e)}", exc_info=True)
+        raise
