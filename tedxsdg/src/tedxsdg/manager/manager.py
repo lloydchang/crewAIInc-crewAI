@@ -10,7 +10,6 @@ from .agent_factory import create_agent
 
 logger = logging.getLogger(__name__)
 
-
 class CrewAIManager:
     """
     Manages the CrewAI operations including agents, tasks, and tools.
@@ -47,9 +46,6 @@ class CrewAIManager:
         logger.debug("Initializing tool registry")
         self.tool_registry = ToolRegistry(self.tools_config)
 
-        # Set memory flag
-        self.memory = True
-
         # Log LLM use (Assuming all tools use the same LLM)
         self._log_llm_use()
 
@@ -71,7 +67,7 @@ class CrewAIManager:
 
             provider = tool_config.get('llm_config', {}).get('provider', 'Unknown')
             model = llm_config.get('model')
-            temperature = llm_config.get('temperature', 'N/A')
+            temperature = llm_config.get('temperature', '0')  # Default temperature to 0
             logger.info(
                 "Tool '%s' uses LLM - Provider: %s, Model: %s, Temperature: %s", 
                 tool_name, provider, model, temperature
@@ -88,7 +84,8 @@ class CrewAIManager:
 
         task_config = self.tasks_config[task_name]
         logger.debug("Task config: %s", task_config)
-        agent__name = task_config.get("agent")
+
+        agent_name = task_config.get("agent")
 
         if agent_name not in self.agents:
             logger.debug("Agent '%s' not found, creating new agent.", agent_name)
@@ -101,7 +98,7 @@ class CrewAIManager:
         logger.debug("Task priority: %s", priority)
 
         task = Task(
-            _description = task_config.get("description", ""),
+            description=task_config.get("description", ""),  # Fix: removed leading underscore
             agent=agent,
             priority=priority,
             expected_output=task_config.get("expected_output", "No output specified.")
@@ -161,7 +158,7 @@ class CrewAIManager:
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
                 process=Process.sequential,
-                memory=self.memory,
+                memory=True,  # Memory is hardcoded as True
                 embedder=None,  # Assuming embedder is handled within tools
                 max_rpm=None,
                 share_crew=False,
