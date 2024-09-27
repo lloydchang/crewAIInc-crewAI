@@ -83,7 +83,8 @@ class TEDxSearchTool(BaseModel):
                         model="nomic-embed-text"
                     ),
                 ),
-            )
+            ),
+            csv=data_path
         )
 
         # Use the search method of CSVSearchTool, assuming it takes a 'csv' and a 'query' parameter
