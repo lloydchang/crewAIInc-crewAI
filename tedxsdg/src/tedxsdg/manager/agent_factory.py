@@ -49,15 +49,17 @@ def create_agent(
         logger.warning("No tools available for agent '%s'. The agent will have no tools assigned.", agent_name)
 
     try:
-        # Create the agent with configuration
+        # Create the agent with configuration, providing defaults for missing fields
         agent = Agent(
             name=agent_name,
-            role=agent_config.get("role"),
-            goal=agent_config.get("goal"),
-            backstory=agent_config.get("backstory"),
+            role=agent_config.get("role", f"Default role for {agent_name}"),
+            goal=agent_config.get("goal", f"Default goal for {agent_name}"),
+            backstory=agent_config.get("backstory", f"Default backstory for {agent_name}"),
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
-            tools=tools
+            tools=tools,
+            # Provide a default empty dict for search_query to satisfy Pydantic
+            search_query={}
         )
         logger.info(
             "Created agent '%s' with tools: %s",
