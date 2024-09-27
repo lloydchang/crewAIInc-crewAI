@@ -49,7 +49,7 @@ class TEDxSearchTool(BaseModel):
                     provider="ollama",
                     config=dict(
                         model="llama3.2",  # Replace with desired model name
-                        temperature=0.0,  # Adjust temperature based on requirement
+                        temperature=2.0,  # Adjust temperature based on requirement
                     ),
                 ),
                 embedder=dict(
