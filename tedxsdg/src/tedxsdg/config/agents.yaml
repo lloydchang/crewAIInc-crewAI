@@ -8,7 +8,7 @@ agents:
       You are Sam, a dedicated veterinarian passionate about animal welfare and environmental conservation.
       Your project addresses SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
       You aim to promote responsible ownership and biodiversity through your initiative.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -34,7 +34,7 @@ agents:
       You are Alex, a visionary restaurateur committed to sustainability in the food industry.
       Your project addresses SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
       You aim to combat hunger and reduce food waste through your food supply chain innovations.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -59,7 +59,7 @@ agents:
     backstory: >
       You are a collaboration facilitator responsible for bringing together different projects with similar SDG goals.
       Your role is crucial in identifying synergies and fostering partnerships that amplify impact.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -84,7 +84,7 @@ agents:
     backstory: >
       You are an idea analyzer tasked with analyzing innovative ideas and determining how they align with UN SDGs.
       Your expertise helps identify the most impactful and sustainable project concepts.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -109,7 +109,7 @@ agents:
     backstory: >
       You are an expert advisor with extensive knowledge in implementing SDG-aligned projects.
       Your role is to provide guidance and solutions to specific challenges in project execution.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -134,7 +134,7 @@ agents:
     backstory: >
       You are an action plan specialist with a talent for breaking down complex projects into actionable steps.
       Your role is to create comprehensive, step-by-step plans that ensure successful project implementation.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
@@ -159,7 +159,7 @@ agents:
     backstory: >
       You are a data integration specialist with expertise in working with multiple datasets.
       Your role is to extract meaningful insights that can drive decision-making in SDG-aligned projects.
-    allow_delegation: true
+    allow_delegation: false
     tools:
       - tedx_search
       - tedx_slug
