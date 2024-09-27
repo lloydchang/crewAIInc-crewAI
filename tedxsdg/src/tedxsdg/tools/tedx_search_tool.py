@@ -66,26 +66,53 @@ class TEDxSearchTool(BaseModel):
         """
         search_query = input.get('query', '')  # Extract 'query' from the input dictionary
         logger.debug("Running TEDx search for query: %s", search_query)
+        if not self.data_path:
+            raise ValueError("`data_path` must be provided in the configuration.")
 
-        # Initialize the CSVSearchTool with configurations
-        tool = CSVSearchTool(
-            config=dict(
-                llm=dict(
-                    provider="ollama",  # Example provider
-                    config=dict(
-                        model="ollama/llama3",
-                        temperature=0.0
+        try:
+            # Initialize the CSVSearchTool with configurations
+            tool = CSVSearchTool(
+                config=dict(
+                    llm=dict(
+                        provider="ollama",  # Example provider
+                        config=dict(
+                            model="ollama/llama3",
+                            temperature=0.0
+                        ),
+                    ),
+                    embedder=dict(
+                        provider="ollama",  # Example provider
+                        config=dict(
+                            model="nomic-embed-text"
+                        ),
                     ),
                 ),
-                embedder=dict(
-                    provider="ollama",  # Example provider
-                    config=dict(
-                        model="nomic-embed-text"
-                    ),
-                ),
-            ),
-            csv=data_path
-        )
+                csv=self.data_path
+            )
+
+            # Use the search method of CSVSearchTool, assuming it takes a 'csv' and a 'query' parameter
+            results = tool.search(
+                csv=self.csv_data,  # Assuming csv_data is compatible with the search method's expectations
+                query=search_query.lower()
+            )
+
+            if not results:
+                return "No results found."
+
+            # Format results for better readability
+            formatted_results = "\n\n".join([
+                f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+                for entry in results
+            ])
+
+            logger.debug("Search results: %s", formatted_results)
+            return f"Final Answer: TEDx Search Results:\n{formatted_results}"
+        except FileNotFoundError as exc:
+            logger.error("File not found: %s", self.data_path, exc_info=True)
+            raise FileNotFoundError(f"File not found: {self.data_path}") from exc
+        except Exception as e:
+            logger.error("Error searching CSV data: %s", e, exc_info=True)
+            raise Exception("Failed to search CSV data.") from e
 
         # Use the search method of CSVSearchTool, assuming it takes a 'csv' and a 'query' parameter
         results = tool.search(
