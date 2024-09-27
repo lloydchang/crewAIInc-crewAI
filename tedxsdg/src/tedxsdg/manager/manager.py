@@ -19,7 +19,7 @@ class CrewAIManager:
         self, 
         agents_config_path: str, 
         tasks_config_path: str, 
-        tools_config_path: str = "config/tools.yaml"  # model_config_path removed
+        tools_config_path: str = "config/tools.yaml"  # Ensure model_config_path is not included
     ):
         logger.debug("Initializing CrewAIManager")
 
@@ -51,3 +51,139 @@ class CrewAIManager:
 
         # Log Embedder use
         self._log_embedder_use()
+
+    def _validate_config_path(self, config_path: str, config_name: str) -> None:
+        logger.debug("Validating %s config path: %s", config_name, config_path)
+        if not os.path.exists(config_path):
+            logger.error("%s config file not found: %s", config_name.capitalize(), config_path)
+            raise FileNotFoundError(f"{config_name.capitalize()} config file not found: {config_path}")
+
+    def _log_llm_use(self) -> None:
+        """
+        Logs the LLM configurations used by each tool.
+        """
+        for tool_name, tool_config in self.tools_config.items():
+            llm_config = tool_config.get('llm_config', {}).get('config', {})
+            if not llm_config or 'model' not in llm_config:
+                logger.error("LLM configuration for tool '%s' is missing or does not contain a valid model.", tool_name)
+                continue
+
+            provider = tool_config.get('llm_config', {}).get('provider', 'Unknown')
+            model = llm_config.get('model')
+            temperature = llm_config.get('temperature', '0')  # Default temperature to 0
+            logger.info(
+                "Tool '%s' uses LLM - Provider: %s, Model: %s, Temperature: %s", 
+                tool_name, provider, model, temperature
+            )
+
+    def _log_embedder_use(self) -> None:
+        """
+        Logs the embedder configurations.
+        """
+        embedder_config = self.tools_config.get('embedder', {}).get('config', {})
+        if not embedder_config or 'model' not in embedder_config:
+            logger.error("Embedder configuration is missing or does not contain a valid model.")
+            return
+
+        provider = self.tools_config.get('embedder', {}).get('provider', 'Unknown')
+        model = embedder_config.get('model')
+        temperature = embedder_config.get('temperature', '0')  # Default temperature to 0
+        logger.info(
+            "Embedder - Provider: %s, Model: %s, Temperature: %s", 
+            provider, model, temperature
+        )
+
+    def create_task(self, task_name: str) -> None:
+        """
+        Creates a task based on the provided task name.
+        """
+        logger.debug("Creating task: %s", task_name)
+        if task_name not in self.tasks_config:
+            logger.error("Task '%s' not found in tasks configuration.", task_name)
+            raise ValueError(f"Task '{task_name}' not found in tasks configuration.")
+
+        task_config = self.tasks_config[task_name]
+        logger.debug("Task config: %s", task_config)
+
+        agent_name = task_config.get("agent")
+
+        if agent_name not in self.agents:
+            logger.debug("Agent '%s' not found, creating new agent.", agent_name)
+            self.agents[agent_name] = self._create_agent(agent_name)
+
+        agent = self.agents[agent_name]
+        logger.debug("Agent '%s' found or created", agent_name)
+
+        priority = task_config.get("priority", 2)
+        logger.debug("Task priority: %s", priority)
+
+        task = Task(
+            description=task_config.get("description", ""),
+            agent=agent,
+            expected_output=task_config.get("expected_output", "No output specified.")
+        )
+        logger.info(
+            "Created task '%s' assigned to agent '%s' with priority %s.", 
+            task_name, agent_name, priority
+        )
+        self.tasks.append(task)
+
+    def _create_agent(self, agent_name: str) -> Agent:
+        """
+        Creates an agent using the agent_factory.
+        """
+        logger.debug("Creating agent: %s", agent_name)
+        if agent_name not in self.agents_config:
+            logger.error("Agent configuration for '%s' is missing.", agent_name)
+            raise ValueError(f"Agent configuration for '{agent_name}' is missing.")
+
+        try:
+            agent_config = self.agents_config[agent_name]
+            agent = create_agent(
+                agent_name,
+                agent_config,
+                self.tool_registry
+            )
+            logger.debug("Agent '%s' created successfully.", agent_name)
+            return agent
+        except Exception as e:
+            logger.error("Error creating agent '%s': %s", agent_name, e, exc_info=True)
+            raise
+
+    def initialize_crew(self) -> Crew:
+        """
+        Initializes the crew with agents and tasks.
+        """
+        logger.debug("Initializing crew")
+        for task_name in self.tasks_config:
+            try:
+                logger.debug("Creating task '%s'", task_name)
+                self.create_task(task_name)
+            except Exception as e:
+                logger.error("Error creating task '%s': %s", task_name, str(e), exc_info=True)
+
+        if not self.agents or not self.tasks:
+            logger.error("At least one agent and one task must be successfully created to initialize the crew.")
+            raise ValueError(
+                "At least one agent and one task must be successfully created to initialize the crew."
+            )
+
+        try:
+            logger.debug(
+                "Initializing Crew with %d agents and %d tasks", 
+                len(self.agents), len(self.tasks)
+            )
+            crew = Crew(
+                agents=list(self.agents.values()),
+                tasks=self.tasks,
+                process=Process.sequential,
+                verbose=True,
+            )
+            logger.info(
+                "Initialized the crew with %d agents and %d tasks.", 
+                len(self.agents), len(self.tasks)
+            )
+            return crew
+        except Exception as e:
+            logger.error("Error initializing Crew: %s", str(e), exc_info=True)
+            raise

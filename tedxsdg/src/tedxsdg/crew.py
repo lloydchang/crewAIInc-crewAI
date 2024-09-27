@@ -1,5 +1,9 @@
 # crew.py
 
+#!/usr/bin/env python
+
+# This module sets up the environment and runs the crew.
+
 import os
 import logging
 import sys
@@ -8,7 +12,7 @@ import inspect
 
 # Centralized logging configuration
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.DEBUG,  # Set to DEBUG for detailed logs
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout)  # Log to stdout
@@ -59,3 +63,40 @@ def initialize_crew():
     except Exception as e:
         logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
         sys.exit(1)
+
+
+def run_crew():
+    """
+    Run the initialized crew and kick off the process.
+    """
+    try:
+        crew = initialize_crew()
+        if crew is None:
+            logger.error("CrewAIManager instance is None. Exiting.")
+            return "Error: CrewAIManager instance is None."
+
+        # Attempt to run the crew
+        if hasattr(crew, 'run'):
+            kickoff_result = crew.run()  # Replace with the actual method name if different
+        elif hasattr(crew, 'execute'):
+            kickoff_result = crew.execute()
+        else:
+            logger.error("No suitable method found to execute the crew.")
+            return "Error: No suitable method found to execute the crew."
+
+        logger.info("Crew execution completed successfully.")
+        return kickoff_result
+    except (ValueError, TypeError, RuntimeError) as e:
+        logger.error("An error occurred while running the crew: %s", str(e), exc_info=True)
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error("An error occurred while running the crew: %s", str(e), exc_info=True)
+        return f"Error: {str(e)}"
+
+
+if __name__ == "__main__":
+    result = run_crew()
+    print("\n######################")
+    print("Crew Execution Result:")
+    print(result)
+    print("######################")
