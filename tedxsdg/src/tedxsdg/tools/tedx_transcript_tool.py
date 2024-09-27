@@ -91,3 +91,9 @@ class TEDxTranscriptTool(BaseModel):
         return self._args_schema
 
     @property
+    def args(self) -> BaseModel:
+        """Return the arguments schema for the tool."""
+        return self._args_schema
+
+    class Config:
+        arbitrary_types_allowed = True
