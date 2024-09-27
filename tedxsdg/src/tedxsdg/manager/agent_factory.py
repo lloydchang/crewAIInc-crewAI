@@ -60,7 +60,7 @@ def create_agent(
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
             tools=tools,
-            search_query=agent_config.get("search_query", None),
+            search_query=agent_config.get("search_query", None),  # Optional field
             type=agent_config.get("type", None)
         )
         logger.info(

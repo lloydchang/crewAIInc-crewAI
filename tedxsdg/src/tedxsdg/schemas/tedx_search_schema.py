@@ -4,7 +4,7 @@
 Module for TEDx search schema.
 """
 
-from typing import Union, Dict, Any
+from typing import Union, Optional, Dict, Any
 from pydantic import BaseModel, Field, validator
 
 
@@ -12,19 +12,13 @@ class TEDxSearchInput(BaseModel):
     """
     Schema for TEDx search input.
     """
-    search_query: Union[str, Dict[str, Any]] = Field(
-        ..., _description = "Search query for TEDx content."
+    search_query: Optional[Union[str, Dict[str, Any]]] = Field(
+        default=None, description="Search query for TEDx content."
     )
 
-    @validator('search_query', pre=True, always=True)
+    @validator('search_query')
     def check_search_query(cls, v):
         """Validate the search_query field."""
-        if not isinstance(v, (str, dict)):
+        if v and not isinstance(v, (str, dict)):
             raise ValueError("search_query must be either a string or a dictionary.")
         return v
-
-class TEDxSearchInput(BaseModel):
-:
-    @property
-    def description(self):
-        return self._description
