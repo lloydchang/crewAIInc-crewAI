@@ -9,7 +9,7 @@ from tools.tool_registry import ToolRegistry
 logger = logging.getLogger(__name__)
 
 class CustomAgent(Agent):
-    search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)  # Default empty dict
+    search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)  # Default to an empty dict
 
     class Config:
         arbitrary_types_allowed = True
@@ -52,13 +52,13 @@ def create_agent(
     if not tools:
         logger.warning("No tools available for agent '%s'. The agent will have no tools assigned.", agent_name)
 
-    # Ensure all required fields are present
+    # Provide default values for optional fields if not present
     required_fields = ["role", "goal", "backstory"]
     for field in required_fields:
         if field not in agent_config:
             agent_config[field] = f"Default {field} for {agent_name}"
 
-    # Ensure search_query is present
+    # Ensure search_query is present, defaulting to an empty dict
     agent_config["search_query"] = agent_config.get("search_query", {})
 
     try:
