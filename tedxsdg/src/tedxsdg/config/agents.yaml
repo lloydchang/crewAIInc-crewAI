@@ -11,8 +11,6 @@ agents:
     allow_delegation: false
     tools:
       - tedx_search
-      - tedx_slug
-      - tedx_transcript
     llm_config:
       provider: "ollama"
       config:
@@ -34,8 +32,6 @@ agents:
     allow_delegation: false
     tools:
       - tedx_search
-      - tedx_slug
-      - tedx_transcript
     llm_config:
       provider: "ollama"
       config:
