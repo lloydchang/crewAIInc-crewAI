@@ -49,7 +49,7 @@ tasks:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    agent: collaboration_facilitator
+    agent: francis
     priority: 2  # Medium priority
     expected_output: >
       A collaboration proposal including:
@@ -70,7 +70,7 @@ tasks:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    agent: idea_analyzer
+    agent: ira
     priority: 2  # Medium priority
     expected_output: >
       A detailed analysis report including:
@@ -91,7 +91,7 @@ tasks:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    agent: expert_advisor
+    agent: eden
     priority: 2  # Medium priority
     expected_output: >
       Detailed expert advice including:
@@ -112,7 +112,7 @@ tasks:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    agent: action_plan_generator
+    agent: peyton
     priority: 2  # High priority
     expected_output: >
       A comprehensive action plan including:
@@ -135,7 +135,7 @@ tasks:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    agent: data_integration_specialist
+    agent: dakota
     priority: 2  # Medium priority
     expected_output: >
       A comprehensive data analysis report including:
