@@ -13,28 +13,19 @@ logger = logging.getLogger(__name__)
 
 class SustainabilityImpactToolArgs(BaseModel):
     """Arguments for SustainabilityImpactTool."""
-    project: str = Field(..., description="The project to assess for sustainability impact")
+    project: str = Field(default=None, description="The project to assess for sustainability impact")
 
 
 class SustainabilityImpactTool(BaseModel):
     """Tool for assessing sustainability impact of ideas and projects."""
 
-    # Class-level attributes
     _name: str = "sustainability_impact"
     _description: str = "Assesses the potential sustainability impact of ideas and projects."
     _args_schema = SustainabilityImpactToolArgs
 
-    # Instance-level fields
-    data_path: str = Field(..., description="Path to the sustainability impact data CSV")
-    assessment_model: str = Field(..., description="Model used for assessment")
+    data_path: str = Field(default=None, description="Path to the sustainability impact data CSV")
+    assessment_model: str = Field(default=None, description="Model used for assessment")
     impact_data: Dict[str, Any] = Field(default_factory=dict, description="Impact data")
-
-    @validator('data_path')
-    def check_data_path(cls, v):
-        """Validator to ensure the data path is provided."""
-        if not v:
-            raise ValueError("data_path must be provided")
-        return v
 
     @validator('impact_data', pre=True, always=True)
     def load_impact_data(cls, value, values):
@@ -57,7 +48,7 @@ class SustainabilityImpactTool(BaseModel):
             logger.error(f"Error loading impact data: {e}", exc_info=True)
             raise
 
-    def run(self, project: str) -> str:
+    def run(self, project: str = None) -> str:
         """Assesses the sustainability impact of the given project."""
         logger.debug("Assessing sustainability impact for project: %s", project)
         impact = self.impact_data.get(project.lower())
@@ -65,7 +56,6 @@ class SustainabilityImpactTool(BaseModel):
             return f"No sustainability impact data found for project '{project}'."
         return f"Final Answer: Sustainability Impact for '{project}':\n{impact}"
 
-    # Class property methods
     @property
     def name(self) -> str:
         return self._name

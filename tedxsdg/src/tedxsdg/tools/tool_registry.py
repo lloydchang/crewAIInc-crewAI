@@ -13,7 +13,6 @@ from .tedx_transcript_tool import TEDxTranscriptTool
 
 logger = logging.getLogger(__name__)
 
-
 class ToolRegistry:
     """
     Registry for managing and creating tools.
@@ -24,36 +23,24 @@ class ToolRegistry:
         logger.debug("Loaded tool configurations: %s", self.tool_configs)
         self.tools: Dict[str, StructuredTool] = {}
 
-    def _create_tool(
-        self, tool_name: str, tool_class: Type[StructuredTool]
-    ) -> StructuredTool:
+    def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         logger.debug("Creating tool '%s'", tool_name)
         
-        # Check if the tool has a configuration in the loaded YAML file
         if tool_name not in self.tool_configs:
             logger.error("No configuration found for tool '%s'.", tool_name)
-            raise ValueError(
-                f"Tool configuration for '{tool_name}' not found."
-            )
+            raise ValueError(f"Tool configuration for '{tool_name}' not found.")
 
         try:
-            # Load the specific tool's configuration and initialize the tool
             tool_config = self.tool_configs[tool_name]
-            
-            # Exclude class-level attributes to prevent Pydantic from processing them
             excluded_keys = {'name', 'description', 'args_schema'}
             filtered_config = {k: v for k, v in tool_config.items() if k not in excluded_keys}
 
-            # **filtered_config unpacks the dictionary into keyword arguments
             tool_instance = tool_class(**filtered_config)
             logger.debug("Tool '%s' created successfully", tool_name)
             self.tools[tool_name] = tool_instance  # Cache the created tool
             return tool_instance
         except Exception as e:
-            logger.error(
-                "Error creating tool '%s': %s", tool_name, str(e), 
-                exc_info=True
-            )
+            logger.error("Error creating tool '%s': %s", tool_name, str(e), exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
@@ -66,7 +53,6 @@ class ToolRegistry:
 
         logger.info("Creating tool '%s'.", tool_name)
 
-        # Mapping tool_name to the corresponding tool class
         tool_mapping = {
             "tedx_search": TEDxSearchTool,
             "tedx_slug": TEDxSlugTool,
@@ -76,20 +62,16 @@ class ToolRegistry:
             "duckduckgo_search": DuckDuckGoSearchTool
         }
 
-        # Check if the tool name is in the mapping
         tool_class = tool_mapping.get(tool_name)
         if not tool_class:
             logger.warning("Tool '%s' not recognized.", tool_name)
             raise ValueError(f"Unknown tool: {tool_name}")
 
         try:
-            # Create and return the tool instance
             tool = self._create_tool(tool_name, tool_class)
             return tool
         except Exception as e:
-            logger.error(
-                "Failed to create tool '%s': %s", tool_name, e, exc_info=True
-            )
+            logger.error("Failed to create tool '%s': %s", tool_name, e, exc_info=True)
             raise
 
     def list_tools(self) -> Dict[str, StructuredTool]:

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class TEDxTranscriptToolArgs(BaseModel):
     """Arguments for TEDxTranscriptTool."""
-    slug: str = Field(..., description="The slug of the TEDx talk to retrieve the transcript for.")
+    slug: str = Field(default=None, description="The slug of the TEDx talk to retrieve the transcript for.")
 
 
 class TEDxTranscriptTool(BaseModel):
@@ -25,13 +25,14 @@ class TEDxTranscriptTool(BaseModel):
     _description: str = "Retrieves the transcript of a TEDx talk based on the provided slug."
     _args_schema = TEDxTranscriptToolArgs
 
-    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
         if not data_path:
+            logger.error("`data_path` must be provided in the configuration.")
             raise ValueError("`data_path` must be provided in the configuration.")
         logger.info("Loading TEDxTranscriptTool with data_path: %s", data_path)
         try:
@@ -52,7 +53,7 @@ class TEDxTranscriptTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def run(self, slug: str) -> str:
+    def run(self, slug: str = None) -> str:
         """
         Retrieve transcript for the given slug.
 
@@ -63,12 +64,12 @@ class TEDxTranscriptTool(BaseModel):
             str: The transcript for the TEDx talk.
         """
         logger.debug("Running TEDxTranscriptTool for slug: %s", slug)
-        slug_lower = slug.lower()
+        slug_lower = slug.lower() if slug else None
 
-        if slug_lower not in self.csv_data:
+        if slug_lower and slug_lower not in self.csv_data:
             return f"No transcript found for slug '{slug}'. Please ensure the slug is correct."
 
-        entry = self.csv_data[slug_lower]
+        entry = self.csv_data.get(slug_lower, {})
         transcript = entry.get('transcript', 'No transcript available.')
 
         formatted_result = (

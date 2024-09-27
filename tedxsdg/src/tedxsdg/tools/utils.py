@@ -9,7 +9,6 @@ from typing import Any, Dict, Union
 
 logger = logging.getLogger(__name__)
 
-
 def extract_query_string(query_input: Union[str, Dict[str, Any]]) -> str:
     """
     Extracts a query string from input, which can be a string, dictionary, or other objects.
@@ -34,7 +33,6 @@ def extract_query_string(query_input: Union[str, Dict[str, Any]]) -> str:
             else:
                 logger.warning("Extracted query is not a string: %s", extracted)
                 return ""
-        # For other types, attempt to convert to string
         extracted = str(query_input).strip()
         logger.debug("Extracted query from non-str/dict input: %s", extracted)
         return extracted
