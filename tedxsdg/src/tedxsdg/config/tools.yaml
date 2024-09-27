@@ -3,16 +3,6 @@
 tools:
   tedx_search:
     data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
-    llm_config:
-      provider: "ollama"
-      config:
-        model: "ollama/llama3.2"
-        temperature: 0
-    embedder_config:
-      provider: "ollama"
-      config:
-        model: "nomic-embed-text"
-        temperature: 0
 
   tedx_slug:
     data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
@@ -29,51 +19,11 @@ tools:
 
   tedx_transcript:
     data_path: "data/github-mauropelucchi-tedx_dataset-update_2024-details.csv"
-    llm_config:
-      provider: "ollama"
-      config:
-        model: "ollama/llama3.2"
-        temperature: 0
-    embedder_config:
-      provider: "ollama"
-      config:
-        model: "nomic-embed-text"
-        temperature: 0
 
   duckduckgo_search:
-    llm_config:
-      provider: "ollama"
-      config:
-        model: "ollama/llama3.2"
-        temperature: 0
-    embedder_config:
-      provider: "ollama"
-      config:
-        model: "nomic-embed-text"
-        temperature: 0
 
   sdg_align:
     data_path: "data/sdg_data.csv"
-    llm_config:
-      provider: "ollama"
-      config:
-        model: "ollama/llama3.2"
-        temperature: 0
-    embedder_config:
-      provider: "ollama"
-      config:
-        model: "nomic-embed-text"
-        temperature: 0
 
   sustainability_impact:
     data_path: "data/impact_data.csv"
-    llm_config:
-      provider: "ollama"
-      config:
-        model: "ollama/llama3.2"
-        temperature: 0
-    embedder_config:
-      provider: "ollama"
-      config:
-        model: "nomic-embed-text"
-        temperature: 0
