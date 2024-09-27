@@ -44,16 +44,16 @@ def create_agent(
             tools.append(tool)
             logger.info("Successfully created tool '%s' for agent '%s'.", tool_name, agent_name)
 
-            # Check for LLM configuration within the tool and create an LLM if present
-            llm_config = getattr(tool, 'llm_config', None)  # Use getattr to handle missing llm_config gracefully
-            if llm_config:
+            # Handle LLM if provided in agent config
+            if "llm_config" in agent_config:
+                llm_config = agent_config.get("llm_config", {}).get("config", {})
                 llm = LLM(
                     model=llm_config.get("model"),
                     temperature=llm_config.get("temperature", 0),
-                    base_url=llm_config.get("base_url", "http://localhost:11434"),  # Default to local for Ollama
-                    api_key=llm_config.get("api_key", None)  # Optional API key
+                    base_url=llm_config.get("base_url", "http://localhost:11434"),
+                    api_key=llm_config.get("api_key", None)
                 )
-                llms.append(llm)  # Add the LLM to the agent's list of LLMs
+                llms.append(llm)
         except ValueError as e:
             logger.warning(
                 "Tool '%s' could not be created and will be skipped for agent '%s': %s", 

@@ -2,6 +2,7 @@
 
 import logging
 from typing import Dict, Type, Any
+from crewai import LLM  # Assuming LLM class is imported from crewai
 from langchain.tools import StructuredTool
 from .config_loader import load_config
 from .duckduckgo_search_tool import DuckDuckGoSearchTool
@@ -38,6 +39,17 @@ class ToolRegistry:
             
             excluded_keys = {'name', 'description', 'args_schema'}
             filtered_config = {k: v for k, v in tool_config.items() if k not in excluded_keys}
+
+            # Handle LLM config if provided
+            if "llm_config" in tool_config:
+                llm_config = tool_config.get("llm_config", {}).get("config", {})
+                llm = LLM(
+                    model=llm_config.get("model"),
+                    temperature=llm_config.get("temperature", 0),
+                    base_url=llm_config.get("base_url", "http://localhost:11434"),
+                    api_key=llm_config.get("api_key", None)
+                )
+                filtered_config["llm"] = llm  # Attach the LLM instance to the tool config
 
             # Create the tool instance
             tool_instance = tool_class(**filtered_config)
