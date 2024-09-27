@@ -73,20 +73,16 @@ class TEDxSearchTool(BaseModel):
             tool = CSVSearchTool(csv=self.csv_data,
                                     config=dict(
                                         llm=dict(
-                                            provider="ollama", # or google, openai, anthropic, llama2, ...
+                                            provider="ollama",
                                             config=dict(
                                                 model="llama3.2",
-                                                temperature=0.0,
-                                                # top_p=1,
-                                                # stream=true,
+                                                temperature=0.0
                                             ),
                                         ),
                                         embedder=dict(
-                                            provider="ollama", # or openai, ollama, ...
+                                            provider="ollama",
                                             config=dict(
-                                                model="nomic-embed-text",
-#                                                task_type="retrieval_document",
-                                                # title="Embeddings",
+                                                model="nomic-embed-text"
                                             ),
                                         ),
                                     )
