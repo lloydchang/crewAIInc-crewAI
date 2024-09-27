@@ -70,7 +70,27 @@ class TEDxSearchTool(BaseModel):
 
         try:
             # Initialize the CSVSearchTool with or without a specific CSV file
-            tool = CSVSearchTool(csv=self.csv_data)
+            tool = CSVSearchTool(csv=self.csv_data,
+                                    config=dict(
+                                        llm=dict(
+                                            provider="ollama", # or google, openai, anthropic, llama2, ...
+                                            config=dict(
+                                                model="llama3.2",
+                                                temperature=0.0,
+                                                # top_p=1,
+                                                # stream=true,
+                                            ),
+                                        ),
+                                        embedder=dict(
+                                            provider="ollama", # or openai, ollama, ...
+                                            config=dict(
+                                                model="nomic-embed-text",
+#                                                task_type="retrieval_document",
+                                                # title="Embeddings",
+                                            ),
+                                        ),
+                                    )
+                                )
 
             # Use the RAG search method of CSVSearchTool
             results = tool.search(
