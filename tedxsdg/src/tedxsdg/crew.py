@@ -88,6 +88,11 @@ def run_crew():
         all_attributes = dir(crew)
         logger.debug("All attributes of Crew: %s", all_attributes)
 
+        # Log types of all attributes
+        for attr in all_attributes:
+            attr_value = getattr(crew, attr)
+            logger.debug("Attribute: %s, Type: %s", attr, type(attr_value))
+
         # Attempt to find suitable methods to execute the crew
         available_methods = [method for method in all_attributes if not method.startswith("__")]
         logger.debug("Available methods in Crew: %s", available_methods)
