@@ -31,10 +31,11 @@ class TEDxSearchTool(BaseModel):
     _description: str = "Searches TEDx content using CrewAI's CSVSearchTool with custom configuration."
     _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
-    def __init__(self, data_path: str = LOCAL_CSV_FILE, llm: Any = None, embedder: Any = None, **kwargs):
-        super().__init__(**kwargs)
+    # Defining class attributes for Pydantic
+    data_path: str = LOCAL_CSV_FILE
 
-        # Ensure the CSV file is downloaded or use the cache location
+    def __init__(self, data_path: str = LOCAL_CSV_FILE, llm: Any = None, embedder: Any = None, **kwargs):
+        # Set attributes from the input parameters
         self.data_path = data_path or LOCAL_CSV_FILE
         self.download_csv_if_not_exists()
 
