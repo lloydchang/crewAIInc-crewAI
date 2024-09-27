@@ -16,12 +16,12 @@ agents:
       provider: "ollama"
       config:
         model: "ollama/llama3.2"
-        temperature: 0
+        temperature: 2.0
     embedder_config:
       provider: "ollama"
       config:
         model: "nomic-embed-text"
-        temperature: 0
+        temperature: 2.0
 
   alex:
     role: "Alex, a visionary restaurateur"
@@ -38,9 +38,9 @@ agents:
       provider: "ollama"
       config:
         model: "ollama/llama3.2"
-        temperature: 0
+        temperature: 2.0
     embedder_config:
       provider: "ollama"
       config:
         model: "nomic-embed-text"
-        temperature: 0
+        temperature: 2.0
