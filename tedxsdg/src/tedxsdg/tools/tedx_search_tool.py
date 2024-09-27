@@ -8,7 +8,7 @@ import logging
 import csv
 from typing import Any, Dict
 from pydantic import BaseModel, Field, validator
-from crewai_tools import CSVRAGSearchTool
+from crewai_tools import CSVSearchTool
 
 # Setup basic logging configuration
 logger = logging.getLogger(__name__)
@@ -69,10 +69,10 @@ class TEDxSearchTool(BaseModel):
             raise ValueError("`data_path` must be provided in the configuration.")
 
         try:
-            # Initialize the CSVRAGSearchTool with or without a specific CSV file
-            tool = CSVRAGSearchTool(csv=self.csv_data)
+            # Initialize the CSVSearchTool with or without a specific CSV file
+            tool = CSVSearchTool(csv=self.csv_data)
 
-            # Use the RAG search method of CSVRAGSearchTool
+            # Use the RAG search method of CSVSearchTool
             results = tool.search(
                 query=search_query.lower()
             )
