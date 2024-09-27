@@ -1,28 +1,29 @@
 # tools/tedx_search_tool.py
 
 """
-Module for TEDxSearchTool which searches TEDx content from a local CSV dataset using a RAG approach.
+Module for TEDxSearchTool which searches TEDx content from a local CSV dataset.
 """
 
 import logging
 import csv
-from typing import Any, Dict
+from typing import Any, Dict, List
 from pydantic import BaseModel, Field, validator
-from crewai_tools import CSVSearchTool
 
-# Setup basic logging configuration
+# logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""
     search_query: str = Field(default=None, description="The search query for TEDx talks")
 
+
 class TEDxSearchTool(BaseModel):
-    """Tool for searching TEDx content from a local CSV dataset using a RAG approach."""
+    """Tool for searching TEDx content from a local CSV dataset."""
     
     _name: str = "tedx_search"
-    _description: str = "Searches TEDx content from the local CSV dataset using a RAG approach."
-    _args_schema = TEDxSearchToolArgs
+    _description: str = "Searches TEDx content from the local CSV dataset."
+    _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
     data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
@@ -54,7 +55,7 @@ class TEDxSearchTool(BaseModel):
 
     def invoke(self, input: Dict[str, str]) -> str:
         """
-        Executes the RAG search on the TEDx dataset based on the input.
+        Executes the search on the TEDx dataset based on the input.
 
         Args:
             input (dict): The input dictionary containing the search query.
@@ -62,54 +63,29 @@ class TEDxSearchTool(BaseModel):
         Returns:
             str: Formatted search results.
         """
-        search_query = input.get('query', '')
-        logger.debug("Running TEDx RAG search for query: %s", search_query)
+        search_query = input.get('query', '')  # Extract 'query' from the input dictionary
+        logger.debug("Running TEDx search for query: %s", search_query)
+        search_query_lower = search_query.lower()
+        results: List[Dict[str, Any]] = []
 
-        if not self.data_path:
-            raise ValueError("`data_path` must be provided in the configuration.")
+        for entry in self.csv_data.values():
+            if (search_query_lower in entry.get('title', '').lower()) or \
+               (search_query_lower in entry.get('description', '').lower()):
+                results.append(entry)
+                if len(results) >= 3:  # Limit to top 3 results
+                    break
 
-        try:
-            # Initialize the CSVSearchTool with or without a specific CSV file
-            # tool = CSVSearchTool(csv=self.csv_data,
-            #                         config=dict(
-            #                             llm=dict(
-            #                                 provider="ollama",
-            #                                 config=dict(
-            #                                     model="ollama/llama3.2",
-            #                                     temperature=0.0
-            #                                 ),
-            #                             ),
-            #                             embedder=dict(
-            #                                 provider="ollama",
-            #                                 config=dict(
-            #                                     model="nomic-embed-text"
-            #                                 ),
-            #                             ),
-            #                         )
-            #                     )
+        if not results:
+            return "No results found."
 
-            # Use the RAG search method of CSVSearchTool
-            results = tool.search(
-                query=search_query.lower()
-            )
+        # Format results for better readability
+        formatted_results = "\n\n".join([
+            f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+            for entry in results
+        ])
 
-            if not results:
-                return "No results found."
-
-            # Format results for better readability
-            formatted_results = "\n\n".join([
-                f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
-                for entry in results
-            ])
-
-            logger.debug("Search results: %s", formatted_results)
-            return f"TEDx Search Results:\n{formatted_results}"
-        except FileNotFoundError as exc:
-            logger.error("File not found: %s", self.data_path, exc_info=True)
-            raise FileNotFoundError(f"File not found: {self.data_path}") from exc
-        except Exception as e:
-            logger.error("Error searching CSV data: %s", e, exc_info=True)
-            raise Exception("Failed to search CSV data.") from e
+        logger.debug("Search results: %s", formatted_results)
+        return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
     @property
     def name(self) -> str:
@@ -121,6 +97,11 @@ class TEDxSearchTool(BaseModel):
 
     @property
     def args_schema(self) -> BaseModel:
+        return self._args_schema
+
+    @property
+    def args(self) -> BaseModel:
+        """Return the arguments schema for the tool."""
         return self._args_schema
 
     class Config:
