@@ -48,7 +48,7 @@ class TEDxSearchTool(BaseModel):
                 llm=dict(
                     provider="ollama",
                     config=dict(
-                        model="ollama3.2",  # Replace with desired model name
+                        model="ollama/llama3.2",  # Replace with desired model name
                         temperature=0.0,  # Adjust temperature based on requirement
                     ),
                 ),
@@ -109,7 +109,8 @@ class TEDxSearchTool(BaseModel):
         return self._description
 
     @property
-    def args_schema(self) -> BaseModel:
+    def args(self) -> BaseModel:
+        """Return the arguments schema for the tool."""
         return self._args_schema
 
     class Config:
