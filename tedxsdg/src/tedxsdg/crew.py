@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
+#!/usr/bin/env python
+
 # This module sets up the environment and runs the crew.
 
 import os
 import logging
 import sys
 from dotenv import load_dotenv
+from manager import CrewAIManager
 
-__version__ = "0.1.1"  # Updated version number
+__version__ = "0.2.0"  # Updated version number
 
 # Centralized logging configuration
 logging.basicConfig(
@@ -20,16 +23,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Attempt to import crewai
-try:
-    import crewai
-    from crewai import Crew, Agent, Task
-    logger.info("Successfully imported crewai. Version info not available.")
-except ImportError as e:
-    logger.error("Failed to import crewai: %s", str(e))
-    logger.error("Please ensure crewai is installed. You can install it using: pip install crewai")
-    sys.exit(1)
-
 # Load environment variables
 load_dotenv()
 
@@ -38,13 +31,13 @@ AGENTS_CONFIG_PATH = os.getenv("AGENTS_CONFIG_PATH", "config/agents.yaml")
 TASKS_CONFIG_PATH = os.getenv("TASKS_CONFIG_PATH", "config/tasks.yaml")
 TOOLS_CONFIG_PATH = os.getenv("TOOLS_CONFIG_PATH", "config/tools.yaml")
 
-def initialize_crew():
-    """
-    Initialize the CrewAI and return the Crew instance.
-    """
-    logger.debug("Initializing crew with configurations.")
+def initialize_test_crew():
+    '''
+    Initialize the test CrewAI instance with hardcoded agents and tasks.
+    '''
+    logger.debug("Initializing test crew with hardcoded agents and tasks.")
     try:
-        # Create Agents and Tasks
+        # Create Agents and Tasks for test purposes
         agent1 = Agent(
             role='Researcher',
             goal='Gather information',
@@ -75,26 +68,32 @@ def initialize_crew():
             verbose=True
         )
 
-        logger.info("Crew initialization successful.")
+        logger.info("Test crew initialization successful.")
         return crew
     except Exception as e:
-        logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
+        logger.error("Failed to initialize test crew: %s", str(e), exc_info=True)
         return None
 
 def run_crew():
     """
-    Run the initialized crew and kick off the process.
+    Run the crew using configuration files for agents, tasks, and tools.
     """
+    logger.debug("Starting crew initialization using configuration files.")
     try:
-        crew = initialize_crew()
-        if crew is None:
-            logger.error("Crew instance is None. Exiting.")
-            return "Error: Crew instance is None."
+        # Initialize the CrewAIManager with the paths to the config files
+        manager = CrewAIManager(
+            agents_config_path=AGENTS_CONFIG_PATH,
+            tasks_config_path=TASKS_CONFIG_PATH,
+            tools_config_path=TOOLS_CONFIG_PATH
+        )
+        
+        # Commented out the test crew initialization
+        # crew = initialize_test_crew()
 
-        logger.debug("Crew instance: %s, Type: %s", crew, type(crew))
-        logger.debug("Available methods in Crew: %s", [method for method in dir(crew) if not method.startswith("__")])
+        # Initialize the real crew based on configurations
+        crew = manager.initialize_crew()
 
-        # Attempt to run the crew
+        # Run the crew
         if hasattr(crew, 'kickoff') and callable(getattr(crew, 'kickoff')):
             logger.debug("Executing crew using 'kickoff' method.")
             kickoff_result = crew.kickoff()
@@ -108,7 +107,7 @@ def run_crew():
         logger.info("Crew execution completed successfully.")
         return kickoff_result
     except Exception as e:
-        logger.error("An error occurred while running the crew: %s", str(e), exc_info=True)
+        logger.error("An error occurred while running the real crew: %s", str(e), exc_info=True)
         return f"Error: {str(e)}"
 
 if __name__ == "__main__":
