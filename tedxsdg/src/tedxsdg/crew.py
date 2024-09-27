@@ -89,7 +89,15 @@ def run_crew():
         logger.debug("All attributes of Crew: %s", all_attributes)
 
         # Check for available callable methods
-        available_methods = [method for method in all_attributes if callable(getattr(crew, method)) and not method.startswith("__")]
+        available_methods = []
+        for method in all_attributes:
+            try:
+                if callable(getattr(crew, method)) and not method.startswith("__"):
+                    available_methods.append(method)
+            except AttributeError:
+                # Ignore any class-only attributes like __signature__
+                continue
+
         logger.debug("Available methods in Crew: %s", available_methods)
 
         # Attempt to run the crew
