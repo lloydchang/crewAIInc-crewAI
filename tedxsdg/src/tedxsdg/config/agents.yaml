@@ -16,6 +16,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   alex:
     role: "Alex, a visionary restaurateur"
@@ -32,6 +42,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   francis:
     role: "Francis, SDG Project Collaboration Facilitator"
@@ -47,6 +67,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   ira:
     role: "Ira, SDG Idea Analyzer"
@@ -62,6 +92,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   eden:
     role: "Eden, SDG Implementation Expert"
@@ -77,6 +117,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   peyton:
     role: "Peyton, SDG Action Plan Specialist"
@@ -92,6 +142,16 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
 
   dakota:
     role: "Dakota, SDG Data Integration Specialist"
@@ -107,3 +167,13 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
+    llm_config:
+      provider: "ollama"
+      config:
+        model: "ollama/llama3.2"
+        temperature: 0
+    embedder_config:
+      provider: "ollama"
+      config:
+        model: "nomic-embed-text"
+        temperature: 0
