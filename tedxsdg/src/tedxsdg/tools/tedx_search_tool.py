@@ -6,12 +6,18 @@ Module for TEDxSearchTool which searches TEDx content from a local CSV dataset.
 
 import logging
 import csv
-from typing import Any, Dict, List
+import os
+import requests
+from typing import Any, Dict, Union
 from pydantic import BaseModel, Field, validator
-from tools.utils import extract_query_string
+from tools.utils import extract_query_string  # Import the utility function
 from crewai_tools import CSVSearchTool  # Assuming this is available in your environment
 
 logger = logging.getLogger(__name__)
+
+# Local CSV file location and remote URL for fallback download
+LOCAL_CSV_FILE = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+REMOTE_CSV_URL = 'https://raw.githubusercontent.com/lloydchang/mauropelucchi-tedx_dataset/refs/heads/master/update_2024/details.csv'
 
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""
@@ -25,8 +31,21 @@ class TEDxSearchTool(BaseModel):
     _description: str = "Searches TEDx content from the local CSV dataset."
     _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
-    data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
+    data_path: str = Field(default=LOCAL_CSV_FILE, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
+
+    # Download CSV file if it doesn't exist
+    def download_csv_if_not_exists(self):
+        if not os.path.exists(self.data_path):
+            logger.info(f"Downloading CSV file from {REMOTE_CSV_URL}")
+            response = requests.get(REMOTE_CSV_URL)
+            if response.status_code == 200:
+                with open(self.data_path, 'wb') as f:
+                    f.write(response.content)
+                logger.info(f"CSV file saved to {self.data_path}")
+            else:
+                logger.error(f"Failed to download CSV file. Status code: {response.status_code}")
+                raise Exception("Failed to download CSV file")
 
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
@@ -37,6 +56,10 @@ class TEDxSearchTool(BaseModel):
         if not data_path:
             raise ValueError("`data_path` must be provided in the configuration.")
         logger.info("Loading TEDxSearchTool with data_path: %s", data_path)
+        
+        # Ensure the CSV file exists or is downloaded
+        cls.download_csv_if_not_exists(cls)
+
         try:
             search_index = {}
             with open(data_path, mode='r', encoding='utf-8') as csvfile:
@@ -72,6 +95,9 @@ class TEDxSearchTool(BaseModel):
             raise ValueError("`data_path` must be provided in the configuration.")
 
         try:
+            # Ensure the CSV file exists or is downloaded
+            self.download_csv_if_not_exists()
+
             # Initialize CSVSearchTool for TEDx search
             results = CSVSearchTool(csv=self.data_path,
                                     config=dict(
