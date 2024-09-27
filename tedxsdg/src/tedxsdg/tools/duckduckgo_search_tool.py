@@ -38,7 +38,7 @@ class DuckDuckGoSearchTool(BaseModel):
         """Placeholder validator for loading search results if necessary."""
         return search_results
 
-    def run(self, search_query: str) -> str:
+    def invoke(self, search_query: str) -> str:
         """Executes the DuckDuckGo search based on the search query."""
         logger.debug("Running DuckDuckGo search for query: %s", search_query)
 

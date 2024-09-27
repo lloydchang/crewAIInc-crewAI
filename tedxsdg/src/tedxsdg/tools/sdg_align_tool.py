@@ -38,7 +38,7 @@ class SDGAlignTool(BaseModel):
         """Return the arguments schema for the tool."""
         return self._args_schema
 
-    def run(self, content: str) -> str:
+    def invoke(self, content: str) -> str:
         """Align the given content with SDGs."""
         logger.debug("Aligning content with SDGs: %s", content)
 
