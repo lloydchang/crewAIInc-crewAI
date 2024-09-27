@@ -49,9 +49,9 @@ def create_agent(
         logger.warning("No tools available for agent '%s'. The agent will have no tools assigned.", agent_name)
 
     try:
-        # Create the agent with configuration (without 'search_query' and 'type')
+        # Create the agent with configuration
         agent = Agent(
-            _name=agent_name,
+            name=agent_name,
             role=agent_config.get("role"),
             goal=agent_config.get("goal"),
             backstory=agent_config.get("backstory"),

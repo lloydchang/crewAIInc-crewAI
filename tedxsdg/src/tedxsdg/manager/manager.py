@@ -118,9 +118,8 @@ class CrewAIManager:
         logger.debug("Task priority: %s", priority)
 
         task = Task(
-            description=task_config.get("description", ""),  # Fix: removed leading underscore
+            description=task_config.get("description", ""),
             agent=agent,
-            priority=priority,
             expected_output=task_config.get("expected_output", "No output specified.")
         )
         logger.info(
@@ -134,12 +133,12 @@ class CrewAIManager:
         Creates an agent using the agent_factory.
         """
         logger.debug("Creating agent: %s", agent_name)
-        try:
-            agent_config = self.agents_config.get(agent_name, {})
-            if not agent_config:
-                logger.error("Agent configuration for '%s' is missing.", agent_name)
-                raise ValueError(f"Agent configuration for '{agent_name}' is missing.")
+        if agent_name not in self.agents_config:
+            logger.error("Agent configuration for '%s' is missing.", agent_name)
+            raise ValueError(f"Agent configuration for '{agent_name}' is missing.")
 
+        try:
+            agent_config = self.agents_config[agent_name]
             agent = create_agent(
                 agent_name,
                 agent_config,
@@ -169,9 +168,6 @@ class CrewAIManager:
                 "At least one agent and one task must be successfully created to initialize the crew."
             )
 
-        # Extract the embedder configuration from tools_config
-        embedder = self.tools_config.get('embedder', None)
-
         try:
             logger.debug(
                 "Initializing Crew with %d agents and %d tasks", 
@@ -181,10 +177,6 @@ class CrewAIManager:
                 agents=list(self.agents.values()),
                 tasks=self.tasks,
                 process=Process.sequential,
-                memory=True,
-                embedder=embedder,  # Pass the embedder configuration if available
-                max_rpm=None,
-                share_crew=False,
                 verbose=True,
             )
             logger.info(
