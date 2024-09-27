@@ -63,37 +63,46 @@ class CrewAIManager:
 
     def _log_llm_use(self) -> None:
         """
-        Logs the LLM configurations used by each tool.
+        Logs the LLM configurations used by each tool, with graceful handling 
+        for tools without an LLM configuration.
         """
         for tool_name, tool_config in self.tools_config.items():
+            if tool_config is None:
+                logger.warning(f"Tool '{tool_name}' has no configuration. Skipping LLM logging.")
+                continue  # Skip if tool has no valid configuration
+
             llm_config = tool_config.get('llm_config', {}).get('config', {})
             if not llm_config or 'model' not in llm_config:
-                logger.error("LLM configuration for tool '%s' is missing or does not contain a valid model.", tool_name)
+                logger.error(f"LLM configuration for tool '{tool_name}' is missing or does not contain a valid model.")
                 continue
 
             provider = tool_config.get('llm_config', {}).get('provider', 'Unknown')
             model = llm_config.get('model')
-            temperature = llm_config.get('temperature', '0')  # Default temperature to 0
+            temperature = llm_config.get('temperature', 0)  # Default temperature to 0
             logger.info(
                 "Tool '%s' uses LLM - Provider: %s, Model: %s, Temperature: %s", 
                 tool_name, provider, model, temperature
             )
 
+
     def _log_embedder_use(self) -> None:
         """
-        Logs the embedder configurations.
+        Logs the embedder configurations for each tool, with graceful handling
+        for tools without an embedder configuration.
         """
         for tool_name, tool_config in self.tools_config.items():
-            embedder_config = tool_config.get('embedder_config', {}).get('config', {})
-            logger.debug("Embedder configuration for tool '%s': %s", tool_name, embedder_config)
+            if tool_config is None:
+                logger.warning(f"Tool '{tool_name}' has no configuration. Skipping embedder logging.")
+                continue  # Skip if tool has no valid configuration
 
+            embedder_config = tool_config.get('embedder_config', {}).get('config', {})
             if not embedder_config or 'model' not in embedder_config:
-                logger.error("Embedder configuration for tool '%s' is missing or does not contain a valid model.", tool_name)
+                logger.error(f"Embedder configuration for tool '{tool_name}' is missing or does not contain a valid model.")
                 continue
 
             provider = tool_config.get('embedder_config', {}).get('provider', 'Unknown')
             model = embedder_config.get('model')
-            temperature = embedder_config.get('temperature', '0')  # Default temperature to 0
+            temperature = embedder_config.get('temperature', 0)  # Default temperature to 0
             logger.info(
                 "Tool '%s' embedder - Provider: %s, Model: %s, Temperature: %s", 
                 tool_name, provider, model, temperature
