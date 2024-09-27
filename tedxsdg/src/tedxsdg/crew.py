@@ -1,3 +1,5 @@
+# crew.py
+
 #!/usr/bin/env python
 
 # This module sets up the environment and runs the crew.
@@ -81,10 +83,16 @@ def run_crew():
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
 
+        # Log available methods on the crew instance
+        logger.debug("Checking for methods to execute on the crew.")
+        logger.debug("Available methods in Crew: %s", [method for method in dir(crew) if callable(getattr(crew, method)) and not method.startswith("__")])
+
         # Attempt to run the crew
         if hasattr(crew, 'run'):
+            logger.debug("Executing crew using 'run' method.")
             kickoff_result = crew.run()  # Replace with the actual method name if different
         elif hasattr(crew, 'execute'):
+            logger.debug("Executing crew using 'execute' method.")
             kickoff_result = crew.execute()
         else:
             logger.error("No suitable method found to execute the crew.")
