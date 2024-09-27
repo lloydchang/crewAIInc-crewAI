@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 try:
     import crewai
     from crewai import Crew, Agent, Task
-    logger.info(f"Successfully imported crewai. Version: {crewai.__version__}")
+    logger.info("Successfully imported crewai. Version info not available.")
 except ImportError as e:
     logger.error("Failed to import crewai: %s", str(e))
     logger.error("Please ensure crewai is installed. You can install it using: pip install crewai")
