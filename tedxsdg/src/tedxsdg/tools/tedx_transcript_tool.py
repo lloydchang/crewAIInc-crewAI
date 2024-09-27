@@ -15,7 +15,6 @@ class TEDxTranscriptToolArgs(BaseModel):
     """Arguments for TEDxTranscriptTool."""
     slug: str = Field(default=None, description="The slug of the TEDx talk to retrieve the transcript for.")
 
-
 class TEDxTranscriptTool(BaseModel):
     """
     Tool to retrieve the transcript of a TEDx talk based on the provided slug.
@@ -91,5 +90,4 @@ class TEDxTranscriptTool(BaseModel):
     def args_schema(self) -> BaseModel:
         return self._args_schema
 
-    class Config:
-        arbitrary_types_allowed = True
+    @property
