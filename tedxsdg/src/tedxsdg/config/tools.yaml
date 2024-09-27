@@ -6,7 +6,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
@@ -19,7 +19,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
@@ -32,7 +32,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
@@ -44,7 +44,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
@@ -57,7 +57,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
@@ -70,7 +70,7 @@ tools:
     llm_config:
       provider: "ollama"
       config:
-        model: "llama3.2"
+        model: "ollama/llama3.2"
         temperature: 0
     embedder_config:
       provider: "ollama"
