@@ -36,6 +36,7 @@ class TEDxSearchTool(BaseModel):
 
     # Download CSV file if it doesn't exist
     def download_csv_if_not_exists(self):
+        """Ensure that the CSV file exists locally, or download it."""
         if not os.path.exists(self.data_path):
             logger.info(f"Downloading CSV file from {REMOTE_CSV_URL}")
             response = requests.get(REMOTE_CSV_URL)
@@ -56,9 +57,6 @@ class TEDxSearchTool(BaseModel):
         if not data_path:
             raise ValueError("`data_path` must be provided in the configuration.")
         logger.info("Loading TEDxSearchTool with data_path: %s", data_path)
-        
-        # Ensure the CSV file exists or is downloaded
-        cls.download_csv_if_not_exists(cls)
 
         try:
             search_index = {}
@@ -94,10 +92,10 @@ class TEDxSearchTool(BaseModel):
         if not self.data_path:
             raise ValueError("`data_path` must be provided in the configuration.")
 
-        try:
-            # Ensure the CSV file exists or is downloaded
-            self.download_csv_if_not_exists()
+        # Ensure the CSV file exists or is downloaded before proceeding
+        self.download_csv_if_not_exists()
 
+        try:
             # Initialize CSVSearchTool for TEDx search
             results = CSVSearchTool(csv=self.data_path,
                                     config=dict(
