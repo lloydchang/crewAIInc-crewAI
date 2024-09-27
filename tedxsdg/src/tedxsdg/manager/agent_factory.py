@@ -3,7 +3,7 @@
 import logging
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field
-from crewai import Agent
+from crewai import Agent, LLM
 from tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ def create_agent(
     tool_registry: ToolRegistry
 ) -> CustomAgent:
     """
-    Creates an agent with the tools and configuration specified in the config file.
+    Creates an agent with the tools and LLM configuration specified in the config file.
     
     Args:
         agent_name (str): The name of the agent.
@@ -35,13 +35,25 @@ def create_agent(
     """
     tool_names = agent_config.get("tools", [])
     tools = []
+    llms = []  # List to store the LLMs used by the tools
 
-    # Retrieve tools from the tool registry
+    # Retrieve tools from the tool registry and their respective LLMs
     for tool_name in tool_names:
         try:
             tool = tool_registry.get_tool(tool_name)
             tools.append(tool)
             logger.info("Successfully created tool '%s' for agent '%s'.", tool_name, agent_name)
+
+            # Check for LLM configuration within the tool and create an LLM if present
+            llm_config = tool.llm_config.get("config", None)
+            if llm_config:
+                llm = LLM(
+                    model=llm_config.get("model"),
+                    temperature=llm_config.get("temperature", 0),
+                    base_url=llm_config.get("base_url", "http://localhost:11434"),  # Default to local for Ollama
+                    api_key=llm_config.get("api_key", None)  # Optional API key
+                )
+                llms.append(llm)  # Add the LLM to the agent's list of LLMs
         except ValueError as e:
             logger.warning(
                 "Tool '%s' could not be created and will be skipped for agent '%s': %s", 
@@ -62,7 +74,7 @@ def create_agent(
     agent_config["search_query"] = agent_config.get("search_query", {})
 
     try:
-        # Create the agent with configuration
+        # Create the agent with configuration and LLMs
         agent = CustomAgent(
             name=agent_name,
             role=agent_config["role"],
@@ -71,7 +83,8 @@ def create_agent(
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
             tools=tools,
-            search_query=agent_config["search_query"]
+            search_query=agent_config["search_query"],
+            llm=llms[0] if llms else None  # Use the first LLM, or None if no LLM was defined
         )
         logger.info(
             "Created agent '%s' with tools: %s",
