@@ -6,6 +6,7 @@ Module for SustainabilityImpactTool which evaluates the sustainability impact of
 
 import logging
 from pydantic import BaseModel, Field
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,20 @@ class SustainabilityImpactTool(BaseModel):
     _name: str = "sustainability_impact"
     _description: str = "Evaluates the sustainability impact of a given project."
     _args_schema = SustainabilityImpactToolArgs
+
+    def invoke(self, input: Dict[str, Any]) -> str:
+        """Evaluate the sustainability impact based on the provided project description."""
+        project_description = input.get("project_description")
+        if not project_description:
+            return "Error: 'project_description' is required in the input."
+
+        logger.debug("Evaluating sustainability impact for project: %s", project_description)
+
+        # Implement the evaluation logic here
+        impact_assessment = "High impact"  # Example output
+
+        logger.debug("Impact assessment result: %s", impact_assessment)
+        return f"Final Answer: Sustainability impact assessment for the project:\n{impact_assessment}"
 
     @property
     def name(self) -> str:
@@ -37,16 +52,6 @@ class SustainabilityImpactTool(BaseModel):
     def args(self) -> BaseModel:
         """Return the arguments schema for the tool."""
         return self._args_schema
-
-    def evaluate(self, project_description: str) -> str:
-        """Evaluate the sustainability impact of the given project description."""
-        logger.debug("Evaluating sustainability impact for project: %s", project_description)
-
-        # Implement the evaluation logic here
-        impact_assessment = "High impact"  # Example output
-
-        logger.debug("Impact assessment result: %s", impact_assessment)
-        return impact_assessment
 
     class Config:
         arbitrary_types_allowed = True
