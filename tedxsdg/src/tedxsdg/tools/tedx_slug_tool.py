@@ -1,8 +1,7 @@
 # tools/tedx_slug_tool.py
 
 """
-Module for TEDxSlugTool which retrieves TEDx content details based on a provided
-slug.
+Module for TEDxSlugTool which retrieves TEDx content details based on a provided slug.
 """
 
 import logging
@@ -12,11 +11,9 @@ from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-
 class TEDxSlugToolArgs(BaseModel):
     """Arguments for TEDxSlugTool."""
     slug: str = Field(default=None, description="The TEDx talk slug to retrieve details for.")
-
 
 class TEDxSlugTool(BaseModel):
     """Tool to retrieve TEDx content details based on a provided slug."""
@@ -88,6 +85,11 @@ class TEDxSlugTool(BaseModel):
 
     @property
     def args_schema(self) -> BaseModel:
+        return self._args_schema
+
+    @property
+    def args(self) -> BaseModel:
+        """Return the arguments schema for the tool."""
         return self._args_schema
 
     class Config:
