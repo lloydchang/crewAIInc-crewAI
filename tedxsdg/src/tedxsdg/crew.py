@@ -7,21 +7,24 @@ import logging
 import sys
 from dotenv import load_dotenv
 
+__version__ = "0.1.0"  # Add a version number for tracking
+
 # Centralized logging configuration
 logging.basicConfig(
-    level=logging.DEBUG,  # Set to DEBUG for detailed logs
+    level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.StreamHandler(sys.stdout)  # Log to stdout
+        logging.StreamHandler(sys.stdout)
     ]
 )
 
 logger = logging.getLogger(__name__)
 
 try:
-    from manager.manager import CrewAIManager
+    from crewai import Crew, Agent, Task
+    logger.info(f"Successfully imported crewai. Version: {crewai.__version__}")
 except ImportError as e:
-    logger.error("Failed to import CrewAIManager: %s", str(e), exc_info=True)
+    logger.error("Failed to import crewai: %s", str(e), exc_info=True)
     sys.exit(1)
 
 # Load environment variables
@@ -32,44 +35,47 @@ AGENTS_CONFIG_PATH = os.getenv("AGENTS_CONFIG_PATH", "config/agents.yaml")
 TASKS_CONFIG_PATH = os.getenv("TASKS_CONFIG_PATH", "config/tasks.yaml")
 TOOLS_CONFIG_PATH = os.getenv("TOOLS_CONFIG_PATH", "config/tools.yaml")
 
-
 def initialize_crew():
     """
-    Initialize the CrewAIManager and return the Crew instance.
+    Initialize the CrewAI and return the Crew instance.
     """
     logger.debug("Initializing crew with configurations.")
     try:
-        manager = CrewAIManager(
-            agents_config_path=AGENTS_CONFIG_PATH,
-            tasks_config_path=TASKS_CONFIG_PATH,
-            tools_config_path=TOOLS_CONFIG_PATH
+        # Here, instead of using CrewAIManager, we'll directly create Agents and Tasks
+        # This is a simplified example. Adjust according to your specific needs.
+        agent1 = Agent(
+            role='Researcher',
+            goal='Gather information',
+            backstory='You are an expert researcher with vast knowledge.',
+            allow_delegation=False
         )
+        agent2 = Agent(
+            role='Writer',
+            goal='Create content',
+            backstory='You are a skilled writer capable of creating engaging content.',
+            allow_delegation=False
+        )
+
+        task1 = Task(
+            description='Research the topic',
+            agent=agent1
+        )
+        task2 = Task(
+            description='Write an article based on the research',
+            agent=agent2
+        )
+
+        crew = Crew(
+            agents=[agent1, agent2],
+            tasks=[task1, task2],
+            verbose=True
+        )
+
         logger.info("Crew initialization successful.")
-
-        # Initialize the crew
-        crew = manager.initialize_crew()
-
-        # Safely list available methods on Crew instance
-        available_methods = []
-        for method in dir(crew):
-            if method.startswith("__"):
-                continue  # Skip private methods
-
-            try:
-                if callable(getattr(crew, method)):
-                    available_methods.append(method)
-            except Exception as e:
-                logger.debug(f"Could not access method '{method}': {e}")
-
-        logger.debug("Available methods in Crew: %s", available_methods)
-
         return crew
-    except (ValueError, TypeError, RuntimeError) as e:
-        logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
     except Exception as e:
         logger.error("Failed to initialize crew: %s", str(e), exc_info=True)
-        sys.exit(1)
-
+        return None
 
 def run_crew():
     """
@@ -78,49 +84,28 @@ def run_crew():
     try:
         crew = initialize_crew()
         if crew is None:
-            logger.error("CrewAIManager instance is None. Exiting.")
-            return "Error: CrewAIManager instance is None."
+            logger.error("Crew instance is None. Exiting.")
+            return "Error: Crew instance is None."
 
-        # Log the crew instance type for debugging
         logger.debug("Crew instance: %s, Type: %s", crew, type(crew))
-
-        # Check and log available methods on the crew instance
-        available_methods = []
-        all_attributes = dir(crew)
-        logger.debug("All attributes of Crew: %s", all_attributes)
-
-        for attr in all_attributes:
-            if not attr.startswith("__"):
-                try:
-                    attr_value = getattr(crew, attr)
-                    if callable(attr_value):
-                        available_methods.append(attr)
-                except AttributeError as e:
-                    logger.debug("AttributeError for %s: %s", attr, str(e))
-                    continue  # Skip attributes that cause errors
-
-        logger.debug("Available methods in Crew: %s", available_methods)
+        logger.debug("Available methods in Crew: %s", [method for method in dir(crew) if not method.startswith("__")])
 
         # Attempt to run the crew
-        if 'run' in available_methods:
+        if hasattr(crew, 'kickoff') and callable(getattr(crew, 'kickoff')):
+            logger.debug("Executing crew using 'kickoff' method.")
+            kickoff_result = crew.kickoff()
+        elif hasattr(crew, 'run') and callable(getattr(crew, 'run')):
             logger.debug("Executing crew using 'run' method.")
             kickoff_result = crew.run()
-        elif 'execute' in available_methods:
-            logger.debug("Executing crew using 'execute' method.")
-            kickoff_result = crew.execute()
         else:
             logger.error("No suitable method found to execute the crew.")
             return "Error: No suitable method found to execute the crew."
 
         logger.info("Crew execution completed successfully.")
         return kickoff_result
-    except (ValueError, TypeError, RuntimeError) as e:
-        logger.error("An error occurred while running the crew: %s", str(e), exc_info=True)
-        return f"Error: {str(e)}"
     except Exception as e:
         logger.error("An error occurred while running the crew: %s", str(e), exc_info=True)
         return f"Error: {str(e)}"
-
 
 if __name__ == "__main__":
     result = run_crew()
