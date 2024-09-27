@@ -53,16 +53,17 @@ class TEDxSearchTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def invoke(self, search_query: str) -> str:
+    def invoke(self, input: Dict[str, str]) -> str:
         """
-        Executes the search on the TEDx dataset based on the search query.
+        Executes the search on the TEDx dataset based on the input.
 
         Args:
-            search_query (str): The search query string.
+            input (dict): The input dictionary containing the search query.
 
         Returns:
             str: Formatted search results.
         """
+        search_query = input.get('query', '')  # Extract 'query' from the input dictionary
         logger.debug("Running TEDx search for query: %s", search_query)
         search_query_lower = search_query.lower()
         results: List[Dict[str, Any]] = []
