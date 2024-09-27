@@ -6,7 +6,7 @@
 
 import os
 import logging
-from crew import main as run_crew  # Importing 'main' as 'run_crew' from crew.py
+from crew import run_crew
 
 # Configure the root logger
 logging.basicConfig(
