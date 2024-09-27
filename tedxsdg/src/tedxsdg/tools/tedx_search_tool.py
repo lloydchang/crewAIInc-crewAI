@@ -70,23 +70,23 @@ class TEDxSearchTool(BaseModel):
 
         try:
             # Initialize the CSVSearchTool with or without a specific CSV file
-            tool = CSVSearchTool(csv=self.csv_data,
-                                    config=dict(
-                                        llm=dict(
-                                            provider="ollama",
-                                            config=dict(
-                                                model="ollama/llama3.2",
-                                                temperature=0.0
-                                            ),
-                                        ),
-                                        embedder=dict(
-                                            provider="ollama",
-                                            config=dict(
-                                                model="nomic-embed-text"
-                                            ),
-                                        ),
-                                    )
-                                )
+            # tool = CSVSearchTool(csv=self.csv_data,
+            #                         config=dict(
+            #                             llm=dict(
+            #                                 provider="ollama",
+            #                                 config=dict(
+            #                                     model="ollama/llama3.2",
+            #                                     temperature=0.0
+            #                                 ),
+            #                             ),
+            #                             embedder=dict(
+            #                                 provider="ollama",
+            #                                 config=dict(
+            #                                     model="nomic-embed-text"
+            #                                 ),
+            #                             ),
+            #                         )
+            #                     )
 
             # Use the RAG search method of CSVSearchTool
             results = tool.search(
