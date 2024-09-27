@@ -43,9 +43,6 @@
 │   │   ├── tedx_slug_schema.cpython-312.pyc
 │   │   └── tedx_transcript_schema.cpython-312.pyc
 │   ├── config_schemas.py
-│   ├── duckduckgo_search_schema.py
-│   ├── sdg_align_schema.py
-│   ├── sustainability_impact_schema.py
 │   ├── tedx_search_schema.py
 │   ├── tedx_slug_schema.py
 │   └── tedx_transcript_schema.py
@@ -63,14 +60,10 @@
     │   ├── tool_registry.cpython-312.pyc
     │   └── utils.cpython-312.pyc
     ├── config_loader.py
-    ├── custom_tool.py
-    ├── duckduckgo_search_tool.py
-    ├── sdg_align_tool.py
-    ├── sustainability_impact_tool.py
     ├── tedx_search_tool.py
     ├── tedx_slug_tool.py
     ├── tedx_transcript_tool.py
     ├── tool_registry.py
     └── utils.py
 
-12 directories, 62 files
+12 directories, 55 files
