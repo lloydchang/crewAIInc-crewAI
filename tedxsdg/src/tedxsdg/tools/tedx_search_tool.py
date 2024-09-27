@@ -75,7 +75,7 @@ class TEDxSearchTool(BaseModel):
                                         llm=dict(
                                             provider="ollama",
                                             config=dict(
-                                                model="llama3.2",
+                                                model="ollama/llama3.2",
                                                 temperature=0.0
                                             ),
                                         ),
