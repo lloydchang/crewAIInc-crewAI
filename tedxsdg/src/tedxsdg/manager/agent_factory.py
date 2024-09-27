@@ -82,7 +82,7 @@ def create_agent(
             backstory=agent_config["backstory"],
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
-            tools=tools,
+            max_iter=agent_config["max_iter"],
             search_query=agent_config["search_query"],
             llm=llms[0] if llms else None  # Use the first LLM, or None if no LLM was defined
         )

@@ -9,6 +9,7 @@ agents:
       Your project addresses SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
       You aim to promote responsible ownership and biodiversity through your initiative.
     allow_delegation: false
+    max_iter: 1
     tools:
       - tedx_search
     llm_config:
@@ -21,7 +22,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   alex:
     role: "Alex, a visionary restaurateur"
@@ -31,6 +31,7 @@ agents:
       Your project addresses SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
       You aim to combat hunger and reduce food waste through your food supply chain innovations.
     allow_delegation: false
+    max_iter: 1
     tools:
       - tedx_search
     llm_config:
@@ -43,7 +44,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   francis:
     role: "Francis, SDG Project Collaboration Facilitator"
@@ -52,6 +52,7 @@ agents:
       You are a collaboration facilitator responsible for bringing together different projects with similar SDG goals.
       Your role is crucial in identifying synergies and fostering partnerships that amplify impact.
     allow_delegation: false
+    max_iter: 1
     tools:
       - sdg_align
     llm_config:
@@ -64,7 +65,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   ira:
     role: "Ira, SDG Idea Analyzer"
@@ -73,6 +73,7 @@ agents:
       You are an idea analyzer tasked with analyzing innovative ideas and determining how they align with UN SDGs.
       Your expertise helps identify the most impactful and sustainable project concepts.
     allow_delegation: false
+    max_iter: 1
     tools:
       - sustainability_impact
     llm_config:
@@ -85,7 +86,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   eden:
     role: "Eden, SDG Implementation Expert"
@@ -94,6 +94,7 @@ agents:
       You are an expert advisor with extensive knowledge in implementing SDG-aligned projects.
       Your role is to provide guidance and solutions to specific challenges in project execution.
     allow_delegation: false
+    max_iter: 1
     tools:
       - duckduckgo_search
     llm_config:
@@ -106,7 +107,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   peyton:
     role: "Peyton, SDG Action Plan Specialist"
@@ -115,6 +115,7 @@ agents:
       You are an action plan specialist with a talent for breaking down complex projects into actionable steps.
       Your role is to create comprehensive, step-by-step plans that ensure successful project implementation.
     allow_delegation: false
+    max_iter: 1
     tools:
       - duckduckgo_search
     llm_config:
@@ -127,7 +128,6 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
 
   dakota:
     role: "Dakota, SDG Data Integration Specialist"
@@ -136,6 +136,7 @@ agents:
       You are a data integration specialist with expertise in working with multiple datasets.
       Your role is to extract meaningful insights that can drive decision-making in SDG-aligned projects.
     allow_delegation: false
+    max_iter: 1
     tools:
       - duckduckgo_search
     llm_config:
@@ -148,4 +149,3 @@ agents:
       config:
         model: "nomic-embed-text"
         temperature: 0
-    max_iter: 1
