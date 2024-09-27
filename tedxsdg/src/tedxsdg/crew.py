@@ -60,11 +60,13 @@ def initialize_crew():
 
         task1 = Task(
             description='Research the topic',
-            agent=agent1
+            agent=agent1,
+            expected_output='Research report summarizing findings on the given topic.'  # Added expected_output
         )
         task2 = Task(
             description='Write an article based on the research',
-            agent=agent2
+            agent=agent2,
+            expected_output='A written article based on the research findings.'  # Added expected_output
         )
 
         crew = Crew(
