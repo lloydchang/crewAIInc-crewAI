@@ -92,7 +92,7 @@ class TEDxSearchTool(BaseModel):
                                 )
 
             # Perform the search using the tool
-            results = tool.search(query=search_query_lower)
+            results = tool(query=search_query_lower)
 
             if not results:
                 return "No results found."
