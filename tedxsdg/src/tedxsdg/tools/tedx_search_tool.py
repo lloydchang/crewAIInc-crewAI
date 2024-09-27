@@ -73,7 +73,7 @@ class TEDxSearchTool(BaseModel):
 
         try:
             # Initialize CSVSearchTool for TEDx search
-            tool = CSVSearchTool(csv=self.data_path,
+            results = CSVSearchTool(csv=self.data_path,
                                     config=dict(
                                         llm=dict(
                                             provider="ollama",
@@ -91,8 +91,8 @@ class TEDxSearchTool(BaseModel):
                                     )
                                 )
 
-            logger.debug("Search results: %s", tool)
-            return f"TEDx Search Results:\n{tool}"
+            logger.debug("Search results: %s", results)
+            return f"TEDx Search Results:\n{results}"
         except FileNotFoundError as exc:
             logger.error("File not found: %s", self.data_path, exc_info=True)
             raise FileNotFoundError(f"File not found: {self.data_path}") from exc
