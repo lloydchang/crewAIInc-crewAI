@@ -14,13 +14,16 @@ from .tedx_transcript_tool import TEDxTranscriptTool
 
 logger = logging.getLogger(__name__)
 
-
 class ToolRegistry:
     """
     Registry for managing and creating tools.
     """
 
     def __init__(self, config_path: str = 'config/tools.yaml'):
+        # Ensure `config_path` is a string that points to a valid YAML file
+        if isinstance(config_path, dict):
+            raise TypeError("Expected a path to the YAML configuration file, but received a dictionary.")
+
         # Load the entire configuration from the specified YAML file
         self.tool_configs = load_config(config_path)
         logger.debug("Loaded tool configurations from '%s': %s", config_path, self.tool_configs)
