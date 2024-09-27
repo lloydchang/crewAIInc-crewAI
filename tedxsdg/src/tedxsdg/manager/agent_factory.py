@@ -1,9 +1,5 @@
 # manager/agent_factory.py
 
-"""
-Module for creating agents with specified tools and configurations.
-"""
-
 import logging
 from crewai import Agent
 from tools.tool_registry import ToolRegistry

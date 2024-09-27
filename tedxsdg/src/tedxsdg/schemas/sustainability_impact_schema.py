@@ -14,11 +14,11 @@ class SustainabilityImpactInput(BaseModel):
     """
     project: Union[str, Dict[str, Any]] = Field(
         default="Unnamed Project",
-        _description = "Project to assess for sustainability impact."
+        description="Project to assess for sustainability impact."
     )
     metrics: List[str] = Field(
-        default=list,
-        _description = "List of sustainability metrics."
+        default_factory=list,
+        description="List of sustainability metrics."
     )
 
     @validator('project')
@@ -40,24 +40,3 @@ class SustainabilityImpactInput(BaseModel):
         if not v.strip():
             raise ValueError("Metrics cannot contain empty strings.")
         return v
-
-    class Config:
-        """
-        Configuration for the SustainabilityImpactInput schema.
-        """
-        schema_extra = {
-            "example": {
-                "project": "Green Energy Initiative",
-                "metrics": ["carbon footprint", "energy efficiency"]
-            }
-        }
-
-class SustainabilityImpactInput(BaseModel):
-:
-    @property
-    def description(self):
-        return self._description
-
-    @property
-    def description(self):
-        return self._description
