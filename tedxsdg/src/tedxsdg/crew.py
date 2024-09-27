@@ -86,7 +86,7 @@ def run_crew():
         # Safely log available methods on the crew instance
         available_methods = [
             method for method in dir(crew)
-            if callable(getattr(crew, method)) and not method.startswith("__") and method != "__signature__"
+            if callable(getattr(crew, method)) and not method.startswith("__") and method != "getattr" and method != "setattr"
         ]
         logger.debug("Available methods in Crew: %s", available_methods)
 
