@@ -20,14 +20,13 @@ class ToolRegistry:
     Registry for managing and creating tools.
     """
 
-    def __init__(self, tool_configs: Dict[str, Any]):
-        self.tool_configs = tool_configs
-        logger.debug("Loaded tool configurations: %s", self.tool_configs)
+    def __init__(self, config_path: str = 'config/tools.yaml'):
+        # Load the entire configuration from the specified YAML file
+        self.tool_configs = load_config(config_path)
+        logger.debug("Loaded tool configurations from '%s': %s", config_path, self.tool_configs)
         self.tools: Dict[str, StructuredTool] = {}
 
-    def _create_tool(
-        self, tool_name: str, tool_class: Type[StructuredTool]
-    ) -> StructuredTool:
+    def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
         logger.debug("Creating tool '%s'", tool_name)
         
         if tool_name not in self.tool_configs:
@@ -35,32 +34,19 @@ class ToolRegistry:
             raise ValueError(f"Tool configuration for '{tool_name}' not found.")
 
         try:
+            # Extract the configuration for the given tool
             tool_config = self.tool_configs[tool_name]
+
+            # Pass the entire tool configuration to the tool during instantiation
+            tool_instance = tool_class(**tool_config)
+            logger.debug("Tool '%s' created successfully.", tool_name)
             
-            excluded_keys = {'name', 'description', 'args_schema'}
-            filtered_config = {k: v for k, v in tool_config.items() if k not in excluded_keys}
-
-            # Handle LLM config if provided
-            if "llm_config" in tool_config:
-                llm_config = tool_config.get("llm_config", {}).get("config", {})
-                llm = LLM(
-                    model=llm_config.get("model", None),
-                    temperature=llm_config.get("temperature", 0),
-                    base_url=llm_config.get("base_url", "http://localhost:11434"),
-                    api_key=llm_config.get("api_key", None)
-                )
-                filtered_config["llm"] = llm  # Attach the LLM instance to the tool config
-
-            # Create the tool instance
-            tool_instance = tool_class(**filtered_config)
-            logger.debug("Tool '%s' created successfully", tool_name)
-            self.tools[tool_name] = tool_instance  # Cache the created tool
+            # Cache the created tool in the registry
+            self.tools[tool_name] = tool_instance
             return tool_instance
+
         except Exception as e:
-            logger.error(
-                "Error creating tool '%s': %s", tool_name, str(e), 
-                exc_info=True
-            )
+            logger.error("Error creating tool '%s': %s", tool_name, str(e), exc_info=True)
             raise
 
     def get_tool(self, tool_name: str) -> StructuredTool:
@@ -89,12 +75,10 @@ class ToolRegistry:
             raise ValueError(f"Unknown tool: {tool_name}")
 
         try:
-            tool = self._create_tool(tool_name, tool_class)
-            return tool
+            # Create and return the tool instance
+            return self._create_tool(tool_name, tool_class)
         except Exception as e:
-            logger.error(
-                "Failed to create tool '%s': %s", tool_name, e, exc_info=True
-            )
+            logger.error("Failed to create tool '%s': %s", tool_name, e, exc_info=True)
             raise
 
     def list_tools(self) -> Dict[str, StructuredTool]:

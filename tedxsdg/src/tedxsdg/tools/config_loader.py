@@ -2,21 +2,21 @@
 
 import yaml
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from crewai import LLM  # Assuming LLM class is imported from crewai
 
 logger = logging.getLogger(__name__)
 
-def load_config(config_path: str, config_section: str) -> Dict[str, Any]:
+def load_config(config_path: str, config_section: Optional[str] = None) -> Dict[str, Any]:
     """
-    Loads a specific section from a YAML configuration file.
-    
+    Load a specific section or the entire configuration from a YAML file.
+
     Args:
         config_path (str): Path to the YAML configuration file.
-        config_section (str): The section/key to load from the YAML.
-    
+        config_section (Optional[str]): The section/key to load from the YAML. If None, loads the entire configuration.
+
     Returns:
-        Dict[str, Any]: The loaded configuration section.
+        Dict[str, Any]: The loaded configuration section or the entire config.
     """
     try:
         with open(config_path, 'r') as file:
@@ -24,24 +24,17 @@ def load_config(config_path: str, config_section: str) -> Dict[str, Any]:
             if not config:
                 logger.error("Configuration file '%s' is empty.", config_path)
                 raise ValueError(f"Configuration file '{config_path}' is empty.")
-            section = config.get(config_section)
-            if section is None:
-                logger.error("Section '%s' not found in configuration file '%s'.", config_section, config_path)
-                raise KeyError(f"Section '{config_section}' not found in configuration file.")
-            
-            # If the section includes an LLM config, handle it
-            if "llm_config" in section:
-                llm_config = section.get("llm_config", {}).get("config", {})
-                llm = LLM(
-                    model=llm_config.get("model", None),
-                    temperature=llm_config.get("temperature", 0),
-                    base_url=llm_config.get("base_url", "http://localhost:11434"),
-                    api_key=llm_config.get("api_key", None)
-                )
-                section["llm"] = llm  # Attach the LLM instance to the section
-                
-            logger.debug("Loaded '%s' configuration: %s", config_section, section)
-            return section
+
+            # If a specific section is requested, extract it
+            if config_section:
+                section = config.get(config_section)
+                if section is None:
+                    logger.error("Section '%s' not found in configuration file '%s'.", config_section, config_path)
+                    raise KeyError(f"Section '{config_section}' not found in configuration file.")
+                config = section
+
+            logger.debug("Loaded configuration from '%s': %s", config_path, config)
+            return config
     except FileNotFoundError:
         logger.error("Configuration file not found: %s", config_path)
         raise
@@ -49,5 +42,5 @@ def load_config(config_path: str, config_section: str) -> Dict[str, Any]:
         logger.error("Error parsing YAML file '%s': %s", config_path, e)
         raise
     except Exception as e:
-        logger.error("Unexpected error loading config '%s': %s", config_path, e)
+        logger.error("Unexpected error loading config from '%s': %s", config_path, e)
         raise
