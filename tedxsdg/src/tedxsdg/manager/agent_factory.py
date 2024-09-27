@@ -48,7 +48,7 @@ def create_agent(
             if "llm_config" in agent_config:
                 llm_config = agent_config.get("llm_config", {}).get("config", {})
                 llm = LLM(
-                    model=llm_config.get("model"),
+                    model=llm_config.get("model", None),
                     temperature=llm_config.get("temperature", 0),
                     base_url=llm_config.get("base_url", "http://localhost:11434"),
                     api_key=llm_config.get("api_key", None)

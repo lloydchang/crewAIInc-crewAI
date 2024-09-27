@@ -33,7 +33,7 @@ def load_config(config_path: str, config_section: str) -> Dict[str, Any]:
             if "llm_config" in section:
                 llm_config = section.get("llm_config", {}).get("config", {})
                 llm = LLM(
-                    model=llm_config.get("model"),
+                    model=llm_config.get("model", None),
                     temperature=llm_config.get("temperature", 0),
                     base_url=llm_config.get("base_url", "http://localhost:11434"),
                     api_key=llm_config.get("api_key", None)
