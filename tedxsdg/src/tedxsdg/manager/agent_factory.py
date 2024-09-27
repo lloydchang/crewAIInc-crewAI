@@ -6,7 +6,6 @@ from tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
-
 def create_agent(
     agent_name: str,
     agent_config: dict,
@@ -29,6 +28,7 @@ def create_agent(
     tool_names = agent_config.get("tools", [])
     tools = []
 
+    # Retrieve tools from the tool registry
     for tool_name in tool_names:
         try:
             tool = tool_registry.get_tool(tool_name)
@@ -44,10 +44,12 @@ def create_agent(
                 tool_name, agent_name
             )
 
+    # Log a warning if no tools are assigned to the agent
     if not tools:
         logger.warning("No tools available for agent '%s'. The agent will have no tools assigned.", agent_name)
 
     try:
+        # Create the agent with configuration (without 'search_query' and 'type')
         agent = Agent(
             _name=agent_name,
             role=agent_config.get("role"),
@@ -55,9 +57,7 @@ def create_agent(
             backstory=agent_config.get("backstory"),
             allow_delegation=agent_config.get("allow_delegation", True),
             verbose=True,
-            tools=tools,
-            search_query=agent_config.get("search_query", None),  # Optional field
-            type=agent_config.get("type", None)
+            tools=tools
         )
         logger.info(
             "Created agent '%s' with tools: %s",
