@@ -9,11 +9,10 @@ tasks:
     agent: sam
     priority: 1  # High priority
     expected_output: >
-      A comprehensive plan with detailed reports including:
-      1. Summary of the eco-friendly pet care initiatives
+      1. A comprehensive plan with detailed report status including:
       2. Primary SDGs addressed (SDG 3 and SDG 15)
       3. Steps for implementation
-      4. Best practices from similar initiatives found via web searches
+      4. Executive summary of the eco-friendly pet care initiatives
 
   develop_sustainable_food_supply_chain:
     description: >
@@ -21,10 +20,9 @@ tasks:
       Align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
       Assess the sustainability impact of the food supply chain innovations.
     agent: alex
-    priority: 1  # High priority
+    priority: 1
     expected_output: >
-      A comprehensive plan with detailed reports including:
-      1. Summary of the food supply chain innovations
+      1. A comprehensive plan with detailed report status including:
       2. Primary SDGs addressed (SDG 2 and SDG 12)
       3. Steps for implementation
-      4. Best practices from similar innovations found via web searches
+      4. Executive summary of the food supply chain innovations

@@ -6,8 +6,6 @@ agents:
     goal: "Launch an eco-friendly pet care initiative"
     backstory: >
       You are Sam, a dedicated veterinarian passionate about animal welfare and environmental conservation.
-      Your project addresses SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
-      You aim to promote responsible ownership and biodiversity through your initiative.
     allow_delegation: false
     max_iter: 1
     tools:
@@ -16,7 +14,7 @@ agents:
       provider: "ollama"
       config:
         model: "ollama/llama3.2"
-        temperature: 2.0
+        temperature: 2.0 # Creative responses
     embedder_config:
       provider: "ollama"
       config:
@@ -28,8 +26,6 @@ agents:
     goal: "Develop a sustainable food supply chain"
     backstory: >
       You are Alex, a visionary restaurateur committed to sustainability in the food industry.
-      Your project addresses SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
-      You aim to combat hunger and reduce food waste through your food supply chain innovations.
     allow_delegation: false
     max_iter: 1
     tools:
