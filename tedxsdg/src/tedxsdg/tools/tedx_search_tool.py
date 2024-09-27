@@ -91,20 +91,8 @@ class TEDxSearchTool(BaseModel):
                                     )
                                 )
 
-            # Perform the search using the tool
-            results = tool(query=search_query_lower)
-
-            if not results:
-                return "No results found."
-
-            # Format results for better readability
-            formatted_results = "\n\n".join([
-                f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
-                for entry in results
-            ])
-
-            logger.debug("Search results: %s", formatted_results)
-            return f"TEDx Search Results:\n{formatted_results}"
+            logger.debug("Search results: %s", tool)
+            return f"TEDx Search Results:\n{tool}"
         except FileNotFoundError as exc:
             logger.error("File not found: %s", self.data_path, exc_info=True)
             raise FileNotFoundError(f"File not found: {self.data_path}") from exc
