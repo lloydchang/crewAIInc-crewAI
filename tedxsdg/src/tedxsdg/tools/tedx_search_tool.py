@@ -55,7 +55,7 @@ class TEDxSearchTool(BaseModel):
 
     def invoke(self, input: Dict[str, str]) -> str:
         """
-        Executes the search on the TEDx dataset based on the input.
+        Executes the RAG search on the TEDx dataset based on the input.
 
         Args:
             input (dict): The input dictionary containing the search query.
@@ -63,29 +63,88 @@ class TEDxSearchTool(BaseModel):
         Returns:
             str: Formatted search results.
         """
-        search_query = input.get('query', '')  # Extract 'query' from the input dictionary
-        logger.debug("Running TEDx search for query: %s", search_query)
-        search_query_lower = search_query.lower()
-        results: List[Dict[str, Any]] = []
+        search_query = input.get('query', '')
+        logger.debug("Running TEDx RAG search for query: %s", search_query)
 
-        for entry in self.csv_data.values():
-            if (search_query_lower in entry.get('title', '').lower()) or \
-               (search_query_lower in entry.get('description', '').lower()):
-                results.append(entry)
-                if len(results) >= 3:  # Limit to top 3 results
-                    break
+        if not self.data_path:
+            raise ValueError("`data_path` must be provided in the configuration.")
 
-        if not results:
-            return "No results found."
+        try:
+            # Initialize the CSVSearchTool with or without a specific CSV file
+            # tool = CSVSearchTool(csv=self.csv_data,
+            #                         config=dict(
+            #                             llm=dict(
+            #                                 provider="ollama",
+            #                                 config=dict(
+            #                                     model="ollama/llama3.2",
+            #                                     temperature=0.0
+            #                                 ),
+            #                             ),
+            #                             embedder=dict(
+            #                                 provider="ollama",
+            #                                 config=dict(
+            #                                     model="nomic-embed-text"
+            #                                 ),
+            #                             ),
+            #                         )
+            #                     )
 
-        # Format results for better readability
-        formatted_results = "\n\n".join([
-            f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
-            for entry in results
-        ])
+            # Use the RAG search method of CSVSearchTool
+            results = tool.search(
+                query=search_query.lower()
+            )
 
-        logger.debug("Search results: %s", formatted_results)
-        return f"Final Answer: TEDx Search Results:\n{formatted_results}"
+            if not results:
+                return "No results found."
+
+            # Format results for better readability
+            formatted_results = "\n\n".join([
+                f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+                for entry in results
+            ])
+
+            logger.debug("Search results: %s", formatted_results)
+            return f"TEDx Search Results:\n{formatted_results}"
+        except FileNotFoundError as exc:
+            logger.error("File not found: %s", self.data_path, exc_info=True)
+            raise FileNotFoundError(f"File not found: {self.data_path}") from exc
+        except Exception as e:
+            logger.error("Error searching CSV data: %s", e, exc_info=True)
+            raise Exception("Failed to search CSV data.") from e
+
+    # def invoke(self, input: Dict[str, str]) -> str:
+    #     """
+    #     Executes the search on the TEDx dataset based on the input.
+
+    #     Args:
+    #         input (dict): The input dictionary containing the search query.
+
+    #     Returns:
+    #         str: Formatted search results.
+    #     """
+    #     search_query = input.get('query', '')  # Extract 'query' from the input dictionary
+    #     logger.debug("Running TEDx search for query: %s", search_query)
+    #     search_query_lower = search_query.lower()
+    #     results: List[Dict[str, Any]] = []
+
+    #     for entry in self.csv_data.values():
+    #         if (search_query_lower in entry.get('title', '').lower()) or \
+    #            (search_query_lower in entry.get('description', '').lower()):
+    #             results.append(entry)
+    #             if len(results) >= 3:  # Limit to top 3 results
+    #                 break
+
+    #     if not results:
+    #         return "No results found."
+
+    #     # Format results for better readability
+    #     formatted_results = "\n\n".join([
+    #         f"Title: {entry.get('title', 'No Title')}\nDescription: {entry.get('description', 'No Description')}\nURL: {entry.get('url', 'No URL')}"
+    #         for entry in results
+    #     ])
+
+    #     logger.debug("Search results: %s", formatted_results)
+    #     return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
     @property
     def name(self) -> str:
