@@ -1,6 +1,6 @@
-# schemas/sdg_align_schema.py
-
 """
+schemas/sdg_align_schema.py
+
 Module for defining schemas related to SDG alignment.
 """
 
@@ -9,30 +9,26 @@ from pydantic import BaseModel, Field, validator
 
 
 class SDGAlignInput(BaseModel):
-    """
-    Schema for SDG alignment input.
-    """
-    idea: Union[str, Dict[str, Any]] = Field(
-        ..., description="Idea to analyze for SDG alignment."
+    """Schema for SDG alignment input."""
+
+    idea: Optional[Union[str, Dict[str, Any]]] = Field(
+        default=None, description="Idea to analyze for SDG alignment."
     )
-    sdgs: List[Union[str, int]] = Field(
+    sdgs: Optional[List[Union[str, int]]] = Field(
         default_factory=list, description="List of SDGs to consider."
     )
 
     @validator('idea')
     def validate_idea(cls, v):
-        if isinstance(v, str):
-            if not v.strip():
+        if v is not None:  # Only validate if the value is not None
+            if isinstance(v, str) and not v.strip():
                 raise ValueError("Idea string cannot be empty.")
-        elif isinstance(v, dict):
-            if not v:
+            elif isinstance(v, dict) and not v:
                 raise ValueError("Idea dictionary cannot be empty.")
-        else:
-            raise TypeError("Idea must be either a string or a dictionary.")
         return v
 
     @validator('sdgs', each_item=True)
     def validate_sdgs(cls, v):
-        if not isinstance(v, (str, int)):
+        if v is not None and not isinstance(v, (str, int)):
             raise TypeError("Each SDG must be either a string or an integer.")
         return v

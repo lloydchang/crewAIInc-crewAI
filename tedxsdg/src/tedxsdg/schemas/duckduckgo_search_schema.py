@@ -1,5 +1,3 @@
-# schemas/duckduckgo_search_schema.py
-
 """
 schemas/duckduckgo_search_schema.py
 
@@ -20,6 +18,6 @@ class DuckDuckGoSearchInput(BaseModel):
     @validator('search_query')
     def check_search_query(cls, v):
         """Validate the search_query field."""
-        if v and not isinstance(v, (str, dict)):
+        if v is not None and not isinstance(v, (str, dict)):
             raise ValueError("search_query must be either a string or a dictionary.")
         return v
