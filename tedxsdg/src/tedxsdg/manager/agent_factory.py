@@ -45,7 +45,7 @@ def create_agent(
             logger.info("Successfully created tool '%s' for agent '%s'.", tool_name, agent_name)
 
             # Check for LLM configuration within the tool and create an LLM if present
-            llm_config = tool.llm_config.get("config", None)
+            llm_config = getattr(tool, 'llm_config', None)  # Use getattr to handle missing llm_config gracefully
             if llm_config:
                 llm = LLM(
                     model=llm_config.get("model"),
