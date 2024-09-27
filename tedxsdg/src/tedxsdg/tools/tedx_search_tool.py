@@ -53,7 +53,7 @@ class TEDxSearchTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def run(self, search_query: str) -> str:
+    def invoke(self, search_query: str) -> str:
         """
         Executes the search on the TEDx dataset based on the search query.
 
