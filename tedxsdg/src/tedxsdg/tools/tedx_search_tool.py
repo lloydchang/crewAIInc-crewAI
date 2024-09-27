@@ -74,7 +74,7 @@ class TEDxSearchTool(BaseModel):
                     provider="ollama",  # Example provider
                     config=dict(
                         model="ollama/llama3.2",
-                        temperature=0
+                        temperature=0.0
                     ),
                 ),
                 embedder=dict(
