@@ -52,10 +52,10 @@ def initialize_crew():
         # Initialize the crew
         crew = manager.initialize_crew()
 
-        # List available methods on Crew instance (if needed)
+        # List available methods on Crew instance
         methods = inspect.getmembers(crew, predicate=inspect.isfunction)
         method_names = [method[0] for method in methods if not method[0].startswith("__")]
-        logger.debug(f"Available methods in Crew: {method_names}")
+        logger.debug("Available methods in Crew: %s", method_names)
 
         return crew
     except (ValueError, TypeError, RuntimeError) as e:
@@ -74,6 +74,9 @@ def run_crew():
         if crew is None:
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
+
+        # Log available methods on the crew instance
+        logger.debug("Available methods in Crew: %s", [method for method in dir(crew) if callable(getattr(crew, method)) and not method.startswith("__")])
 
         # Attempt to run the crew
         if hasattr(crew, 'run'):
