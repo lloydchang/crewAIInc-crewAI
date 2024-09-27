@@ -1,6 +1,7 @@
 # config/agents.yaml
 
 agents:
+
   sam:
     role: "sam"
     goal: "Launch an eco-friendly pet care initiatives"
@@ -16,8 +17,6 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    search_query: {}  # Ensure this is defined
-    type: "eco-friendly pet care initiatives"  # Ensure this is defined
 
   alex:
     role: "alex"
@@ -34,8 +33,6 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    search_query: {}  # Ensure this is defined
-    type: "food supply chain innovations"  # Ensure this is defined
 
   collaboration_facilitator:
     role: "collaboration_facilitator"
@@ -51,8 +48,6 @@ agents:
       - duckduckgo_search
       - sdg_align
       - sustainability_impact
-    search_query: {}  # Ensure this is defined
-    type: "collaboration"  # Ensure this is defined
 
   idea_analyzer:
     role: "idea_analyzer"
