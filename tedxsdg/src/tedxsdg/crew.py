@@ -81,6 +81,9 @@ def run_crew():
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
 
+        # Log the crew instance type and id for debugging
+        logger.debug("Crew instance: %s, Type: %s", crew, type(crew))
+
         # Safely log available methods on the crew instance
         available_methods = []
         for method in dir(crew):
@@ -96,10 +99,10 @@ def run_crew():
         logger.debug("Available methods in Crew: %s", available_methods)
 
         # Attempt to run the crew
-        if hasattr(crew, 'run'):
+        if 'run' in available_methods:
             logger.debug("Executing crew using 'run' method.")
-            kickoff_result = crew.run()  # Replace with the actual method name if different
-        elif hasattr(crew, 'execute'):
+            kickoff_result = crew.run()
+        elif 'execute' in available_methods:
             logger.debug("Executing crew using 'execute' method.")
             kickoff_result = crew.execute()
         else:
