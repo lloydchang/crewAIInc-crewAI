@@ -14,13 +14,13 @@ class LLMInnerConfig(BaseModel):
     model: Optional[str] = Field(default=None, description="The model name for the LLM.")
     temperature: Optional[float] = Field(default=0, ge=0, description="Temperature for the LLM.")
 
-    @validator('model')
+#     @validator('model')
     def validate_model(cls, v):
         if v is not None and not v.strip():
             raise ValueError("LLM model name cannot be empty.")
         return v
 
-    @validator('temperature')
+#     @validator('temperature')
     def validate_temperature(cls, v):
         if v is not None and v < 0:
             raise ValueError("LLM temperature must be equal to or greater than 0.")
@@ -33,7 +33,7 @@ class LLMConfig(BaseModel):
     provider: Optional[str] = Field(default=None, description="Provider name for the LLM.")
     config: Optional[LLMInnerConfig] = None
 
-    @validator('provider')
+#     @validator('provider')
     def validate_provider(cls, v):
         if v is not None and not v.strip():
             raise ValueError("LLM provider cannot be empty.")
@@ -46,13 +46,13 @@ class EmbedderInnerConfig(BaseModel):
     model: Optional[str] = Field(default=None, description="The model name for the Embedder.")
     temperature: Optional[float] = Field(default=0, ge=0, description="Temperature for the Embedder.")
 
-    @validator('model')
+#     @validator('model')
     def validate_model(cls, v):
         if v is not None and not v.strip():
             raise ValueError("Embedder model name cannot be empty.")
         return v
 
-    @validator('temperature')
+#     @validator('temperature')
     def validate_temperature(cls, v):
         if v is not None and v < 0:
             raise ValueError("Embedder temperature must be equal to or greater than 0.")
@@ -65,7 +65,7 @@ class EmbedderConfig(BaseModel):
     provider: Optional[str] = Field(default=None, description="Provider name for the Embedder.")
     config: Optional[EmbedderInnerConfig] = None
 
-    @validator('provider')
+#     @validator('provider')
     def validate_provider(cls, v):
         if v is not None and not v.strip():
             raise ValueError("Embedder provider cannot be empty.")
@@ -78,7 +78,7 @@ class ToolConfig(BaseModel):
     llm: Optional[LLMConfig] = None
     embedder: Optional[EmbedderConfig] = None
 
-    @validator('llm', 'embedder', pre=True, always=True)
+#     @validator('llm', 'embedder', pre=True, always=True)
     def validate_configs(cls, v, field):
         if v is None:  # Accept None for optional fields
             return v

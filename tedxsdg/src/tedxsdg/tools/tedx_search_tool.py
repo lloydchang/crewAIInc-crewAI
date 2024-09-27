@@ -48,7 +48,7 @@ class TEDxSearchTool(BaseModel):
                 logger.error(f"Failed to download CSV file. Status code: {response.status_code}")
                 raise Exception("Failed to download CSV file")
 
-    @validator('csv_data', pre=True, always=True)
+#     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         """
         Validator to load the CSV data when the tool is initialized.

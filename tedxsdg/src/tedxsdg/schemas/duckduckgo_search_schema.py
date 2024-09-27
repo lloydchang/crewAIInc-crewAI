@@ -15,7 +15,7 @@ class DuckDuckGoSearchInput(BaseModel):
         default=None, description="Search query for DuckDuckGo."
     )
 
-    @validator('search_query')
+#     @validator('search_query')
     def check_search_query(cls, v):
         """Validate the search_query field."""
         if v is not None and not isinstance(v, (str, dict)):

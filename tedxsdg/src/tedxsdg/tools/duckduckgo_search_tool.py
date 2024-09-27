@@ -26,7 +26,7 @@ class DuckDuckGoSearchTool(BaseModel):
     base_url: str = Field(default=None, description="Base URL for DuckDuckGo API")
     search_results: Dict[str, Any] = Field(default_factory=dict, description="Search results")
 
-    @validator('base_url')
+#     @validator('base_url')
     def check_base_url(cls, base_url: str) -> str:
         """Validates that the base_url starts with 'http' or 'https'."""
         if base_url and not base_url.startswith(("http://", "https://")):

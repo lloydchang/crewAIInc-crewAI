@@ -14,7 +14,7 @@ class TEDxTranscriptInput(BaseModel):
         default=None, description="The slug of the TEDx talk to retrieve the transcript for."
     )
 
-    @validator('slug')
+#     @validator('slug')
     def validate_slug(cls, v):
         if v is not None and not isinstance(v, str):
             raise TypeError("Slug must be a string.")

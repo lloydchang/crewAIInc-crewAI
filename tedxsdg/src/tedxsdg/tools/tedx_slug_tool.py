@@ -25,7 +25,7 @@ class TEDxSlugTool(BaseModel):
     data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
-    @validator('csv_data', pre=True, always=True)
+#     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
         if not data_path:

@@ -12,7 +12,7 @@ class TEDxSlugInput(BaseModel):
 
     slug: Optional[str] = Field(default=None, description="The slug to retrieve data for.")
 
-    @validator('slug')
+#     @validator('slug')
     def check_slug(cls, v):
         """Validate the slug field."""
         if v is not None and not isinstance(v, str):

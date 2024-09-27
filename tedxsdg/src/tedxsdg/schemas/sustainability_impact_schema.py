@@ -20,7 +20,7 @@ class SustainabilityImpactInput(BaseModel):
         description="List of sustainability metrics."
     )
 
-    @validator('project')
+#     @validator('project')
     def validate_project(cls, v):
         if v is not None:  # Only validate if the value is not None
             if isinstance(v, str) and not v.strip():
@@ -29,7 +29,7 @@ class SustainabilityImpactInput(BaseModel):
                 raise ValueError("Project dictionary cannot be empty.")
         return v
 
-    @validator('metrics', each_item=True)
+#     @validator('metrics', each_item=True)
     def validate_metrics(cls, v):
         if v is not None and not isinstance(v, str):
             raise TypeError("Each metric must be a string.")
