@@ -7,15 +7,14 @@ Module for TEDxSearchTool which searches TEDx content using CrewAI's CSVSearchTo
 import logging
 import os
 import requests
-from typing import Dict
+from typing import Dict, Any
 from pydantic import BaseModel, Field
 from tools.utils import extract_query_string
 from crewai_tools import CSVSearchTool  # CrewAI's CSV Search Tool
 
 logger = logging.getLogger(__name__)
 
-# Local CSV file location and remote URL for fallback download
-LOCAL_CSV_FILE = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
+# Remote URL for fallback download
 REMOTE_CSV_URL = 'https://raw.githubusercontent.com/lloydchang/mauropelucchi-tedx_dataset/refs/heads/master/update_2024/details.csv'
 
 
@@ -31,33 +30,19 @@ class TEDxSearchTool(BaseModel):
     _description: str = "Searches TEDx content using CrewAI's CSVSearchTool with custom configuration."
     _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
-    data_path: str = Field(default=LOCAL_CSV_FILE, description="Path to the TEDx dataset CSV")
+    def __init__(self, data_path: str, llm: Any = None, embedder: Any = None, **kwargs):
+        super().__init__(**kwargs)
 
-    # CrewAI CSVSearchTool instance
-    csv_search_tool: CSVSearchTool = None
-
-    def __init__(self, **data):
-        super().__init__(**data)
         # Ensure the CSV file is downloaded
+        self.data_path = data_path
         self.download_csv_if_not_exists()
         
         # Configure and initialize the CSVSearchTool with a custom LLM and embedder configuration
         self.csv_search_tool = CSVSearchTool(
             csv=self.data_path,
             config=dict(
-                llm=dict(
-                    provider="ollama",
-                    config=dict(
-                        model="llama3.2",  # Replace with desired model name
-                        temperature=0.0,  # Adjust temperature based on requirement
-                    ),
-                ),
-                embedder=dict(
-                    provider="ollama",
-                    config=dict(
-                        model="nomic-embed-text",  # Replace with desired embedder model
-                    ),
-                ),
+                llm=llm,
+                embedder=embedder,
             )
         )
 
@@ -76,7 +61,7 @@ class TEDxSearchTool(BaseModel):
 
     def invoke(self, input: Dict[str, str]) -> str:
         """
-        Executes the semantic search on the TEDx dataset using CrewAI's CSVSearchTool with the custom configuration.
+        Executes the semantic search on the TEDx dataset using CrewAI's CSVSearchTool.
 
         Args:
             input (dict): The input dictionary containing the search query.
@@ -88,30 +73,9 @@ class TEDxSearchTool(BaseModel):
         search_query = extract_query_string(input)
         logger.debug("Running TEDx search for query: %s", search_query)
 
-        # Perform the semantic search using CrewAI's CSVSearchTool
         try:
             results = self.csv_search_tool._run(search_query=search_query)
-            logger.debug("Search results: %s", results)
             return f"TEDx Search Results:\n{results}"
-        except FileNotFoundError as exc:
-            logger.error("File not found: %s", self.data_path, exc_info=True)
-            raise FileNotFoundError(f"File not found: {self.data_path}") from exc
         except Exception as e:
             logger.error("Error searching CSV data: %s", e, exc_info=True)
             raise Exception("Failed to search CSV data.") from e
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def description(self) -> str:
-        return self._description
-
-    @property
-    def args(self) -> BaseModel:
-        """Return the arguments schema for the tool."""
-        return self._args_schema
-
-    class Config:
-        arbitrary_types_allowed = True
