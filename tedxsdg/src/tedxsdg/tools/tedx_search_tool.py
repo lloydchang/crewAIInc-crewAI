@@ -73,8 +73,22 @@ class TEDxSearchTool(BaseModel):
 
         try:
             # Initialize CSVSearchTool for TEDx search
-            tool = CSVSearchTool(self.data_path)
-            
+            tool = CSVSearchTool(csv=self.data_path,
+                                config=dict(
+                                    llm=dict(
+                                        provider="ollama"                                        config=dict(
+                                            model="llama3.2",
+                                            temperature=0.0,
+                                        ),
+                                    ),
+                                    embedder=dict(
+                                        provider="ollama",
+                                        config=dict(
+                                            model="nomic-embed-text",
+                                        ),
+                                    ),
+                                )
+
             # Perform the search using the tool
             results = tool.search(query=search_query_lower)
 
