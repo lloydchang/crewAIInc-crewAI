@@ -33,7 +33,7 @@ agents:
       - sdg_align
       - sustainability_impact
 
-  collaboration_facilitator:
+  francis:
     role: "Francis, SDG Project Collaboration Facilitator"
     goal: "Facilitate collaboration between SDG projects"
     backstory: >
@@ -48,7 +48,7 @@ agents:
       - sdg_align
       - sustainability_impact
 
-  idea_analyzer:
+  ira:
     role: "Ira, SDG Idea Analyzer"
     goal: "Analyze ideas and align them with UN SDGs"
     backstory: >
@@ -63,7 +63,7 @@ agents:
       - sdg_align
       - sustainability_impact
 
-  expert_advisor:
+  eden:
     role: "Eden, SDG Implementation Expert"
     goal: "Provide expert advice on SDG-aligned project implementation"
     backstory: >
@@ -78,7 +78,7 @@ agents:
       - sdg_align
       - sustainability_impact
 
-  action_plan_generator:
+  peyton:
     role: "Peyton, SDG Action Plan Specialist"
     goal: "Generate detailed action plans for SDG-aligned projects"
     backstory: >
@@ -93,7 +93,7 @@ agents:
       - sdg_align
       - sustainability_impact
 
-  data_integration_specialist:
+  dakota:
     role: "Dakota, SDG Data Integration Specialist"
     goal: "Integrate and analyze data to provide insights for TEDxSDG projects"
     backstory: >
