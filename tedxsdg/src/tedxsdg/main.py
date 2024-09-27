@@ -16,7 +16,9 @@ logging.basicConfig(
     ]
 )
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 # Disable the OpenTelemetry SDK by setting the environment variable
 os.environ['OTEL_SDK_DISABLED'] = 'true'
