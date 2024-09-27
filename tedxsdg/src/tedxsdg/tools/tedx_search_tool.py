@@ -9,7 +9,9 @@ import csv
 from typing import Any, Dict, List
 from pydantic import BaseModel, Field, validator
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""

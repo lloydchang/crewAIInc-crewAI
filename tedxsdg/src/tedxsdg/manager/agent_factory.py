@@ -6,9 +6,7 @@ from pydantic import BaseModel, Field
 from crewai import Agent
 from tools.tool_registry import ToolRegistry
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 class CustomAgent(Agent):
     search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)  # Default to an empty dict
