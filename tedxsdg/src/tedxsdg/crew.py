@@ -53,8 +53,13 @@ def initialize_crew():
         # Safely list available methods on Crew instance
         available_methods = []
         for method in dir(crew):
-            if callable(getattr(crew, method)) and not method.startswith("__"):
-                available_methods.append(method)
+            try:
+                # Check if the method is callable and does not start with "__"
+                if callable(getattr(crew, method)) and not method.startswith("__"):
+                    available_methods.append(method)
+            except AttributeError:
+                # Ignore class-only attributes like __signature__
+                continue
 
         logger.debug("Available methods in Crew: %s", available_methods)
 
