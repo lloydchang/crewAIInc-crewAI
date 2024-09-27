@@ -6,8 +6,6 @@ tasks:
       Launch and implement an eco-friendly pet care initiatives to promote responsible ownership and biodiversity.
       Align with SDGs 3 (Good Health and Well-being) and 15 (Life on Land).
       Assess the initiative's sustainability.
-    tools:
-      - tedx_search
     agent: sam
     priority: 1  # High priority
     expected_output: >
@@ -22,8 +20,6 @@ tasks:
       Develop and implement a sustainable food supply chain innovations to combat hunger and reduce food waste.
       Align with SDGs 2 (Zero Hunger) and 12 (Responsible Consumption and Production).
       Assess the sustainability impact of the food supply chain innovations.
-    tools:
-      - tedx_search
     agent: alex
     priority: 1  # High priority
     expected_output: >
