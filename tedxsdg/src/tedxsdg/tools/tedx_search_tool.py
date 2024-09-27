@@ -76,7 +76,7 @@ class TEDxSearchTool(BaseModel):
             tool = CSVSearchTool(csv=self.data_path,
                                     config=dict(
                                         llm=dict(
-                                            provider="ollama,
+                                            provider="ollama",
                                             config=dict(
                                                 model="llama3.2",
                                                 temperature=0.0,
