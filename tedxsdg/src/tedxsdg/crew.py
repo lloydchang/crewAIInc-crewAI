@@ -81,20 +81,24 @@ def run_crew():
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
 
-        # Log the crew instance type and all attributes for debugging
+        # Log the crew instance type for debugging
         logger.debug("Crew instance: %s, Type: %s", crew, type(crew))
 
-        # Check and log all attributes and methods of the crew instance
+        # Check and log available methods on the crew instance
+        available_methods = []
         all_attributes = dir(crew)
         logger.debug("All attributes of Crew: %s", all_attributes)
 
-        # Log types of all attributes
         for attr in all_attributes:
-            attr_value = getattr(crew, attr)
-            logger.debug("Attribute: %s, Type: %s", attr, type(attr_value))
+            if not attr.startswith("__"):
+                try:
+                    attr_value = getattr(crew, attr)
+                    if callable(attr_value):
+                        available_methods.append(attr)
+                except AttributeError as e:
+                    logger.debug("AttributeError for %s: %s", attr, str(e))
+                    continue  # Skip attributes that cause errors
 
-        # Attempt to find suitable methods to execute the crew
-        available_methods = [method for method in all_attributes if not method.startswith("__")]
         logger.debug("Available methods in Crew: %s", available_methods)
 
         # Attempt to run the crew
