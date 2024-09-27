@@ -6,7 +6,7 @@ Module for TEDxTranscriptTool which retrieves the transcript of a TEDx talk.
 
 import logging
 import csv
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
