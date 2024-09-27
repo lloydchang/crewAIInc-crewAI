@@ -1,5 +1,3 @@
-# crew.py
-
 #!/usr/bin/env python
 
 # This module sets up the environment and runs the crew.
@@ -8,7 +6,6 @@ import os
 import logging
 import sys
 from dotenv import load_dotenv
-import inspect
 
 # Centralized logging configuration
 logging.basicConfig(
@@ -45,7 +42,7 @@ def initialize_crew():
         manager = CrewAIManager(
             agents_config_path=AGENTS_CONFIG_PATH,
             tasks_config_path=TASKS_CONFIG_PATH,
-            tools_config_path=TOOLS_CONFIG_PATH  # Corrected here
+            tools_config_path=TOOLS_CONFIG_PATH
         )
         logger.info("Crew initialization successful.")
 
@@ -55,13 +52,14 @@ def initialize_crew():
         # Safely list available methods on Crew instance
         available_methods = []
         for method in dir(crew):
+            if method.startswith("__"):
+                continue  # Skip private methods
+
             try:
-                # Check if the method is callable and does not start with "__"
-                if callable(getattr(crew, method)) and not method.startswith("__"):
+                if callable(getattr(crew, method)):
                     available_methods.append(method)
-            except AttributeError:
-                # Ignore class-only attributes like __signature__
-                continue
+            except Exception as e:
+                logger.debug(f"Could not access method '{method}': {e}")
 
         logger.debug("Available methods in Crew: %s", available_methods)
 
@@ -84,10 +82,17 @@ def run_crew():
             return "Error: CrewAIManager instance is None."
 
         # Safely log available methods on the crew instance
-        available_methods = [
-            method for method in dir(crew)
-            if callable(getattr(crew, method)) and not method.startswith("__") and method != "getattr" and method != "setattr"
-        ]
+        available_methods = []
+        for method in dir(crew):
+            if method.startswith("__"):
+                continue  # Skip private methods
+
+            try:
+                if callable(getattr(crew, method)):
+                    available_methods.append(method)
+            except Exception as e:
+                logger.debug(f"Could not access method '{method}': {e}")
+
         logger.debug("Available methods in Crew: %s", available_methods)
 
         # Attempt to run the crew
