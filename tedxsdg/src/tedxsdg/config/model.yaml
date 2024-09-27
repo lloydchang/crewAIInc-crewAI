@@ -4,10 +4,10 @@ llm:
   provider: "ollama"  # The provider for the LLM. Ensure this matches your implementation.
   config:
     model: "ollama/llama3.2"  # Confirm this model name with Ollama to ensure correct usage.
-    temperature: 0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
+    temperature: 0.0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
 
 embedder:
   provider: "ollama"  # Verify if 'ollama' supports 'nomic-embed-text'.
   config:
     model: "nomic-embed-text"  # Confirm the correct model name and ensure compatibility with the provider.
-    temperature: 0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
+    temperature: 0.0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
