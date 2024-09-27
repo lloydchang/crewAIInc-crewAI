@@ -50,14 +50,11 @@ def initialize_crew():
         # Initialize the crew
         crew = manager.initialize_crew()
 
-        # List available methods on Crew instance
+        # Safely list available methods on Crew instance
         available_methods = []
         for method in dir(crew):
             if callable(getattr(crew, method)) and not method.startswith("__"):
-                try:
-                    available_methods.append(method)
-                except AttributeError:
-                    logger.warning("AttributeError when checking method: %s", method)
+                available_methods.append(method)
 
         logger.debug("Available methods in Crew: %s", available_methods)
 
@@ -78,9 +75,6 @@ def run_crew():
         if crew is None:
             logger.error("CrewAIManager instance is None. Exiting.")
             return "Error: CrewAIManager instance is None."
-
-        # Log available methods on the crew instance
-        logger.debug("Available methods in Crew: %s", [method for method in dir(crew) if callable(getattr(crew, method)) and not method.startswith("__")])
 
         # Attempt to run the crew
         if hasattr(crew, 'run'):
