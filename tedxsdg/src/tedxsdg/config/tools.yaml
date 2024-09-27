@@ -41,8 +41,6 @@ tools:
         temperature: 0
 
   duckduckgo_search:
-    api_key: "your_duckduckgo_api_key"  # Replace with your actual API key
-    base_url: "https://api.duckduckgo.com/"
     llm_config:
       provider: "ollama"
       config:
@@ -56,7 +54,6 @@ tools:
 
   sdg_align:
     data_path: "data/sdg_data.csv"
-    alignment_model: "your_alignment_model"  # Replace with your actual alignment model
     llm_config:
       provider: "ollama"
       config:
@@ -70,7 +67,6 @@ tools:
 
   sustainability_impact:
     data_path: "data/impact_data.csv"
-    assessment_model: "your_assessment_model"  # Replace with your actual assessment model
     llm_config:
       provider: "ollama"
       config:

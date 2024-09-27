@@ -19,7 +19,7 @@ class CrewAIManager:
         self, 
         agents_config_path: str, 
         tasks_config_path: str, 
-        tools_config_path: str = "config/tools.yaml"  # Ensure model_config_path is not included
+        tools_config_path: str = "config/tools.yaml"
     ):
         logger.debug("Initializing CrewAIManager")
 

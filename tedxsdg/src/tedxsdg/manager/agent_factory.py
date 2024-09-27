@@ -9,7 +9,7 @@ from tools.tool_registry import ToolRegistry
 logger = logging.getLogger(__name__)
 
 class CustomAgent(Agent):
-    search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)  # Default empty dict
 
     class Config:
         arbitrary_types_allowed = True
