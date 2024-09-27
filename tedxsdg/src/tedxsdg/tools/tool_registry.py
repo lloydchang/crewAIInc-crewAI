@@ -5,9 +5,6 @@ from typing import Dict, Type, Any, Union
 from crewai import LLM  # Assuming LLM class is imported from crewai
 from langchain.tools import StructuredTool
 from .config_loader import load_config
-from .duckduckgo_search_tool import DuckDuckGoSearchTool
-from .sdg_align_tool import SDGAlignTool
-from .sustainability_impact_tool import SustainabilityImpactTool
 from .tedx_search_tool import TEDxSearchTool
 from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
@@ -78,9 +75,6 @@ class ToolRegistry:
             "tedx_search": TEDxSearchTool,
             "tedx_slug": TEDxSlugTool,
             "tedx_transcript": TEDxTranscriptTool,
-            "sdg_align": SDGAlignTool,
-            "sustainability_impact": SustainabilityImpactTool,
-            "duckduckgo_search": DuckDuckGoSearchTool
         }
 
         tool_class = tool_mapping.get(tool_name)
