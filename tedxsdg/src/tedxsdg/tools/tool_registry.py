@@ -1,7 +1,7 @@
 # tools/tool_registry.py
 
 import logging
-from typing import Dict, Type, Any
+from typing import Dict, Type, Any, Union
 from crewai import LLM  # Assuming LLM class is imported from crewai
 from langchain.tools import StructuredTool
 from .config_loader import load_config
@@ -19,14 +19,25 @@ class ToolRegistry:
     Registry for managing and creating tools.
     """
 
-    def __init__(self, config_path: str = 'config/tools.yaml'):
-        # Ensure `config_path` is a string that points to a valid YAML file
-        if isinstance(config_path, dict):
-            raise TypeError("Expected a path to the YAML configuration file, but received a dictionary.")
+    def __init__(self, config: Union[str, Dict[str, Any]]):
+        """
+        Initialize the ToolRegistry with either a path to the configuration YAML file or a dictionary.
 
-        # Load the entire configuration from the specified YAML file
-        self.tool_configs = load_config(config_path)
-        logger.debug("Loaded tool configurations from '%s': %s", config_path, self.tool_configs)
+        Args:
+            config (str or dict): Path to the YAML configuration file or a dictionary of tool configurations.
+        """
+        if isinstance(config, str):
+            # If a string is provided, treat it as a path and load the configuration from the file
+            logger.debug("Loading tool configurations from file path: %s", config)
+            self.tool_configs = load_config(config)
+        elif isinstance(config, dict):
+            # If a dictionary is provided, use it directly
+            logger.debug("Received tool configurations as a dictionary.")
+            self.tool_configs = config
+        else:
+            raise TypeError("config must be a path (str) or a dictionary (dict)")
+
+        logger.debug("Loaded tool configurations: %s", self.tool_configs)
         self.tools: Dict[str, StructuredTool] = {}
 
     def _create_tool(self, tool_name: str, tool_class: Type[StructuredTool]) -> StructuredTool:
