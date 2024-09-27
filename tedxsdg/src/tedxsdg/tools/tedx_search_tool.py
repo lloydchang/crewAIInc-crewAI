@@ -8,6 +8,7 @@ import logging
 import csv
 from typing import Any, Dict, List
 from pydantic import BaseModel, Field, validator
+from tools.utils import extract_query_string
 from crewai_tools import CSVSearchTool  # Assuming this is available in your environment
 
 logger = logging.getLogger(__name__)
@@ -63,11 +64,10 @@ class TEDxSearchTool(BaseModel):
         Returns:
             str: Formatted search results.
         """
-        search_query = input.get('search_query', '')  # Extract 'search_query' from the input dictionary
+        # Use the utility function to extract the search query
+        search_query = extract_query_string(input)
         logger.debug("Running TEDx search for query: %s", search_query)
-        search_query_lower = search_query.lower()
-        results: List[Dict[str, Any]] = []
-
+        
         if not self.data_path:
             raise ValueError("`data_path` must be provided in the configuration.")
 
