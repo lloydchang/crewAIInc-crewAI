@@ -8,9 +8,6 @@ tasks:
       Assess the initiative's sustainability.
     tools:
       - tedx_search
-      - duckduckgo_search
-      - sdg_align
-      - sustainability_impact
     agent: sam
     priority: 1  # High priority
     expected_output: >
@@ -27,9 +24,6 @@ tasks:
       Assess the sustainability impact of the food supply chain innovations.
     tools:
       - tedx_search
-      - duckduckgo_search
-      - sdg_align
-      - sustainability_impact
     agent: alex
     priority: 1  # High priority
     expected_output: >
