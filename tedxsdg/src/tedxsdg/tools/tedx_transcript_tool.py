@@ -51,7 +51,7 @@ class TEDxTranscriptTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def invoke(self, slug: str) -> str:
+    def invoke(self, input: Dict[str, Any]) -> str:
         """
         Retrieve transcript for the given slug.
 
@@ -61,6 +61,10 @@ class TEDxTranscriptTool(BaseModel):
         Returns:
             str: The transcript for the TEDx talk.
         """
+        slug = input.get("slug")
+        if not slug:
+            return "Error: 'slug' is required in the input."
+
         logger.debug("Running TEDxTranscriptTool for slug: %s", slug)
         slug_lower = slug.lower()
 

@@ -48,16 +48,20 @@ class TEDxSlugTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def invoke(self, slug: str) -> str:
+    def invoke(self, input: Dict[str, Any]) -> str:
         """
         Retrieve data for the given slug.
 
         Args:
-            slug (str): The TEDx talk slug.
+            input (Dict[str, Any]): A dictionary containing the slug.
 
         Returns:
             str: The details for the TEDx talk.
         """
+        slug = input.get("slug")
+        if not slug:
+            return "Error: 'slug' is required in the input."
+
         logger.debug("Running TEDxSlugTool for slug: %s", slug)
         slug_lower = slug.lower()
 

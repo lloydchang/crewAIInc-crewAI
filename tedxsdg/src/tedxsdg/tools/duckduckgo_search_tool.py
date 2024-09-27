@@ -33,13 +33,12 @@ class DuckDuckGoSearchTool(BaseModel):
             raise ValueError("base_url must start with http or https")
         return base_url
 
-    @validator('search_results', pre=True, always=True)
-    def load_search_results(cls, search_results: Dict[str, Any]) -> Dict[str, Any]:
-        """Placeholder validator for loading search results if necessary."""
-        return search_results
+    def invoke(self, input: Dict[str, Any]) -> str:
+        """Executes the DuckDuckGo search based on the input."""
+        search_query = input.get("search_query")
+        if not search_query:
+            return "Error: 'search_query' is required in the input."
 
-    def invoke(self, search_query: str) -> str:
-        """Executes the DuckDuckGo search based on the search query."""
         logger.debug("Running DuckDuckGo search for query: %s", search_query)
 
         try:
