@@ -38,6 +38,9 @@ class CrewAIManager:
         logger.debug("Loading tools configuration")
         self.tools_config = load_config(tools_config_path, "tools")
 
+        # Log the loaded tools configuration
+        logger.debug("Loaded tools configuration: %s", self.tools_config)
+
         # Initialize empty agents and tasks
         self.agents: Dict[str, Agent] = {}
         self.tasks: List[Task] = []
@@ -80,18 +83,21 @@ class CrewAIManager:
         """
         Logs the embedder configurations.
         """
-        embedder_config = self.tools_config.get('embedder', {}).get('config', {})
-        if not embedder_config or 'model' not in embedder_config:
-            logger.error("Embedder configuration is missing or does not contain a valid model.")
-            return
+        for tool_name, tool_config in self.tools_config.items():
+            embedder_config = tool_config.get('embedder_config', {}).get('config', {})
+            logger.debug("Embedder configuration for tool '%s': %s", tool_name, embedder_config)
 
-        provider = self.tools_config.get('embedder', {}).get('provider', 'Unknown')
-        model = embedder_config.get('model')
-        temperature = embedder_config.get('temperature', '0')  # Default temperature to 0
-        logger.info(
-            "Embedder - Provider: %s, Model: %s, Temperature: %s", 
-            provider, model, temperature
-        )
+            if not embedder_config or 'model' not in embedder_config:
+                logger.error("Embedder configuration for tool '%s' is missing or does not contain a valid model.", tool_name)
+                continue
+
+            provider = tool_config.get('embedder_config', {}).get('provider', 'Unknown')
+            model = embedder_config.get('model')
+            temperature = embedder_config.get('temperature', '0')  # Default temperature to 0
+            logger.info(
+                "Tool '%s' embedder - Provider: %s, Model: %s, Temperature: %s", 
+                tool_name, provider, model, temperature
+            )
 
     def create_task(self, task_name: str) -> None:
         """
