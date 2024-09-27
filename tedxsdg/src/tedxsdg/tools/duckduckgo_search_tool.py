@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class DuckDuckGoSearchToolArgs(BaseModel):
     """Arguments for DuckDuckGoSearchTool."""
-    search_query: str = Field(default=None, description="The search query for DuckDuckGo")
+    query: str = Field(default=None, description="The search query for DuckDuckGo")
 
 
 class DuckDuckGoSearchTool(BaseModel):
@@ -35,11 +35,11 @@ class DuckDuckGoSearchTool(BaseModel):
 
     def invoke(self, input: Dict[str, Any]) -> str:
         """Executes the DuckDuckGo search based on the input."""
-        search_query = input.get("search_query")
-        if not search_query:
-            return "Error: 'search_query' is required in the input."
+        query = input.get("query")
+        if not query:
+            return "Error: 'query' is required in the input."
 
-        logger.debug("Running DuckDuckGo search for query: %s", search_query)
+        logger.debug("Running DuckDuckGo search for query: %s", query)
 
         try:
             # Mock response for demonstration purposes
