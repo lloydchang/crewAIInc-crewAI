@@ -1,5 +1,3 @@
-# crew.py
-
 #!/usr/bin/env python
 
 # This module sets up the environment and runs the crew.
@@ -53,9 +51,15 @@ def initialize_crew():
         crew = manager.initialize_crew()
 
         # List available methods on Crew instance
-        methods = inspect.getmembers(crew, predicate=inspect.isfunction)
-        method_names = [method[0] for method in methods if not method[0].startswith("__")]
-        logger.debug("Available methods in Crew: %s", method_names)
+        available_methods = []
+        for method in dir(crew):
+            if callable(getattr(crew, method)) and not method.startswith("__"):
+                try:
+                    available_methods.append(method)
+                except AttributeError:
+                    logger.warning("AttributeError when checking method: %s", method)
+
+        logger.debug("Available methods in Crew: %s", available_methods)
 
         return crew
     except (ValueError, TypeError, RuntimeError) as e:
