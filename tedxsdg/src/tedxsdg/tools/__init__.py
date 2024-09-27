@@ -8,9 +8,6 @@ from .tedx_slug_tool import TEDxSlugTool
 from .tedx_transcript_tool import TEDxTranscriptTool
 
 __all__ = [
-    "DuckDuckGoSearchTool",
-    "SDGAlignTool",
-    "SustainabilityImpactTool",
     "TEDxSearchTool",
     "TEDxSlugTool",
     "TEDxTranscriptTool",
