@@ -27,6 +27,13 @@ class SustainabilityImpactTool(BaseModel):
     assessment_model: str = Field(default=None, description="Model used for assessment")
     impact_data: Dict[str, Any] = Field(default_factory=dict, description="Impact data")
 
+    @validator('data_path')
+    def check_data_path(cls, v):
+        """Validator to ensure the data path is provided."""
+        if v is None:
+            raise ValueError("data_path must be provided")
+        return v
+
     @validator('impact_data', pre=True, always=True)
     def load_impact_data(cls, value, values):
         """Loads impact data from a CSV file."""
@@ -48,7 +55,7 @@ class SustainabilityImpactTool(BaseModel):
             logger.error(f"Error loading impact data: {e}", exc_info=True)
             raise
 
-    def run(self, project: str = None) -> str:
+    def run(self, project: str) -> str:
         """Assesses the sustainability impact of the given project."""
         logger.debug("Assessing sustainability impact for project: %s", project)
         impact = self.impact_data.get(project.lower())

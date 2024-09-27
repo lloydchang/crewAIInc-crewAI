@@ -32,7 +32,6 @@ class TEDxTranscriptTool(BaseModel):
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
         if not data_path:
-            logger.error("`data_path` must be provided in the configuration.")
             raise ValueError("`data_path` must be provided in the configuration.")
         logger.info("Loading TEDxTranscriptTool with data_path: %s", data_path)
         try:
@@ -53,7 +52,7 @@ class TEDxTranscriptTool(BaseModel):
             logger.error("Error loading CSV data: %s", e, exc_info=True)
             raise Exception("Failed to load CSV data.") from e
 
-    def run(self, slug: str = None) -> str:
+    def run(self, slug: str) -> str:
         """
         Retrieve transcript for the given slug.
 
@@ -64,12 +63,12 @@ class TEDxTranscriptTool(BaseModel):
             str: The transcript for the TEDx talk.
         """
         logger.debug("Running TEDxTranscriptTool for slug: %s", slug)
-        slug_lower = slug.lower() if slug else None
+        slug_lower = slug.lower()
 
-        if slug_lower and slug_lower not in self.csv_data:
+        if slug_lower not in self.csv_data:
             return f"No transcript found for slug '{slug}'. Please ensure the slug is correct."
 
-        entry = self.csv_data.get(slug_lower, {})
+        entry = self.csv_data[slug_lower]
         transcript = entry.get('transcript', 'No transcript available.')
 
         formatted_result = (

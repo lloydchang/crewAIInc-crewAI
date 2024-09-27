@@ -4,7 +4,6 @@
 Module for TEDxSearchTool which searches TEDx content from a local CSV dataset.
 """
 
-import os
 import logging
 import csv
 from typing import Any, Dict, List
@@ -14,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class TEDxSearchToolArgs(BaseModel):
     """Arguments for TEDxSearchTool."""
-    search_query: str = Field(..., description="The search query for TEDx talks")
+    search_query: str = Field(default=None, description="The search query for TEDx talks")
 
 
 class TEDxSearchTool(BaseModel):
@@ -24,11 +23,9 @@ class TEDxSearchTool(BaseModel):
     _description: str = "Searches TEDx content from the local CSV dataset."
     _args_schema = TEDxSearchToolArgs  # Define the argument schema
 
-    # Instance-level fields
-    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
-    # Validator to load CSV data on initialization
     @validator('csv_data', pre=True, always=True)
     def load_csv_data(cls, v, values):
         data_path = values.get('data_path')
@@ -87,7 +84,6 @@ class TEDxSearchTool(BaseModel):
         logger.debug("Search results: %s", formatted_results)
         return f"Final Answer: TEDx Search Results:\n{formatted_results}"
 
-    # Class property methods
     @property
     def name(self) -> str:
         return self._name
@@ -95,11 +91,6 @@ class TEDxSearchTool(BaseModel):
     @property
     def description(self) -> str:
         return self._description
-
-    @property
-    def args(self) -> TEDxSearchToolArgs:
-        """Return an instance of the argument schema."""
-        return self._args_schema()
 
     @property
     def args_schema(self) -> BaseModel:

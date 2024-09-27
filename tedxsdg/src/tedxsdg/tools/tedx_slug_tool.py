@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class TEDxSlugToolArgs(BaseModel):
     """Arguments for TEDxSlugTool."""
-    slug: str = Field(..., description="The TEDx talk slug to retrieve details for.")
+    slug: str = Field(default=None, description="The TEDx talk slug to retrieve details for.")
 
 
 class TEDxSlugTool(BaseModel):
@@ -25,7 +25,7 @@ class TEDxSlugTool(BaseModel):
     _description: str = "Retrieves TEDx content details based on a provided slug."
     _args_schema = TEDxSlugToolArgs
 
-    data_path: str = Field(..., description="Path to the TEDx dataset CSV")
+    data_path: str = Field(default=None, description="Path to the TEDx dataset CSV")
     csv_data: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Loaded CSV data")
 
     @validator('csv_data', pre=True, always=True)
@@ -78,7 +78,6 @@ class TEDxSlugTool(BaseModel):
         logger.debug("Result for slug '%s': %s", slug, formatted_result)
         return f"Final Answer: TEDx Talk Details for slug '{slug}':\n{formatted_result}"
 
-    # Class property methods
     @property
     def name(self) -> str:
         return self._name
