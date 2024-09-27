@@ -3,7 +3,7 @@
 llm:
   provider: "ollama"  # The provider for the LLM. Ensure this matches your implementation.
   config:
-    model: "llama3"  # Confirm this model name with Ollama to ensure correct usage.
+    model: "llama3.2"  # Confirm this model name with Ollama to ensure correct usage.
     temperature: 0  # Set the temperature for generation. Typical range: 0 (deterministic) to 1 (more randomness).
 
 embedder:
