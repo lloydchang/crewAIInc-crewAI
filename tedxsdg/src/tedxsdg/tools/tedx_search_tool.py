@@ -8,6 +8,7 @@ import logging
 import csv
 from typing import Any, Dict, List
 from pydantic import BaseModel, Field, validator
+from crewai_tools import CSVSearchTool
 
 # logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -65,15 +66,31 @@ class TEDxSearchTool(BaseModel):
         """
         search_query = input.get('query', '')  # Extract 'query' from the input dictionary
         logger.debug("Running TEDx search for query: %s", search_query)
-        search_query_lower = search_query.lower()
-        results: List[Dict[str, Any]] = []
 
-        for entry in self.csv_data.values():
-            if (search_query_lower in entry.get('title', '').lower()) or \
-               (search_query_lower in entry.get('description', '').lower()):
-                results.append(entry)
-                if len(results) >= 3:  # Limit to top 3 results
-                    break
+        # Initialize the CSVSearchTool with configurations
+        tool = CSVSearchTool(
+            config=dict(
+                llm=dict(
+                    provider="ollama",  # Example provider
+                    config=dict(
+                        model="ollama/llama3.2",
+                        temperature=0
+                    ),
+                ),
+                embedder=dict(
+                    provider="ollama",  # Example provider
+                    config=dict(
+                        model="nomic-embed-text"
+                    ),
+                ),
+            )
+        )
+
+        # Use the search method of CSVSearchTool, assuming it takes a 'csv' and a 'query' parameter
+        results = tool.search(
+            csv=self.csv_data,  # Assuming csv_data is compatible with the search method's expectations
+            query=search_query.lower()
+        )
 
         if not results:
             return "No results found."
