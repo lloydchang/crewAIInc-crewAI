@@ -7,7 +7,7 @@ import logging
 import sys
 from dotenv import load_dotenv
 
-__version__ = "0.1.0"  # Add a version number for tracking
+__version__ = "0.1.1"  # Updated version number
 
 # Centralized logging configuration
 logging.basicConfig(
@@ -20,11 +20,14 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Attempt to import crewai
 try:
+    import crewai
     from crewai import Crew, Agent, Task
     logger.info(f"Successfully imported crewai. Version: {crewai.__version__}")
 except ImportError as e:
-    logger.error("Failed to import crewai: %s", str(e), exc_info=True)
+    logger.error("Failed to import crewai: %s", str(e))
+    logger.error("Please ensure crewai is installed. You can install it using: pip install crewai")
     sys.exit(1)
 
 # Load environment variables
@@ -41,8 +44,7 @@ def initialize_crew():
     """
     logger.debug("Initializing crew with configurations.")
     try:
-        # Here, instead of using CrewAIManager, we'll directly create Agents and Tasks
-        # This is a simplified example. Adjust according to your specific needs.
+        # Create Agents and Tasks
         agent1 = Agent(
             role='Researcher',
             goal='Gather information',
