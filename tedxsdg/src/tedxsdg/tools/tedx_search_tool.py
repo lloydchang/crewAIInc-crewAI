@@ -7,7 +7,7 @@ Module for TEDxSearchTool which searches TEDx content using CrewAI's CSVSearchTo
 import logging
 import os
 import requests
-from typing import Dict, Any
+from typing import Dict,
 from pydantic import BaseModel, Field
 from tools.utils import extract_query_string
 from crewai_tools import CSVSearchTool  # CrewAI's CSV Search Tool
