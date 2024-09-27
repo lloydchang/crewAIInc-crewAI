@@ -6,7 +6,6 @@ Module for TEDxSearchTool which searches TEDx content using CrewAI's CSVSearchTo
 
 import logging
 import os
-import yaml
 import requests
 from typing import Dict
 from pydantic import BaseModel, Field
@@ -18,13 +17,6 @@ logger = logging.getLogger(__name__)
 # Local CSV file location and remote URL for fallback download
 LOCAL_CSV_FILE = 'data/github-mauropelucchi-tedx_dataset-update_2024-details.csv'
 REMOTE_CSV_URL = 'https://raw.githubusercontent.com/lloydchang/mauropelucchi-tedx_dataset/refs/heads/master/update_2024/details.csv'
-
-
-def load_tool_config(tool_name: str, config_file: str = 'config/tools.yaml') -> dict:
-    """Load the configuration for a specific tool from the YAML file."""
-    with open(config_file, 'r') as file:
-        tools_config = yaml.safe_load(file)
-    return tools_config.get(tool_name, {})
 
 
 class TEDxSearchToolArgs(BaseModel):
@@ -46,25 +38,26 @@ class TEDxSearchTool(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        
-        # Load configurations from tools.yaml
-        config = load_tool_config(self._name)
-
-        # Set data path based on configuration or default to local CSV path
-        self.data_path = config.get('data_path', LOCAL_CSV_FILE)
-
         # Ensure the CSV file is downloaded
         self.download_csv_if_not_exists()
-
-        # Configure and initialize the CSVSearchTool with dynamic LLM and embedder configurations
-        llm_config = config.get("llm_config", {})
-        embedder_config = config.get("embedder_config", {})
-
+        
+        # Configure and initialize the CSVSearchTool with a custom LLM and embedder configuration
         self.csv_search_tool = CSVSearchTool(
             csv=self.data_path,
             config=dict(
-                llm=llm_config,
-                embedder=embedder_config,
+                llm=dict(
+                    provider="ollama",
+                    config=dict(
+                        model="llama3.2",  # Replace with desired model name
+                        temperature=0.0,  # Adjust temperature based on requirement
+                    ),
+                ),
+                embedder=dict(
+                    provider="ollama",
+                    config=dict(
+                        model="nomic-embed-text",  # Replace with desired embedder model
+                    ),
+                ),
             )
         )
 
