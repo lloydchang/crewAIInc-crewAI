@@ -1,15 +1,18 @@
 # manager/agent_factory.py
 
 import logging
-from typing import Optional
-from pydantic import ValidationError
+from typing import Optional, Dict, Any
+from pydantic import BaseModel, Field
 from crewai import Agent
 from tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
 class CustomAgent(Agent):
-    search_query: Optional[dict] = {}
+    search_query: Optional[Dict[str, Any]] = Field(default_factory=dict)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 def create_agent(
     agent_name: str,
@@ -40,13 +43,9 @@ def create_agent(
             tools.append(tool)
             logger.info("Successfully created tool '%s' for agent '%s'.", tool_name, agent_name)
         except ValueError as e:
-            logger.error(
-                "Error creating tool '%s' for agent '%s': %s", tool_name, agent_name, str(e), 
-                exc_info=True
-            )
             logger.warning(
-                "Tool '%s' could not be created and will be skipped for agent '%s'.", 
-                tool_name, agent_name
+                "Tool '%s' could not be created and will be skipped for agent '%s': %s", 
+                tool_name, agent_name, str(e)
             )
 
     # Log a warning if no tools are assigned to the agent
@@ -80,9 +79,9 @@ def create_agent(
             [tool.name for tool in tools]
         )
         return agent
-    except ValidationError as e:
+    except Exception as e:
         logger.error(
-            "Validation error creating agent '%s': %s", agent_name, str(e), 
+            "Error creating agent '%s': %s", agent_name, str(e), 
             exc_info=True
         )
         # Attempt to create the agent with minimal required fields
@@ -95,7 +94,7 @@ def create_agent(
                 search_query={}
             )
             logger.warning(
-                "Created agent '%s' with minimal configuration due to validation error.", 
+                "Created agent '%s' with minimal configuration due to error.", 
                 agent_name
             )
             return agent
@@ -106,9 +105,3 @@ def create_agent(
                 exc_info=True
             )
             raise ValueError(f"Failed to create agent '{agent_name}': {str(e2)}") from e2
-    except Exception as e:
-        logger.error(
-            "Error creating agent '%s': %s", agent_name, str(e), 
-            exc_info=True
-        )
-        raise ValueError(f"Failed to create agent '{agent_name}': {str(e)}") from e
