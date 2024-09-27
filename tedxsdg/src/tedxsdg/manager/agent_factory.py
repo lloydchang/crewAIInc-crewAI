@@ -108,3 +108,7 @@ def create_agent(
             raise ValueError(f"Failed to create agent '{agent_name}': {str(e2)}") from e2
     except Exception as e:
         logger.error(
+            "Error creating agent '%s': %s", agent_name, str(e), 
+            exc_info=True
+        )
+        raise ValueError(f"Failed to create agent '{agent_name}': {str(e)}") from e
